@@ -1,0 +1,30 @@
+{
+  "name": "hitchy",
+  "version": "0.0.1",
+  "author": "cepharum GmbH",
+  "homepage": "http://cepharum.de",
+  "license": "MIT",
+  "main": "lib/injector/connect.js",
+  "scripts": {
+    "start": "node scripts/server.js",
+    "test": "mocha test/*"
+  },
+  "bin": {
+    "hitchy": "node scripts/cli.js"
+  },
+  "engines": {
+    "node": ">=6.9.2",
+    "npm": ">=3.0.0"
+  },
+  "peerDependencies": {
+    "mocha": "*",
+    "express": "*",
+    "gulp": "*"
+  },
+  "dependencies": {
+    "glob": "^7.1.1",
+    "minimist": "^1.2.0",
+    "lodash": "^4.17.4",
+    "waterline": "^0.11.8"
+  }
+}
