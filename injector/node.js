@@ -26,8 +26,7 @@
  * @author: cepharum
  */
 
-const Command = require( "./common" );
-const _ = require( "lodash" );
+const Common = require( "./common" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
