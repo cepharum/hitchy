@@ -27,10 +27,8 @@
  */
 
 module.exports = {
-
 	connect: require( "./connect" ),
 	express: require( "./connect" ),
 
 	node: require( "./node" ),
-
 };

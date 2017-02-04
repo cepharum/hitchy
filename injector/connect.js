@@ -26,42 +26,38 @@
  * @author: cepharum
  */
 
-const Command = require( "./common" );
-const _ = require( "lodash" );
+const Common = require( "./common" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
  * as middleware.
  *
  * @param {HitchyOptions=} options
- * @returns {function(request:IncomingMessage, response:ServerResponse)}
+ * @returns {ConnectHandler|ConnectHandler[]}
  */
 module.exports = function( options ) {
 
 	let hitchy = null;
 	let error = null;
 
-	require( "../index" )( options )
+	require( "../lib" )( options )
 		.then( function( runtime ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
 		} );
 
-	return function( req, res ) {
+	return function( req, res, next ) {
 		/** @type HitchyRequestContext */
 		let context = {
 			request:  req,
 			response: res,
-			done:     function() {},
+			done:     next,
 			local:    {}
 		};
 
 		if ( hitchy ) {
 			hitchy.utility.introduce( context );
-
-			hitchy.router.normalize( context );
-			hitchy.responder.normalize( context );
 
 			hitchy.router.dispatch.call( context )
 				.then( function() {
@@ -76,3 +72,7 @@ module.exports = function( options ) {
 		}
 	};
 };
+
+/**
+ * @typedef {function(err:Error=,req:IncomingMessage,res:ServerResponse,next:function(err:Error=))} ConnectHandler
+ */
