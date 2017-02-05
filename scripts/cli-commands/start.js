@@ -82,6 +82,8 @@ module.exports = function( options, args ) {
 	function start( scriptname ) {
 		return new Promise( function( resolve, reject ) {
 			if ( scriptname ) {
+				console.error( `invoking custom start script ${scriptname} ...` );
+
 				let child = require( "child_process" ).fork( scriptname, {
 					cwd: options.rootFolder,
 					env: process.env,
@@ -98,6 +100,8 @@ module.exports = function( options, args ) {
 				return;
 			}
 
+
+			console.error( `starting application using internal server ...` );
 
 			let port = args.port || process.env.PORT || 3000;
 			let ip = args.ip || process.env.IP || "127.0.0.1";
