@@ -26,8 +26,8 @@
  * @author: cepharum
  */
 
-const _   = require( "lodash" );
-const Log = require( "debug" )( "debug" );
+const _     = require( "lodash" );
+const Debug = require( "debug" )( "debug" );
 
 module.exports = {
 	/**
@@ -100,7 +100,7 @@ function _showError( options, error ) {
 	let status = require( "../lib/core/responder/normalize/status" ).bind( this );
 	let send   = require( "../lib/core/responder/normalize/send" ).bind( this );
 
-	Log( "rendering error internally", error );
+	Debug( "rendering error internally", error );
 
 	_.defaults( error, {
 		status:  parseInt( error.code ) || 500,

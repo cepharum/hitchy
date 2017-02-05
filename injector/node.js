@@ -27,7 +27,7 @@
  */
 
 const Common = require( "./common" );
-const Log    = require( "debug" )( "debug" );
+const Debug  = require( "debug" )( "debug" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
@@ -85,10 +85,10 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			Log( "got request during startup resulting in error", error );
+			Debug( "got request during startup resulting in error", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
-			Log( "got request during startup, sending splash" );
+			Debug( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	};
