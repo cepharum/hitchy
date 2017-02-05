@@ -28,6 +28,7 @@
 
 const File = require( "fs" );
 const Path = require( "path" );
+const Log  = require( "debug" )( "bootstrap" );
 
 /**
  * Qualifies options to properly select packages involved in running current
@@ -48,21 +49,27 @@ const Path = require( "path" );
  * 3. folder farthest to current instance of hitchy containing sub "node_modules"
  *
  * @param {HitchyOptions} options
+ * @param {string=} currentWorkingDirectory
  * @returns {Promise<HitchyOptions>}
  */
-module.exports = function _toolTriangulate( options ) {
+module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 	// always choose current hitchy framework instance to do the job
-	options.hitchyFolder = Path.resolve( __dirname, "../.." );
+	options.hitchyFolder = Path.resolve( __dirname, ".." );
 
 	// always prefer explicitly provided project folder the most
 	if ( !options.hasOwnProperty( "rootFolder" ) ) {
 		// next prefer context of current main script
-		return _findDirectory( Path.dirname( require.main.filename ), "node_modules", "..", true )
+		return _findDirectory( currentWorkingDirectory || Path.dirname( require.main.filename ), "node_modules", "..", true )
 			.catch( function() {
 				// eventually check context current instance of hitchy is running in
-				return _findDirectory( Path.resolve( __dirname, "../../../.." ), "node_modules", "../.." )
+				return _findDirectory( Path.resolve( __dirname, "../../.." ), "node_modules", "../.." )
 			} )
 			.then( function( pathname ) {
+				if ( !pathname ) {
+					Log( "can't detect root folder of current project" );
+					throw new Error( "detecting project root folder failed" );
+				}
+
 				options.rootFolder = pathname;
 
 				return options;
@@ -112,11 +119,13 @@ module.exports = function _toolTriangulate( options ) {
 					let isMatch       = stat.isDirectory();
 					let stopTraversal = keepIteratingIfFailing ? isMatch : !isMatch;
 
+					if ( isMatch ) {
+						latestMatch = path;
+					}
+
 					if ( stopTraversal ) {
 						resolve( latestMatch );
 					} else {
-						latestMatch = path;
-
 						if ( step ) {
 							// check if current package is in use by another one
 							testPath( Path.resolve( path, step ) );

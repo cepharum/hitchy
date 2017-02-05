@@ -37,6 +37,12 @@ module.exports = {
 	/** @borrows _toolPromiseMap as map */
 	map: _toolPromiseMap,
 
+	/** @borrows _toolPromiseMultiMap as multiMap */
+	multiMap: _toolPromiseMultiMap,
+
+	/** @borrows _toolPromiseFind as find */
+	find: _toolPromiseFind,
+
 };
 
 /**
@@ -124,6 +130,62 @@ function _toolPromiseMap( items, fn ) {
 					}, reject );
 			} else {
 				resolve( target );
+			}
+		}
+	} );
+}
+
+/**
+ * Maps all provided items onto values provided some callback invoked on every
+ * item and returning Promise resolved with all mapped items.
+ *
+ * This method is processing all mappings simultaneously and waits for all
+ * started mappings to complete before promising result.
+ *
+ * @note This method is capable of handling array-like collections, too.
+ *
+ * @param {Array} items array of items to filter
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @returns {Promise<Array>} promised array of mapped items
+ */
+function _toolPromiseMultiMap( items, fn ) {
+	let length = items.length;
+	let result = new Array( length );
+
+	for ( let index = 0; index < length; index++ ) {
+		result = Promise.resolve( fn( items[index], index, items ) );
+	}
+
+	return Promise.all( result );
+}
+
+/**
+ * Iterates over array of items invoking provided callback on each item stopping
+ * iteration on first item callback is returning truthy value.
+ *
+ * @note This method is capable of handling array-like collections, too.
+ *
+ * @param {Array} items array of items to filter
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @returns {Promise<*>} promises first element callback returned truthy on or
+ *          null if no item satisfies this
+ */
+function _toolPromiseFind( items, fn ) {
+	return new Promise( function( resolve, reject ) {
+		step( items, 0, items.length );
+
+		function step( items, index, length ) {
+			if ( index < length ) {
+				Promise.resolve( fn( items[index], index, items ) )
+					.then( function( result ) {
+						if ( result ) {
+							resolve( items[index] );
+						} else {
+							step( items, index + 1, length );
+						}
+					}, reject );
+			} else {
+				resolve( null );
 			}
 		}
 	} );

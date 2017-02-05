@@ -26,17 +26,7 @@
  * @author: cepharum
  */
 
-const Tool = require( "../../../tools/promise" );
-
-/**
- * @this HitchyAPI
- * @param {HitchyOptions} options
- * @returns {HitchyUtilityPromiseAPI}
- */
-module.exports = function( options ) {
-	return /** @lends HitchyUtilityPromiseAPI */ {
-		each: Tool.each,
-		filter: Tool.filter,
-		map: Tool.map,
-	};
+module.exports = {
+	triangulate: require( "./triangulate" ),
+	promise: require( "./promise" ),
 };
