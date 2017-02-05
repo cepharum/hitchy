@@ -26,7 +26,8 @@
  * @author: cepharum
  */
 
-const _ = require( "lodash" );
+const _   = require( "lodash" );
+const Log = require( "debug" )( "debug" );
 
 module.exports = {
 	/**
@@ -56,13 +57,15 @@ module.exports = {
  * @private
  */
 function _splash( options ) {
-	let res = this.response;
+	let format = require( "../lib/core/responder/normalize/format" ).bind( this );
+	let status = require( "../lib/core/responder/normalize/status" ).bind( this );
+	let send   = require( "../lib/core/responder/normalize/send" ).bind( this );
 
-	res
-		.status( 423 )
-		.format( {
-			html: function() {
-				res.send( `<!doctype html>
+	status( 423 );
+
+	format( {
+		html:    function() {
+			send( `<!doctype html>
 <html>
 <head>
 <title>Service is starting ...</title>
@@ -72,16 +75,16 @@ function _splash( options ) {
 <body>This service isn't available, yet.</body>
 </body>
 </html>` );
-			},
-			json: function() {
-				res.send( {
-					softError: "Welcome! This service isn't available, yet."
-				} );
-			},
-			default: function() {
-				res.send( "Welcome! This service isn't available, yet." );
-			}
-		} );
+		},
+		json:    function() {
+			send( {
+				softError: "Welcome! This service isn't available, yet."
+			} );
+		},
+		default: function() {
+			send( "Welcome! This service isn't available, yet." );
+		}
+	} );
 }
 
 /**
@@ -93,18 +96,21 @@ function _splash( options ) {
  * @private
  */
 function _showError( options, error ) {
-	let res = this.response;
+	let format = require( "../lib/core/responder/normalize/format" ).bind( this );
+	let status = require( "../lib/core/responder/normalize/status" ).bind( this );
+	let send   = require( "../lib/core/responder/normalize/send" ).bind( this );
+
+	Log( "rendering error internally", error );
 
 	_.defaults( error, {
-		status: parseInt( error.code ) || 500,
+		status:  parseInt( error.code ) || 500,
 		message: "unknown error"
 	} );
 
-	res
-		.status( error.status )
-		.format( {
-			html: function() {
-				res.send( `<!doctype html>
+	status( error.status );
+	format( {
+		html:    function() {
+			send( `<!doctype html>
 <html>
 <head>
 <title>Error</title>
@@ -114,15 +120,15 @@ function _showError( options, error ) {
 <body>${error.message}</body>
 </body>
 </html>` );
-			},
-			json: function() {
-				res.send( {
-					error: error.message,
-					code: error.status,
-				} );
-			},
-			default: function() {
-				res.send( "Error: " + ( error.message || "unknown error" ) );
-			}
-		} );
+		},
+		json:    function() {
+			send( {
+				error: error.message,
+				code:  error.status,
+			} );
+		},
+		default: function() {
+			send( "Error: " + ( error.message || "unknown error" ) );
+		}
+	} );
 }
