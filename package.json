@@ -5,13 +5,13 @@
   "homepage": "http://cepharum.de",
   "repository": "https://github.com/cepharum/hitchy",
   "license": "MIT",
-  "main": "injector/connect.js",
+  "main": "injector",
   "scripts": {
     "start": "node scripts/server.js",
     "test": "mocha test/*"
   },
   "bin": {
-    "hitchy": "node scripts/cli.js"
+    "hitchy": "./hitchy-ctl.sh"
   },
   "engines": {
     "node": ">=6.9.2",

@@ -34,7 +34,7 @@
 const Http = require( "http" );
 const Args = require( "minimist" )( process.argv.slice( 2 ) );
 
-const Hitchy = require( "./node" );
+const Hitchy = require( "hitchy" );
 
 let options = {};
 
@@ -42,7 +42,7 @@ if ( Args.project ) {
 	options.rootFolder = Args.project;
 }
 
-let server = Http.createServer( Hitchy( options ) );
+let server = Http.createServer( Hitchy.node( options ) );
 
 server.listen(
 	process.env.PORT || Args.port || 3000,

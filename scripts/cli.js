@@ -26,3 +26,73 @@
  * @author: cepharum
  */
 
+const Args = require( "minimist" )( process.argv.slice( 2 ) );
+
+const command = Args._.shift() || "start";
+
+if ( Args.help || Args.h ) {
+	return usage();
+}
+
+process.on( "unhandledRejection", _unhandledRejection );
+process.on( "uncaughtException", _unhandledException );
+
+let options = {};
+
+if ( Args.project ) {
+	options.rootFolder = Args.project;
+}
+
+require( "../tools/triangulate" )( options, process.cwd() )
+	.then( function( options ) {
+		switch ( command ) {
+			case "start" :
+				require( "./cli-commands/start" )( options, Args );
+				break;
+
+			default :
+				usage();
+		}
+	} );
+
+
+function usage() {
+	console.error( `
+Usage: hitchy <action> [ options ]
+
+Supported actions are:
+
+ start     Start presentation application in current folder.
+ stop      Stop presentation of application in current folder.
+ lock      Shutdown request processing but keep service running (site down).
+ unlock    Re-enable request processing.
+ open      Open browser requesting homepage of application.
+ 
+Default action is "start".
+
+Supported options are:
+
+ --injector=name    Chooses injector to use (default: node, might be "express").
+` );
+}
+
+function _unhandledRejection( reason, promise ) {
+	console.error( "unhandled rejection of promise", reason, promise );
+}
+
+function _unhandledException( error ) {
+	console.error( "unhandled exception", error );
+}
+
+
+
+/**
+ * @typedef {object<string,(string|boolean)>} HitchyCLIOptionArguments
+ */
+
+/**
+ * @typedef {object} HitchyCLIArguments
+ * @extends {HitchyCLIOptionArguments}
+ * @property {string[]} _ non-option arguments
+ */
+
