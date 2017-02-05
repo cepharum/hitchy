@@ -181,7 +181,11 @@ module.exports = function( options, args ) {
 			url += addr.address + port;
 
 			console.error( `
-Service is running. Open ${url} in your favourite browser now!
+Service is running. Open 
+
+   ${url} 
+
+in your favourite browser now!
 ` );
 		}
 	}
@@ -196,25 +200,29 @@ Service is running. Open ${url} in your favourite browser now!
 	 * @private
 	 */
 	function _handleCancel() {
-		console.error( "shutting down server ... " );
+		if ( !this.$stoppingServer ) {
+			this.$stoppingServer = true;
 
-		// disable any keep-alive mode and reduce timeout on active connections
-		let s = this.$trackedSockets,
-		    i, l;
+			console.error( "shutting down server ... " );
 
-		if ( Array.isArray( s ) ) {
-			for ( i = 0, l = s.length; i < l; i++ ) {
-				s[i].setKeepAlive( false );
-				s[i].setTimeout( 5000 );
+			// disable any keep-alive mode and reduce timeout on active connections
+			let s = this.$trackedSockets,
+			    i, l;
+
+			if ( Array.isArray( s ) ) {
+				for ( i = 0, l = s.length; i < l; i++ ) {
+					s[i].setKeepAlive( false );
+					s[i].setTimeout( 1000 );
+				}
 			}
+
+			this.on( "close", function() {
+				process.exit();
+			} );
+
+			// close server's listening socket
+			this.close();
 		}
-
-		this.on( "close", function() {
-			process.exit();
-		} );
-
-		// close server's listening socket
-		this.close();
 	}
 
 	/**
