@@ -34,6 +34,10 @@ if ( Args.help || Args.h ) {
 	return usage();
 }
 
+if ( Args["log-level"] ) {
+	process.env.DEBUG = Args["log-level"];
+}
+
 process.on( "unhandledRejection", _unhandledRejection );
 process.on( "uncaughtException", _unhandledException );
 
@@ -73,6 +77,7 @@ Default action is "start".
 Supported options are:
 
  --injector=name    Chooses injector to use (default: node, might be "express").
+ --log-level=names  Selects active logging facilities (see npm package "debug").
 ` );
 }
 
