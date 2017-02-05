@@ -53,7 +53,7 @@ module.exports = function( options ) {
 			request:  req,
 			response: res,
 			done:     function() {},
-			local:    {}
+			local:    {},
 		};
 
 		if ( hitchy ) {
@@ -62,10 +62,15 @@ module.exports = function( options ) {
 			hitchy.router.normalize( context );
 			hitchy.responder.normalize( context );
 
-			hitchy.router.dispatch.call( context )
+			hitchy.router.dispatch( context )
 				.then( function() {
 					if ( !res.finished ) {
-						next();
+						let error = new Error( "Page not found!" );
+						error.status = 404;
+
+						options.handleErrors = true;
+
+						Common.errorHandler.call( context, options, error );
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {

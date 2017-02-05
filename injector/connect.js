@@ -59,7 +59,7 @@ module.exports = function( options ) {
 		if ( hitchy ) {
 			hitchy.utility.introduce( context );
 
-			hitchy.router.dispatch.call( context )
+			hitchy.router.dispatch( context )
 				.then( function() {
 					if ( !res.finished ) {
 						next();
