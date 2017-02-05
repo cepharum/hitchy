@@ -38,10 +38,12 @@ const Log    = require( "debug" )( "debug" );
  */
 module.exports = function( options ) {
 
+	/** @type HitchyAPI */
 	let hitchy = null;
+	/** @type Error */
 	let error = null;
 
-	require( "../lib" )( options )
+	let starter = require( "../lib" )( options )
 		.then( function( runtime ) {
 			hitchy = runtime;
 		}, function( cause ) {
@@ -49,6 +51,14 @@ module.exports = function( options ) {
 		} );
 
 	return function( req, res ) {
+		if ( !arguments.length ) {
+			// handle special, somewhat hackish way for notifying hitchy to shutdown
+			return starter
+				.then( function() {
+					return hitchy.bootstrap.shutdown();
+				} );
+		}
+
 		/** @type HitchyRequestContext */
 		let context = {
 			request:  req,

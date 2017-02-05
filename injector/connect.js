@@ -27,6 +27,7 @@
  */
 
 const Common = require( "./common" );
+const Log    = require( "debug" )( "debug" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
@@ -37,10 +38,12 @@ const Common = require( "./common" );
  */
 module.exports = function( options ) {
 
+	/** @type HitchyAPI */
 	let hitchy = null;
+	/** @type Error */
 	let error = null;
 
-	require( "../lib" )( options )
+	let starter = require( "../lib" )( options )
 		.then( function( runtime ) {
 			hitchy = runtime;
 		}, function( cause ) {
@@ -48,6 +51,14 @@ module.exports = function( options ) {
 		} );
 
 	return function( req, res, next ) {
+		if ( !arguments.length ) {
+			// handle special, somewhat hackish way for notifying hitchy to shutdown
+			return starter
+				.then( function() {
+					return hitchy.bootstrap.shutdown();
+				} );
+		}
+
 		/** @type HitchyRequestContext */
 		let context = {
 			request:  req,
@@ -66,8 +77,10 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
+			Log( "got request during startup resulting in error", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
+			Log( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	};

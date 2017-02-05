@@ -36,6 +36,9 @@ const Tools = require( "../../tools" );
  * @param {HitchyCLIArguments} args
  */
 module.exports = function( options, args ) {
+	let hitchy = null;
+
+
 	if ( args.injector ) {
 		return start();
 	} else {
@@ -138,7 +141,9 @@ module.exports = function( options, args ) {
 	}
 
 	function startWithNode( port, ip ) {
-		let httpd = require( "http" ).createServer( require( "../../injector" ).node( options ) );
+		hitchy = require( "../../injector" ).node( options );
+
+		let httpd = require( "http" ).createServer( hitchy );
 
 		httpd.listen( port, ip, onListening.bind( httpd ) );
 
@@ -146,9 +151,11 @@ module.exports = function( options, args ) {
 	}
 
 	function startWithExpress( port, ip ) {
+		hitchy = require( "../../injector" ).express( options );
+
 		let app = require( "express" )();
 
-		app.use( require( "../../injector" ).express( options ) );
+		app.use( hitchy );
 
 		app.listen( port, ip, onListening.bind( app ) );
 
@@ -217,7 +224,17 @@ in your favourite browser now!
 			}
 
 			this.on( "close", function() {
-				process.exit();
+				if ( hitchy ) {
+					console.error( "shutting down hitchy ..." );
+					hitchy()
+						.then( _exit );
+				} else {
+					_exit();
+				}
+
+				function _exit() {
+					process.exit();
+				}
 			} );
 
 			// close server's listening socket
