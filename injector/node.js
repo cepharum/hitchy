@@ -27,6 +27,7 @@
  */
 
 const Common = require( "./common" );
+const Log    = require( "debug" )( "bootstrap" );
 const Debug  = require( "debug" )( "debug" );
 
 /**
@@ -48,6 +49,8 @@ module.exports = function( options ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
+			Log( "starting hitchy failed: %s", cause.message || cause || "unknown error" );
+			process.emit( "SIGINT" );
 		} );
 
 	return function( req, res ) {
@@ -55,7 +58,7 @@ module.exports = function( options ) {
 			// handle special, somewhat hackish way for notifying hitchy to shutdown
 			return starter
 				.then( function() {
-					return hitchy.bootstrap.shutdown();
+					return hitchy ? hitchy.bootstrap.shutdown() : null;
 				} );
 		}
 
@@ -70,10 +73,14 @@ module.exports = function( options ) {
 		if ( hitchy ) {
 			hitchy.utility.introduce( context );
 
-			hitchy.router.normalize( context );
-			hitchy.responder.normalize( context );
+			hitchy.router.normalize( context )
+				.then( function( context ) {
+					// responder normalization works synchronously currently, so
+					// don't waste time on wrapping it in another promise
+					hitchy.responder.normalize( context );
 
-			hitchy.router.dispatch( context )
+					return hitchy.router.dispatch( context );
+				} )
 				.then( function() {
 					if ( !res.finished ) {
 						let error = new Error( "Page not found!" );

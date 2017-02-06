@@ -27,6 +27,7 @@
  */
 
 const Common = require( "./common" );
+const Log    = require( "debug" )( "bootstrap" );
 const Debug  = require( "debug" )( "debug" );
 
 /**
@@ -48,6 +49,8 @@ module.exports = function( options ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
+			Log( "starting hitchy failed: %s", cause.message || cause || "unknown error" );
+			process.emit( "SIGINT" );
 		} );
 
 	return function( req, res, next ) {
@@ -55,7 +58,7 @@ module.exports = function( options ) {
 			// handle special, somewhat hackish way for notifying hitchy to shutdown
 			return starter
 				.then( function() {
-					return hitchy.bootstrap.shutdown();
+					return hitchy ? hitchy.bootstrap.shutdown() : null;
 				} );
 		}
 
