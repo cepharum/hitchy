@@ -49,7 +49,7 @@ module.exports = function( options ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
-			Log( "starting hitchy failed: %s", cause.message || cause || "unknown error" );
+			Log( "starting hitchy failed", cause );
 			process.emit( "SIGINT" );
 		} );
 
