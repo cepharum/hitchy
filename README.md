@@ -111,7 +111,7 @@ This will generate an empty project folder with hitchy as dependency. The last
 command is firing up hitchy's internal server relying on node's HTTP server,
 only.
 
-As of v0.0.3 hitchy has been tested to properly route requests to controllers
+As of v0.0.5 hitchy has been tested to properly route requests to controllers
 and optionally include policies. However, since this project is empty, any 
 request results in a 404 error.
 
@@ -197,3 +197,4 @@ reverse order compared to startup phase.
 we consider to keep the core nearly as simple as now and provide several 
 extension e.g. for enabling hitchy to support development of angular-based 
 client.
+
