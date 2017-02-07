@@ -29,17 +29,17 @@ SOFTWARE.
 hitchy is yet another web application framework. After trying all kinds of web
 application frameworks our team eventually ended up with using sailsjs to 
 develop new software for the web. Sails includes data storage API, knows how to
-define and manage data models using controllers etc. All that stuff is instantly
+define and manage data models, using controllers etc. All that stuff is instantly
 available in a freshly created sailsjs application project.
 
 But then we started to check the code of sailsjs and felt - let's say - grounded.
 
 Parts of code in sailsjs obviously has been written by someone who doesn't know
-Javascript very well. And since we will responsible for code we develop for our
-customers we always had some headaches when thinking about those flaws in code.
-We even tried to do revisions and provide them upstream, but one of our first
-pull requests is still pending. In addition we consider sailsjs paradigm to 
-promote several APIs globally bad practice. Because of all this sailsjs is
+Javascript very well. And since we will be responsible for code we develop for 
+our customers we always had some headaches when thinking about those flaws in 
+code. We even tried to do revisions and provide them upstream, but one of our 
+first pull requests is still pending. In addition we consider sailsjs' paradigm 
+to promote several APIs globally bad practice. Because of all this sailsjs is
 currently dropping off the table.
 
 After that we evaluated different options for replacing sailsjs. trailsjs does
