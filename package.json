@@ -3,7 +3,7 @@
   "version": "0.0.6",
   "author": "cepharum GmbH",
   "homepage": "http://cepharum.de",
-  "repository": "https://github.com/cepharum/hitchy",
+  "repository": "https://github.com/hitchyjs/core",
   "license": "MIT",
   "main": "injector",
   "scripts": {
