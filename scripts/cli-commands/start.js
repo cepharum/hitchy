@@ -48,7 +48,7 @@ module.exports = function( options, args ) {
 		 * simple server internally.
 		 */
 		let files = ["server.js", "app.js", "main.js"]
-			.map( name => Path.resolve( options.rootFolder, name ) );
+			.map( name => Path.resolve( options.projectFolder, name ) );
 
 		return Tools.promise.find( files, function( filename ) {
 			return new Promise( function( resolve, reject ) {
@@ -85,7 +85,7 @@ module.exports = function( options, args ) {
 				console.error( `invoking custom start script ${scriptname} ...` );
 
 				let child = require( "child_process" ).fork( scriptname, {
-					cwd: options.rootFolder,
+					cwd: options.projectFolder,
 					env: process.env,
 				} );
 

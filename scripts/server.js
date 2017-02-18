@@ -39,7 +39,7 @@ const Hitchy = require( "hitchy" );
 let options = {};
 
 if ( Args.project ) {
-	options.rootFolder = Args.project;
+	options.projectFolder = Args.project;
 }
 
 let server = Http.createServer( Hitchy.node( options ) );

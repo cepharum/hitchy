@@ -44,7 +44,7 @@ process.on( "uncaughtException", _unhandledException );
 let options = {};
 
 if ( Args.project ) {
-	options.rootFolder = Args.project;
+	options.projectFolder = Args.project;
 }
 
 require( "../tools/triangulate" )( options, process.cwd() )
