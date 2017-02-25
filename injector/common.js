@@ -57,9 +57,9 @@ module.exports = {
  * @private
  */
 function _splash( options ) {
-	let format = require( "../lib/core/responder/normalize/format" ).bind( this );
-	let status = require( "../lib/core/responder/normalize/status" ).bind( this );
-	let send   = require( "../lib/core/responder/normalize/send" ).bind( this );
+	let format = require( "./normalize/format" ).bind( this );
+	let status = require( "./normalize/status" ).bind( this );
+	let send   = require( "./normalize/send" ).bind( this );
 
 	status( 423 );
 
@@ -96,9 +96,9 @@ function _splash( options ) {
  * @private
  */
 function _showError( options, error ) {
-	let format = require( "../lib/core/responder/normalize/format" ).bind( this );
-	let status = require( "../lib/core/responder/normalize/status" ).bind( this );
-	let send   = require( "../lib/core/responder/normalize/send" ).bind( this );
+	let format = require( "../lib/responder/normalize/format" ).bind( this );
+	let status = require( "../lib/responder/normalize/status" ).bind( this );
+	let send   = require( "../lib/responder/normalize/send" ).bind( this );
 
 	Debug( "rendering error internally", error );
 
