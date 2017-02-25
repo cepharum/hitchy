@@ -1,7 +1,7 @@
 "use strict";
 
 let options = {
-	projectFolder: "projects/empty",
+	projectFolder: "test/projects/empty",
 	onStarted: true // to be replaced with Promise
 };
 
