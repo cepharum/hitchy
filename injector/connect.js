@@ -26,6 +26,8 @@
  * @author: cepharum
  */
 
+"use strict";
+
 const Common = require( "./common" );
 const Log    = require( "debug" )( "bootstrap" );
 const Debug  = require( "debug" )( "debug" );
@@ -49,11 +51,36 @@ module.exports = function( options ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
-			Log( "starting hitchy failed", cause );
-			process.emit( "SIGINT" );
+			Log( "ERROR: starting hitchy failed", cause );
+
+			// cause shutdown by running middleware function w/o arguments
+			middleware()
+				.catch( function( cause ) {
+					Log( "ERROR: shutting down hitchy failed either", cause );
+				} );
+
+			// keep rejecting promise
+			throw cause;
 		} );
 
-	return function( req, res, next ) {
+	if ( options && options.onStarted ) {
+		options.onStarted = new Promise( function( resolve, reject ) {
+			starter.then( resolve, reject );
+		} );
+
+		// suppress warning on unhandled promise rejection on unit-testing
+		if ( process.env.NODE_ENV === "test" ) {
+			options.onStarted.catch( () => {} );
+		}
+	}
+
+	// suppress warning on not handling rejection of internal-only promise
+	starter.catch( () => {} );
+
+	return middleware;
+
+
+	function middleware( req, res ) {
 		if ( !arguments.length ) {
 			// handle special, somewhat hackish way for notifying hitchy to shutdown
 			return starter
@@ -86,7 +113,7 @@ module.exports = function( options ) {
 			Debug( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
-	};
+	}
 };
 
 /**
