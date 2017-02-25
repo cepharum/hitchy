@@ -29,15 +29,15 @@
 "use strict";
 
 const Common = require( "./common" );
-const Log    = require( "debug" )( "bootstrap" );
-const Debug  = require( "debug" )( "debug" );
+const Log = require( "debug" )( "bootstrap" );
+const Debug = require( "debug" )( "debug" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
  * as middleware.
  *
  * @param {HitchyOptions=} options
- * @returns {ConnectHandler|ConnectHandler[]}
+ * @returns {HitchyConnectInstance}
  */
 module.exports = function( options ) {
 
@@ -84,18 +84,22 @@ module.exports = function( options ) {
 	} );
 
 	Object.defineProperties( middleware, {
+		/** @name HitchyConnectInstance#onStarted */
 		onStarted: {
 			get: function() {
 				consumingStarter = true;
 				return starter;
 			}
 		},
-		stop: { value: function() {
-			return starter
-				.then( function() {
-					return hitchy ? hitchy.bootstrap.shutdown() : undefined;
-				} );
-		} }
+		stop: {
+			/** @name HitchyConnectInstance#stop */
+			value: function() {
+				return starter
+					.then( function() {
+						return hitchy ? hitchy.bootstrap.shutdown() : undefined;
+					} );
+			}
+		}
 	} );
 
 	return middleware;
@@ -104,10 +108,10 @@ module.exports = function( options ) {
 	function middleware( req, res ) {
 		/** @type HitchyRequestContext */
 		let context = {
-			request:  req,
+			request: req,
 			response: res,
-			done:     next,
-			local:    {}
+			done: next,
+			local: {}
 		};
 
 		if ( hitchy ) {
@@ -130,5 +134,6 @@ module.exports = function( options ) {
 };
 
 /**
- * @typedef {function(err:Error=,req:IncomingMessage,res:ServerResponse,next:function(err:Error=))} ConnectHandler
+ * @typedef {function(error:Error=,request:IncomingMessage,response:ServerResponse,next:function(err:Error=))} HitchyConnectInstance
+ * @extends HitchyInstance
  */

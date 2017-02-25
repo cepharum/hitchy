@@ -29,15 +29,15 @@
 "use strict";
 
 const Common = require( "./common" );
-const Log    = require( "debug" )( "bootstrap" );
-const Debug  = require( "debug" )( "debug" );
+const Log = require( "debug" )( "bootstrap" );
+const Debug = require( "debug" )( "debug" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
  * as middleware.
  *
  * @param {HitchyOptions=} options
- * @returns {function(request:IncomingMessage, response:ServerResponse)}
+ * @returns {HitchyNodeInstance}
  */
 module.exports = function( options ) {
 
@@ -84,18 +84,22 @@ module.exports = function( options ) {
 	} );
 
 	Object.defineProperties( middleware, {
+		/** @name HitchyNodeInstance#onStarted */
 		onStarted: {
 			get: function() {
 				consumingStarter = true;
 				return starter;
 			}
 		},
-		stop: { value: function() {
-			return starter
-				.then( function() {
-					return hitchy ? hitchy.bootstrap.shutdown() : undefined;
-				} );
-		} }
+		stop: {
+			/** @name HitchyNodeInstance#stop */
+			value: function() {
+				return starter
+					.then( function() {
+						return hitchy ? hitchy.bootstrap.shutdown() : undefined;
+					} );
+			}
+		}
 	} );
 
 	return middleware;
@@ -104,10 +108,10 @@ module.exports = function( options ) {
 	function middleware( req, res ) {
 		/** @type HitchyRequestContext */
 		let context = {
-			request:  req,
+			request: req,
 			response: res,
-			done:     function() {},
-			local:    {},
+			done: function() {},
+			local: {},
 		};
 
 		if ( hitchy ) {
@@ -140,3 +144,14 @@ module.exports = function( options ) {
 		}
 	}
 };
+
+/**
+ * @typedef object HitchyInstance
+ * @property {Promise} onStarted settled on starting hitchy instance succeeded or failed
+ * @property {function:Promise} stop shuts down hitchy instance
+ */
+
+/**
+ * @typedef function(request:IncomingMessage, response:ServerResponse) HitchyNodeInstance
+ * @extends HitchyInstance
+ */

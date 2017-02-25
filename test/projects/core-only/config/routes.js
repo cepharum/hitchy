@@ -1,4 +1,4 @@
-modules.export = {
+module.exports = {
 	"/view/read": "ViewController.read",
 	"/view/read/:id": "ViewController.read",
 	"/view/body": "ViewController.bodyNormal",
