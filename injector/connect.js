@@ -74,21 +74,34 @@ module.exports = function( options ) {
 		}
 	}
 
-	// suppress warning on not handling rejection of internal-only promise
-	starter.catch( () => {} );
+
+	let consumingStarter = false;
+
+	starter.catch( cause => {
+		if ( consumingStarter ) {
+			throw cause;
+		}
+	} );
+
+	Object.defineProperties( middleware, {
+		onStarted: {
+			get: function() {
+				consumingStarter = true;
+				return starter;
+			}
+		},
+		stop: { value: function() {
+			return starter
+				.then( function() {
+					return hitchy ? hitchy.bootstrap.shutdown() : undefined;
+				} );
+		} }
+	} );
 
 	return middleware;
 
 
 	function middleware( req, res ) {
-		if ( !arguments.length ) {
-			// handle special, somewhat hackish way for notifying hitchy to shutdown
-			return starter
-				.then( function() {
-					return hitchy ? hitchy.bootstrap.shutdown() : null;
-				} );
-		}
-
 		/** @type HitchyRequestContext */
 		let context = {
 			request:  req,

@@ -230,7 +230,7 @@ in your favourite browser now!
 			this.on( "close", function() {
 				if ( hitchy ) {
 					console.error( "shutting down hitchy ..." );
-					hitchy()
+					hitchy.stop()
 						.then( _exit );
 				} else {
 					_exit();
