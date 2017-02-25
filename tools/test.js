@@ -26,36 +26,70 @@
  * @author: cepharum
  */
 
+/**
+ * Implements tools for common tasks in developing tests.
+ */
+
 "use strict";
 
 const Http = require( "http" );
 const Url  = require( "url" );
 
 
+let recentlyStartedServers = [];
+
 module.exports = {
 
-	startServer: Http.createServer,
+	/**
+	 * Starts hitchy service using node's http server.
+	 *
+	 * @param {HitchyNodeInstance} hitchy
+	 * @returns {Promise<Server>}
+	 */
+	startServer: function( hitchy ) {
+		switch ( process.env.HITCHY_MODE || "node" ) {
+			case "node" :
+				return new Promise( function( resolve, reject ) {
+					let server = Http.createServer( hitchy );
 
-	get: function( options ) {
-		return new Promise( function( resolve, reject ) {
-			Http.get( options, function( res ) {
-				resolve( res );
-			} ).on( "error", reject );
-		} );
+					recentlyStartedServers.unshift( server );
+
+					server.listen( function() {
+						hitchy.onStarted.then( function() {
+							resolve( server );
+						}, reject );
+					} );
+
+					server.on( "error", reject );
+					server.on( "close", () => { recentlyStartedServers.shift(); } );
+				} );
+
+			default :
+				throw new Error( "this injection mode of hitchy is not fully supported yet" );
+		}
 	},
 
+	get: request.bind( undefined, "GET" ),
 	post: request.bind( undefined, "POST" ),
 	put: request.bind( undefined, "PUT" ),
 	delete: request.bind( undefined, "DELETE" ),
-
 };
-
 
 function request( method, options, data ) {
 	return new Promise( function( resolve, reject ) {
+		let server = recentlyStartedServers[0];
+		if ( !server ) {
+			throw new Error( "server not started yet" );
+		}
+
 		if ( typeof options === "string" ) {
 			options = Url.parse( options );
 			options.method = method;
+		}
+
+		if ( !options.hostname ) {
+			options.hostname = "127.0.0.1";
+			options.port = server.address().port;
 		}
 
 		let request = Http.request( options, function( res ) {

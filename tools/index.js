@@ -29,4 +29,5 @@
 module.exports = {
 	triangulate: require( "./triangulate" ),
 	promise: require( "./promise" ),
+	test: require( "./test" ),
 };
