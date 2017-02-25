@@ -36,10 +36,6 @@ module.exports = {
 
 	startServer: Http.createServer,
 
-	stopServer: function( hitchyInstance ) {
-		hitchyInstance();
-	},
-
 	get: function( options ) {
 		return new Promise( function( resolve, reject ) {
 			Http.get( options, function( res ) {

@@ -6,25 +6,24 @@ let options = {
 };
 
 const Tools = require( "../../tools" );
-const hitchy = require( "../../../injector/index.js" )[process.env.HITCHY_MODE || "node"]( options );
+const Hitchy = require( "../../../injector/index.js" )[process.env.HITCHY_MODE || "node"]( options );
 
 // ----------------------------------------------------------------------------
 
-suite( "Least project with node" );
+suite( "Serving empty project" );
 
-test( "running server", function runningServer( done ) {
-	let server = Tools.startServer( hitchy );
+test( "rejects requests with 404 Not Found", function runningServer( done ) {
+	let server = Tools.startServer( Hitchy );
 
 	server.listen( function() {
 		let socket = server.address();
 
 		options.onStarted.then( function() {
 			Tools.get( "http://127.0.0.1:" + socket.port )
-				.then( function( res ) {
-					res.should.have.value( "statusCode", 404 );
+				.then( function( response ) {
+					response.should.have.value( "statusCode", 404 );
 
-					Tools.stopServer( hitchy );
-					done();
+					Hitchy.stop().then( done, done );
 				} );
 		}, done );
 	} );
