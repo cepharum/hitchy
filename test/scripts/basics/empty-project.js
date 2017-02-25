@@ -6,7 +6,7 @@ let options = {
 };
 
 const Tools = require( "../../tools" );
-const Hitchy = require( "../../../injector/index.js" )[process.env.HITCHY_MODE || "node"]( options );
+const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"]( options );
 
 // ----------------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ test( "rejects requests with 404 Not Found", function runningServer( done ) {
 	server.listen( function() {
 		let socket = server.address();
 
-		options.onStarted.then( function() {
+		options.onStarted.then( function requesting() {
 			Tools.get( "http://127.0.0.1:" + socket.port )
 				.then( function( response ) {
 					response.should.have.value( "statusCode", 404 );
