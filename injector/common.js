@@ -127,6 +127,9 @@ function _showError( options, error ) {
 				code:  error.status,
 			} );
 		},
+		text: function() {
+			send( "Error: " + ( error.message || "unknown error" ) );
+		},
 		default: function() {
 			send( "Error: " + ( error.message || "unknown error" ) );
 		}

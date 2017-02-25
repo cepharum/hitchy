@@ -73,30 +73,65 @@ module.exports = {
 	post: request.bind( undefined, "POST" ),
 	put: request.bind( undefined, "PUT" ),
 	delete: request.bind( undefined, "DELETE" ),
+	/** @borrows request as request */
+	request: request,
 };
 
-function request( method, options, data ) {
+/**
+ * Sends HTTP request to hitchy server, receives responds and fulfills returned
+ * promise with response on success or with cause on error.
+ *
+ * @param {string} method HTTP method
+ * @param {string} url requested URL
+ * @param {(Buffer|string|object)=} data data to be sent with request
+ * @param {object<string,string>} headers custom headers to include on request
+ * @returns {Promise}
+ */
+function request( method, url, data, headers ) {
 	return new Promise( function( resolve, reject ) {
 		let server = recentlyStartedServers[0];
 		if ( !server ) {
 			throw new Error( "server not started yet" );
 		}
 
-		if ( typeof options === "string" ) {
-			options = Url.parse( options );
-			options.method = method;
+		let request = Url.parse( url );
+
+		request.method = method;
+
+		if ( !request.hostname ) {
+			request.hostname = "127.0.0.1";
+			request.port = server.address().port;
 		}
 
-		if ( !options.hostname ) {
-			options.hostname = "127.0.0.1";
-			options.port = server.address().port;
-		}
+		request.headers = {
+			"accept": "text/html",
+		};
 
-		let request = Http.request( options, function( res ) {
-			resolve( res );
+		Object.keys( headers || {} )
+			.forEach( function( name ) {
+				request.headers[name] = headers[name];
+			} );
+
+		let handle = Http.request( request, function( response ) {
+			let buffers = [];
+
+			response.on( "data", chunk => buffers.push( chunk ) );
+			response.on( "end", () => {
+				response.body = Buffer.concat( buffers );
+
+				let type = response.headers["content-type"] || "";
+
+				if ( type.match( /^(text|application)\/json\b/ ) ) {
+					response.data = JSON.parse( response.body.toString( "utf8" ) );
+				} else if ( type.match( /^text\// ) ) {
+					response.text = response.body.toString( "utf8" );
+				}
+
+				resolve( response );
+			} );
 		} );
 
-		request.on( "error", reject );
-		request.end( data );
+		handle.on( "error", reject );
+		handle.end( data );
 	} );
 }
