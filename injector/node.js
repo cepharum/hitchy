@@ -54,7 +54,7 @@ module.exports = function( options ) {
 			Log( "ERROR: starting hitchy failed", cause );
 
 			// cause shutdown by running middleware function w/o arguments
-			middleware()
+			middleware.stop()
 				.catch( function( cause ) {
 					Log( "ERROR: shutting down hitchy failed either", cause );
 				} );
