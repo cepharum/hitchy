@@ -1,8 +1,7 @@
 "use strict";
 
 let options = {
-	projectFolder: "test/projects/empty",
-	onStarted: true // to be replaced with Promise
+	projectFolder: "test/projects/empty"
 };
 
 const Tools = require( "../../tools" );
