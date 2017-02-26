@@ -112,25 +112,27 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 			} )
 	} );
 
-	test( "POSTs /view/create/someSimpleName", function() {
-		return Test.post( "/view/create/someSimpleName" )
+	test( "POSTs /view/create/someSimpleName?extra=1", function() {
+		return Test.post( "/view/create/someSimpleName?extra=1" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				require( "should" )( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "someSimpleName" ] );
+				response.data.extra.should.be.String().and.equal( "1" );
 			} )
 	} );
 
-	test( "POSTs /view/create/some/complex/name", function() {
-		return Test.post( "/view/create/some/complex/name" )
+	test( "POSTs /view/create/some/complex/name?extra[]=foo&extra[]=bar", function() {
+		return Test.post( "/view/create/some/complex/name?extra[]=foo&extra[]=bar" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				require( "should" )( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "some", "complex", "name" ] );
+				response.data.extra.should.be.Array().and.eql( [ "foo", "bar" ] );
 			} )
 	} );
 } );
