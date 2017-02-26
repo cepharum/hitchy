@@ -1,10 +1,10 @@
 module.exports = {
 	index: function( req, res, next ) {
-		req.indexed = "yeah!";
+		req.indexed = "instant session!";
 		next();
 	},
 	promised: function( req, res ) {
-		req.promised = "yup!";
-		return new Promise( function( resolve ) { setTimeout( resolve, 100 ); } );
+		req.promised = "promised session!";
+		return new Promise( resolve => setTimeout( resolve, 100 ) );
 	},
 };

@@ -1,7 +1,8 @@
 "use strict";
 
 let options = {
-	projectFolder: "test/projects/empty"
+	projectFolder: "test/projects/empty",
+	//debug: true,
 };
 
 const Test = require( "../../../tools" ).test;

@@ -1,4 +1,5 @@
 module.exports = {
 	"/view/read": "SessionPolicy",
-	"/view/create": "SessionPolicy.promised",
+	"POST /view/read/:id": "SessionPolicy.promised",
+	"/view/create*": "SessionPolicy.promised",
 };
