@@ -29,8 +29,6 @@
 "use strict";
 
 const Common = require( "./common" );
-const Log = require( "debug" )( "bootstrap" );
-const Debug = require( "debug" )( "debug" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
@@ -40,7 +38,6 @@ const Debug = require( "debug" )( "debug" );
  * @returns {HitchyConnectInstance}
  */
 module.exports = function( options ) {
-
 	/** @type HitchyAPI */
 	let hitchy = null;
 	/** @type Error */
@@ -51,13 +48,8 @@ module.exports = function( options ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
-			Log( "ERROR: starting hitchy failed", cause );
 
-			// cause shutdown by running middleware function w/o arguments
-			middleware.stop()
-				.catch( function( cause ) {
-					Log( "ERROR: shutting down hitchy failed either", cause );
-				} );
+			require( "debug" )( "bootstrap" )( "ERROR: starting hitchy failed", cause );
 
 			// keep rejecting promise
 			throw cause;
@@ -124,10 +116,10 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			Debug( "got request during startup resulting in error", error );
+			hitchy.log( "debug" )( "got request during startup resulting in error", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
-			Debug( "got request during startup, sending splash" );
+			hitchy.log( "debug" )( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	}
