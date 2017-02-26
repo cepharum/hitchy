@@ -54,7 +54,7 @@ module.exports = {
 
 					recentlyStartedServers.unshift( server );
 
-					server.listen( function() {
+					server.listen( 0, "0.0.0.0", 10240, function() {
 						hitchy.onStarted.then( function() {
 							resolve( server );
 						}, reject );
@@ -111,6 +111,8 @@ function request( method, url, data, headers ) {
 			.forEach( function( name ) {
 				request.headers[name] = headers[name];
 			} );
+
+		request.agent = false;
 
 		let handle = Http.request( request, function( response ) {
 			let buffers = [];

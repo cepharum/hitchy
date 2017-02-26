@@ -149,7 +149,7 @@ module.exports = function( options, args ) {
 
 		let httpd = require( "http" ).createServer( hitchy );
 
-		httpd.listen( port, ip, onListening.bind( httpd ) );
+		httpd.listen( port, ip, process.env.BACKLOG || 10240, onListening.bind( httpd ) );
 
 		return httpd;
 	}
@@ -161,7 +161,7 @@ module.exports = function( options, args ) {
 
 		app.use( hitchy );
 
-		app.listen( port, ip, onListening.bind( app ) );
+		app.listen( port, ip, process.env.BACKLOG || 10240, onListening.bind( app ) );
 
 		return app;
 	}
