@@ -23,6 +23,10 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 
 
 	test( "misses GETting", function() {
+		if ( process.env.SKIP_LOAD_TESTS ) {
+			this.skip();
+		}
+
 		let requests = new Array( RequestsPerChunk );
 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
@@ -41,6 +45,10 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 	} );
 
 	test( "GETs /view/read/<id> w/ random <id>", function() {
+		if ( process.env.SKIP_LOAD_TESTS ) {
+			this.skip();
+		}
+
 		let requests = new Array( RequestsPerChunk );
 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
