@@ -61,7 +61,7 @@ module.exports = {
 					} );
 
 					server.on( "error", reject );
-					server.on( "close", () => { recentlyStartedServers.shift(); } );
+					server.on( "close", () => { recentlyStartedServers.filter( i => i === server ); } );
 				} );
 
 			default :
