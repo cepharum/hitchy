@@ -55,17 +55,6 @@ module.exports = function( options ) {
 			throw cause;
 		} );
 
-	if ( options && options.onStarted ) {
-		options.onStarted = new Promise( function( resolve, reject ) {
-			starter.then( resolve, reject );
-		} );
-
-		// suppress warning on unhandled promise rejection on unit-testing
-		if ( process.env.NODE_ENV === "test" ) {
-			options.onStarted.catch( () => {} );
-		}
-	}
-
 
 	let consumingStarter = false;
 
