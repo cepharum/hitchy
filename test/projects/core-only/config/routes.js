@@ -1,4 +1,5 @@
 module.exports = {
+	"GET /": "ViewController",
 	"/view/read": "ViewController.read",
 	"/view/read/:id": "ViewController.read",
 	"/view/body": "ViewController.bodyNormal",

@@ -14,12 +14,12 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	suiteSetup( () => Test.startServer( Hitchy ) );
 	suiteTeardown( () => Hitchy.stop() );
 
-	test( "misses GETting /", function() {
+	test( "GETs /", function() {
 		return Test.get( "/" )
 			.then( function( response ) {
-				response.should.have.value( "statusCode", 404 );
+				response.should.have.status( 200 );
 				response.should.be.html();
-				response.text.should.be.String().and.match( /\bnot\s+found\b/i ).and.match( /<html\b/i );
+				response.text.should.be.String().and.match( /\bwelcome\b/i ).and.match( /<p>/i );
 			} )
 	} );
 
