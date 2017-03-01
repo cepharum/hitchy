@@ -32,9 +32,9 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
 			requests[i] = Test.get( "/" )
 				.then( function( response ) {
-					response.should.have.value( "statusCode", 404 );
+					response.should.have.value( "statusCode", 200 );
 					response.should.be.html();
-					response.text.should.be.String().and.match( /\bnot\s+found\b/i ).and.match( /<html\b/i );
+					response.text.should.be.String().and.match( /\bwelcome\b/i ).and.match( /<h1\b/i );
 				} );
 		}
 
