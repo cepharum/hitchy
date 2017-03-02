@@ -22,7 +22,7 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 	const DelayPerChunk = 10;
 
 
-	test( "misses GETting", function() {
+	test( "misses GETting /missing", function() {
 		if ( process.env.SKIP_LOAD_TESTS ) {
 			this.skip();
 		}
@@ -30,11 +30,11 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 		let requests = new Array( RequestsPerChunk );
 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
-			requests[i] = Test.get( "/" )
+			requests[i] = Test.get( "/missing" )
 				.then( function( response ) {
-					response.should.have.value( "statusCode", 200 );
+					response.should.have.value( "statusCode", 404 );
 					response.should.be.html();
-					response.text.should.be.String().and.match( /\bwelcome\b/i ).and.match( /<h1\b/i );
+					response.text.should.be.String().and.match( /\bnot\s+found\b/i ).and.match( /<html\b/i );
 				} );
 		}
 
