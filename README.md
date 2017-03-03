@@ -2,6 +2,8 @@
 
 web application framework
 
+[![Build Status](https://travis-ci.org/hitchyjs/core.svg?branch=master)](https://travis-ci.org/hitchyjs/core)
+
 ## License
 
 Copyright (c) 2017 cepharum GmbH
