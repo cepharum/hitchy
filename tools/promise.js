@@ -43,6 +43,9 @@ module.exports = {
 	/** @borrows _toolPromiseFind as find */
 	find: _toolPromiseFind,
 
+	/** @borrows _toolPromiseDelay as delay */
+	delay: _toolPromiseDelay,
+
 };
 
 /**
@@ -189,4 +192,15 @@ function _toolPromiseFind( items, fn ) {
 			}
 		}
 	} );
+}
+
+/**
+ * Conveniently creates promise resolved with value after some delay.
+ *
+ * @param {number} delay desired delay in milliseconds
+ * @param {*=} payload value promise is fulfilled with
+ * @returns {Promise<*>} promised delay
+ */
+function _toolPromiseDelay( delay, payload ) {
+	return new Promise( resolve => setTimeout( resolve, delay, payload ) );
 }

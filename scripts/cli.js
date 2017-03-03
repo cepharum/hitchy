@@ -41,10 +41,12 @@ if ( Args["log-level"] || !process.env.DEBUG ) {
 process.on( "unhandledRejection", _unhandledRejection );
 process.on( "uncaughtException", _unhandledException );
 
-let options = {};
+let options = {
+	debug: !!Args.debug,
+};
 
 if ( Args.project ) {
-	options.rootFolder = Args.project;
+	options.projectFolder = Args.project;
 }
 
 require( "../tools/triangulate" )( options, process.cwd() )
@@ -78,6 +80,7 @@ Supported options are:
 
  --injector=name    Chooses injector to use (default: node, might be "express").
  --log-level=names  Selects active logging facilities (see npm package "debug").
+ --debug            Enables noisy logging for debugging purposes.
 ` );
 }
 

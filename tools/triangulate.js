@@ -26,6 +26,8 @@
  * @author: cepharum
  */
 
+"use strict";
+
 const File = require( "fs" );
 const Path = require( "path" );
 const Log  = require( "debug" )( "bootstrap" );
@@ -36,15 +38,15 @@ const Log  = require( "debug" )( "bootstrap" );
  *
  * Included options are:
  *
- * * `rootFolder` selecting folder containing web application to be served
+ * * `projectFolder` selecting folder containing web application to be served
  *   by hitchy
  * * `hitchyFolder` selecting folder containing instance of hitchy framework
  *   to be used
  *
- * Regarding `rootFolder` this method is choosing folder according to this
+ * Regarding `projectFolder` this method is choosing folder according to this
  * list:
  *
- * 1. existing option named `rootFolder`
+ * 1. existing option named `projectFolder`
  * 2. folder closest to current main script and containing sub "node_modules"
  * 3. folder farthest to current instance of hitchy containing sub "node_modules"
  *
@@ -56,27 +58,41 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 	// always choose current hitchy framework instance to do the job
 	options.hitchyFolder = Path.resolve( __dirname, ".." );
 
+
 	// always prefer explicitly provided project folder the most
-	if ( !options.hasOwnProperty( "rootFolder" ) ) {
-		// next prefer context of current main script
-		return _findDirectory( currentWorkingDirectory || Path.dirname( require.main.filename ), "node_modules", "..", true )
-			.catch( function() {
-				// eventually check context current instance of hitchy is running in
-				return _findDirectory( Path.resolve( __dirname, "../../.." ), "node_modules", "../.." )
-			} )
-			.then( function( pathname ) {
-				if ( !pathname ) {
-					Log( "can't detect root folder of current project" );
-					throw new Error( "detecting project root folder failed" );
+	if ( options.hasOwnProperty( "projectFolder" ) ) {
+		// but require existing project folder
+		return new Promise( function( resolve, reject ) {
+			File.stat( options.projectFolder, function( error, stat ) {
+				if ( error ) {
+					reject( error );
+				} else if ( !stat.isDirectory() ) {
+					reject( new Error( "selected project folder does not exist" ) );
+				} else {
+					resolve( options );
 				}
-
-				options.rootFolder = pathname;
-
-				return options;
 			} );
+		} );
 	}
 
-	return Promise.resolve( options );
+
+	// if missing explicit selection of project folder:
+	// 1. prefer context of current main script
+	return _findDirectory( currentWorkingDirectory || Path.dirname( require.main.filename ), "node_modules", "..", true )
+		.catch( function() {
+			// 2. check context current instance of hitchy is running in
+			return _findDirectory( Path.resolve( __dirname, "../../.." ), "node_modules", "../.." )
+		} )
+		.then( function( pathname ) {
+			if ( !pathname ) {
+				Log( "can't detect root folder of current project" );
+				throw new Error( "detecting project root folder failed" );
+			}
+
+			options.projectFolder = pathname;
+
+			return options;
+		} );
 
 
 

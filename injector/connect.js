@@ -26,19 +26,18 @@
  * @author: cepharum
  */
 
+"use strict";
+
 const Common = require( "./common" );
-const Log    = require( "debug" )( "bootstrap" );
-const Debug  = require( "debug" )( "debug" );
 
 /**
  * Provides API for injecting hitchy into expressjs/connectjs-based application
  * as middleware.
  *
  * @param {HitchyOptions=} options
- * @returns {ConnectHandler|ConnectHandler[]}
+ * @returns {HitchyConnectInstance}
  */
 module.exports = function( options ) {
-
 	/** @type HitchyAPI */
 	let hitchy = null;
 	/** @type Error */
@@ -49,25 +48,51 @@ module.exports = function( options ) {
 			hitchy = runtime;
 		}, function( cause ) {
 			error = cause;
-			Log( "starting hitchy failed", cause );
-			process.emit( "SIGINT" );
+
+			require( "debug" )( "bootstrap" )( "ERROR: starting hitchy failed", cause );
+
+			// keep rejecting promise
+			throw cause;
 		} );
 
-	return function( req, res, next ) {
-		if ( !arguments.length ) {
-			// handle special, somewhat hackish way for notifying hitchy to shutdown
-			return starter
-				.then( function() {
-					return hitchy ? hitchy.bootstrap.shutdown() : null;
-				} );
-		}
 
+	let consumingStarter = false;
+
+	starter.catch( cause => {
+		if ( consumingStarter ) {
+			throw cause;
+		}
+	} );
+
+	Object.defineProperties( middleware, {
+		/** @name HitchyConnectInstance#onStarted */
+		onStarted: {
+			get: function() {
+				consumingStarter = true;
+				return starter;
+			}
+		},
+		stop: {
+			/** @name HitchyConnectInstance#stop */
+			value: function() {
+				return starter
+					.then( function() {
+						return hitchy ? hitchy.bootstrap.shutdown() : undefined;
+					} );
+			}
+		}
+	} );
+
+	return middleware;
+
+
+	function middleware( req, res ) {
 		/** @type HitchyRequestContext */
 		let context = {
-			request:  req,
+			request: req,
 			response: res,
-			done:     next,
-			local:    {}
+			done: next,
+			local: {}
 		};
 
 		if ( hitchy ) {
@@ -80,15 +105,16 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			Debug( "got request during startup resulting in error", error );
+			hitchy.log( "debug" )( "got request during startup resulting in error", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
-			Debug( "got request during startup, sending splash" );
+			hitchy.log( "debug" )( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
-	};
+	}
 };
 
 /**
- * @typedef {function(err:Error=,req:IncomingMessage,res:ServerResponse,next:function(err:Error=))} ConnectHandler
+ * @typedef {function(error:Error=,request:IncomingMessage,response:ServerResponse,next:function(err:Error=))} HitchyConnectInstance
+ * @extends HitchyInstance
  */

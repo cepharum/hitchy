@@ -39,12 +39,13 @@ const Hitchy = require( "hitchy" );
 let options = {};
 
 if ( Args.project ) {
-	options.rootFolder = Args.project;
+	options.projectFolder = Args.project;
 }
 
 let server = Http.createServer( Hitchy.node( options ) );
 
 server.listen(
 	process.env.PORT || Args.port || 3000,
-	process.env.IP || Args.ip || "127.0.0.1"
+	process.env.IP || Args.ip || "127.0.0.1",
+	process.env.BACKLOG || 4096
 );
