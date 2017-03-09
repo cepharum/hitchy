@@ -6,7 +6,7 @@ const PromiseTool = require( "../../../tools" ).promise;
 
 // ----------------------------------------------------------------------------
 
-suite( "Promise Tools", function() {
+suite( "Tools.Promise", function() {
 	let input;
 
 	setup( function() {
@@ -17,7 +17,7 @@ suite( "Promise Tools", function() {
 		];
 	} );
 
-	test( "support sequential, probably delayed iteration using each()", function() {
+	test( "supports sequential, probably delayed iteration using each()", function() {
 		let output = [];
 
 		return PromiseTool
@@ -46,7 +46,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "support sequential, probably delayed filtering of array using each()", function() {
+	test( "supports sequential, probably delayed filtering of array using each()", function() {
 		return PromiseTool
 			.filter( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
@@ -76,7 +76,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "support sequential, probably delayed mapping of array using map()", function() {
+	test( "supports sequential, probably delayed mapping of array using map()", function() {
 		return PromiseTool
 			.map( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
@@ -103,7 +103,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "support sequential, probably delayed mapping of array using multiMap()", function() {
+	test( "supports sequential, probably delayed mapping of array using multiMap()", function() {
 		return PromiseTool
 			.multiMap( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
@@ -130,7 +130,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "map faster on using multiMap() than on using map()", function() {
+	test( "maps faster on using multiMap() than on using map()", function() {
 		let rank = 1;
 
 		return Promise.all( [
@@ -151,7 +151,7 @@ suite( "Promise Tools", function() {
 		}
 	} );
 
-	test( "support sequential, probably delayed search for value", function() {
+	test( "supports sequential, probably delayed search for value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -178,7 +178,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "support sequential, probably delayed search for value in reverse order", function() {
+	test( "supports sequential, probably delayed search for value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -205,7 +205,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "provide null on failed sequential, probably delayed search for value", function() {
+	test( "provides null on failed sequential, probably delayed search for value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -232,7 +232,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "provide null on failed sequential, probably delayed search for value in reverse order", function() {
+	test( "provides null on failed sequential, probably delayed search for value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -259,7 +259,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "support sequential, probably delayed search for index of a value", function() {
+	test( "supports sequential, probably delayed search for index of a value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -286,7 +286,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "support sequential, probably delayed search for index of a value in reverse order", function() {
+	test( "supports sequential, probably delayed search for index of a value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -313,7 +313,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "provide -1 on failed sequential, probably delayed search for index of a value", function() {
+	test( "provides -1 on failed sequential, probably delayed search for index of a value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -340,7 +340,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "provide null on failed sequential, probably delayed search for index of a value in reverse order", function() {
+	test( "provides null on failed sequential, probably delayed search for index of a value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -367,7 +367,7 @@ suite( "Promise Tools", function() {
 			} );
 	} );
 
-	test( "create promise to conveniently delay processing", function() {
+	test( "creates promise to conveniently delay processing", function() {
 		let start = Date.now();
 
 		return PromiseTool.delay( 100 )
