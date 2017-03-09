@@ -26,9 +26,42 @@
  * @author: cepharum
  */
 
-module.exports = {
-	triangulate: require( "./triangulate" ),
-	promise: require( "./promise" ),
-	test: require( "./test" ),
-	apiMockUp: require( "./api-mockup" ),
+"use strict";
+
+const Path = require( "path" );
+const OS = require( "os" );
+
+/**
+ * Helps with loading modules for testing purposes providing some mockup API as
+ * part of common module pattern.
+ *
+ * @param {string=} projectFolder pathname to contain project, omit for temp folder of OS
+ * @returns {function(name:string):object}
+ */
+module.exports = function _apiMockUpGenerator( projectFolder = OS.tmpdir() ) {
+
+	/**
+	 * Supports loading module of hitchy project providing fake options and API.
+	 *
+	 * @returns {object} API of module
+	 */
+	return function _apiMockUpLoader( name, moduleArguments = [] ) {
+		const options = {
+			// always choose current hitchy framework instance to do the job
+			hitchyFolder: Path.resolve( __dirname, ".." ),
+			projectFolder: projectFolder,
+		};
+
+		const Api = {
+			libLoader: _apiMockUpLoader,
+		};
+
+
+		let api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
+		if ( typeof api === "function" ) {
+			return api.apply( Api, [ options ].concat( moduleArguments ) );
+		}
+
+		return api;
+	};
 };
