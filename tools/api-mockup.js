@@ -31,14 +31,17 @@
 const Path = require( "path" );
 const OS = require( "os" );
 
+const _ = require( "lodash" );
+
 /**
  * Helps with loading modules for testing purposes providing some mockup API as
  * part of common module pattern.
  *
  * @param {string=} projectFolder pathname to contain project, omit for temp folder of OS
+ * @param {HitchyAPI=} apiCustomizations custom API parts to mock instead of actual ones
  * @returns {function(name:string):object}
  */
-module.exports = function _apiMockUpGenerator( projectFolder = OS.tmpdir() ) {
+module.exports = function _apiMockUpGenerator( projectFolder = OS.tmpdir(), apiCustomizations = {} ) {
 
 	/**
 	 * Supports loading module of hitchy project providing fake options and API.
@@ -49,12 +52,29 @@ module.exports = function _apiMockUpGenerator( projectFolder = OS.tmpdir() ) {
 		const options = {
 			// always choose current hitchy framework instance to do the job
 			hitchyFolder: Path.resolve( __dirname, ".." ),
+
+			// choose optionally provided project folder or stick with temp
+			// folder by default
 			projectFolder: projectFolder,
 		};
 
-		const Api = {
-			libLoader: _apiMockUpLoader,
-		};
+		/** @type HitchyAPI */
+		const Api = _.merge( {
+			runtime: {
+				config: {},
+				models: {},
+				controllers: {},
+				services: {},
+				policies: {}
+			},
+			components: {},
+			utility: {},
+			bootstrap: {},
+			responder: {},
+			router: {}
+		}, apiCustomizations, {
+			loader: _apiMockUpLoader,
+		} );
 
 
 		let api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
