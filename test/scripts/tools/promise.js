@@ -2,11 +2,11 @@
 
 const Should = require( "should" );
 
-const PromiseUtil = require( "../../../tools" ).promise;
+const PromiseTool = require( "../../../tools" ).promise;
 
 // ----------------------------------------------------------------------------
 
-suite( "Promise Utilities", function() {
+suite( "Promise Tools", function() {
 	let input;
 
 	setup( function() {
@@ -20,7 +20,7 @@ suite( "Promise Utilities", function() {
 	test( "support sequential, probably delayed iteration using each()", function() {
 		let output = [];
 
-		return PromiseUtil
+		return PromiseTool
 			.each( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -47,7 +47,7 @@ suite( "Promise Utilities", function() {
 	} );
 
 	test( "support sequential, probably delayed filtering of array using each()", function() {
-		return PromiseUtil
+		return PromiseTool
 			.filter( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -77,7 +77,7 @@ suite( "Promise Utilities", function() {
 	} );
 
 	test( "support sequential, probably delayed mapping of array using map()", function() {
-		return PromiseUtil
+		return PromiseTool
 			.map( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -104,7 +104,7 @@ suite( "Promise Utilities", function() {
 	} );
 
 	test( "support sequential, probably delayed mapping of array using multiMap()", function() {
-		return PromiseUtil
+		return PromiseTool
 			.multiMap( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -134,8 +134,8 @@ suite( "Promise Utilities", function() {
 		let rank = 1;
 
 		return Promise.all( [
-			PromiseUtil.map( input, fastMapper ).then( () => rank++ ),
-			PromiseUtil.multiMap( input, slowMapper ).then( () => rank++ )
+			PromiseTool.map( input, fastMapper ).then( () => rank++ ),
+			PromiseTool.multiMap( input, slowMapper ).then( () => rank++ )
 			] )
 			.then( function( [ mapped, multiMapped ] ) {
 				Should( mapped ).be.exactly( 2 );
@@ -154,7 +154,7 @@ suite( "Promise Utilities", function() {
 	test( "support sequential, probably delayed search for value", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.find( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -181,7 +181,7 @@ suite( "Promise Utilities", function() {
 	test( "support sequential, probably delayed search for value in reverse order", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.find( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -208,7 +208,7 @@ suite( "Promise Utilities", function() {
 	test( "provide null on failed sequential, probably delayed search for value", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.find( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -235,7 +235,7 @@ suite( "Promise Utilities", function() {
 	test( "provide null on failed sequential, probably delayed search for value in reverse order", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.find( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -262,7 +262,7 @@ suite( "Promise Utilities", function() {
 	test( "support sequential, probably delayed search for index of a value", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.indexOf( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -289,7 +289,7 @@ suite( "Promise Utilities", function() {
 	test( "support sequential, probably delayed search for index of a value in reverse order", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.indexOf( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -316,7 +316,7 @@ suite( "Promise Utilities", function() {
 	test( "provide -1 on failed sequential, probably delayed search for index of a value", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.indexOf( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -343,7 +343,7 @@ suite( "Promise Utilities", function() {
 	test( "provide null on failed sequential, probably delayed search for index of a value in reverse order", function() {
 		let sum = 0;
 
-		return PromiseUtil
+		return PromiseTool
 			.indexOf( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
@@ -370,7 +370,7 @@ suite( "Promise Utilities", function() {
 	test( "create promise to conveniently delay processing", function() {
 		let start = Date.now();
 
-		return PromiseUtil.delay( 100 )
+		return PromiseTool.delay( 100 )
 			.then( function() {
 				let stop = Date.now();
 
