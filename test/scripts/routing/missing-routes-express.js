@@ -60,6 +60,44 @@ suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", f
 	suiteSetup( () => Test.startServer( Hitchy, { prefix: "/injected/hitchy" } ) );
 	suiteTeardown( () => Hitchy.stop() );
 
+	test( "GETs /test", function() {
+		return Test.get( "/test" )
+			.then( function( response ) {
+				// was working above when used w/o prefix
+				response.should.have.status( 404 );
+			} );
+	} );
+
+	test( "misses GETting /missing-controller", function() {
+		return Test.get( "/missing-controller" )
+			.then( function( response ) {
+				response.should.have.status( 404 );
+			} );
+	} );
+
+	test( "misses GETting /missing-method", function() {
+		return Test.get( "/missing-method" )
+			.then( function( response ) {
+				response.should.have.status( 404 );
+			} );
+	} );
+
+	test( "GETs /something", function() {
+		return Test.get( "/something" )
+			.then( function( response ) {
+				// was working above when used w/o prefix
+				response.should.have.status( 404 );
+			} );
+	} );
+
+	test( "GETs /addon", function() {
+		return Test.get( "/addon" )
+			.then( function( response ) {
+				// was working above when used w/o prefix
+				response.should.have.status( 404 );
+			} );
+	} );
+
 	test( "GETs /injected/hitchy/test", function() {
 		return Test.get( "/injected/hitchy/test" )
 			.then( function( response ) {

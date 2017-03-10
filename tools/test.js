@@ -54,7 +54,7 @@ module.exports = {
 
 			case "connect" :
 			case "express" :
-				return new Promise( function( resolve, reject ) {
+				return new Promise( function _installAndLoadExpress( resolve, reject ) {
 					try {
 						let Express = require( "express" );
 						return resolve( Express );
@@ -78,7 +78,7 @@ module.exports = {
 						}
 					} );
 				} )
-					.then( function( Express ) {
+					.then( function _createSimpleExpressApp( Express ) {
 						let app = Express();
 
 						let notFound = new Error( "Page not found." );
@@ -91,6 +91,7 @@ module.exports = {
 						}
 
 						return _createHTTP( app );
+
 
 						function _fakeError( err, req, res, next ) {
 							res
