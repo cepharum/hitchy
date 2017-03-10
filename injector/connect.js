@@ -83,10 +83,12 @@ module.exports = function( options ) {
 		}
 	} );
 
+	middleware.injector = "connect";
+
 	return middleware;
 
 
-	function middleware( req, res ) {
+	function middleware( req, res, next ) {
 		/** @type HitchyRequestContext */
 		let context = {
 			request: req,

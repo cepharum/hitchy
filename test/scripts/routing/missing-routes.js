@@ -6,7 +6,7 @@ let options = {
 };
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector/index" )[process.env.HITCHY_MODE || "node"]( options );
+const Hitchy = require( "../../../injector/index" )["node"]( options );
 
 // ----------------------------------------------------------------------------
 

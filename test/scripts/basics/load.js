@@ -7,7 +7,7 @@ let options = {
 
 const Test = require( "../../../tools" ).test;
 const Promises = require( "../../../tools" ).promise;
-const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"]( options );
+const Hitchy = require( "../../../injector" )["node"]( options );
 
 // ----------------------------------------------------------------------------
 
