@@ -38,7 +38,7 @@ const Should = require( "should" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Testing API", function() {
+suite( "Testing", function() {
 	test( "is running test", function() {
 		return Promise.resolve( true )
 			.then( function( result ) {
