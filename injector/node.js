@@ -44,8 +44,8 @@ module.exports = function( options ) {
 	let error = null;
 
 	let starter = require( "../lib" )( options )
-		.then( function( runtime ) {
-			hitchy = runtime;
+		.then( function( api ) {
+			middleware.hitchy = Object.seal( hitchy = api );
 		}, function( cause ) {
 			error = cause;
 
