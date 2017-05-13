@@ -26,10 +26,30 @@
  * @author: cepharum
  */
 
+"use strict";
+
 module.exports = {
-	triangulate: require( "./triangulate" ),
-	promise: require( "./promise" ),
-	test: require( "./test" ),
-	apiMockUp: require( "./api-mockup" ),
-	object: require( "./object" ),
+
+	/** @borrows _toolObjectDeepSeal as deepSeal */
+	deepSeal: _toolObjectDeepSeal,
+
 };
+
+/**
+ * Deeply seals a given object w/o copying it.
+ *
+ * @param {object} object object to be sealed deeply
+ * @returns {object} reference on provided object, now deeply sealed
+ */
+function _toolObjectDeepSeal( object ) {
+	if ( object && typeof object === "object" ) {
+		Object.keys( object || {} )
+			.forEach( function( name ) {
+				_toolObjectDeepSeal( object[name] );
+			} );
+
+		Object.seal( object );
+	}
+
+	return object;
+}
