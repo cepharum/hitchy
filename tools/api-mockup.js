@@ -43,12 +43,35 @@ const _ = require( "lodash" );
  */
 module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), apiOverlay = {} } = {} ) {
 
+	/** @type {HitchyAPI} */
+	const Api = _.merge( {
+		runtime: {
+			config: {},
+			models: {},
+			controllers: {},
+			services: {},
+			policies: {}
+		},
+		components: {},
+		utility: {},
+		bootstrap: {},
+		responder: {},
+		router: {}
+	}, apiOverlay, {
+		loader: _apiMockUpLoader,
+		log: function( namespace ) {
+			return require( "debug" )( namespace );
+		}
+	} );
+
+
+
 	/**
 	 * Supports loading module of hitchy project providing fake options and API.
 	 *
 	 * @returns {object} API of module
 	 */
-	return function _apiMockUpLoader( name, moduleArguments = [] ) {
+	function _apiMockUpLoader( name, moduleArguments = [] ) {
 		const options = {
 			// always choose current hitchy framework instance to do the job
 			hitchyFolder: Path.resolve( __dirname, ".." ),
@@ -58,33 +81,15 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), ap
 			projectFolder: projectFolder,
 		};
 
-		/** @type HitchyAPI */
-		const Api = _.merge( {
-			runtime: {
-				config: {},
-				models: {},
-				controllers: {},
-				services: {},
-				policies: {}
-			},
-			components: {},
-			utility: {},
-			bootstrap: {},
-			responder: {},
-			router: {}
-		}, apiOverlay, {
-			loader: _apiMockUpLoader,
-			log: function( namespace ) {
-				return require( "debug" )( namespace );
-			}
-		} );
-
-
 		let api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
 		if ( typeof api === "function" ) {
 			return api.apply( Api, [ options ].concat( moduleArguments ) );
 		}
 
 		return api;
-	};
+	}
+
+	Object.defineProperty( _apiMockUpLoader, "mockedApi", { value: Api } );
+
+	return _apiMockUpLoader;
 };
