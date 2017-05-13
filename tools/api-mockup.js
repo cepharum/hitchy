@@ -38,10 +38,10 @@ const _ = require( "lodash" );
  * part of common module pattern.
  *
  * @param {string=} projectFolder pathname to contain project, omit for temp folder of OS
- * @param {HitchyAPI=} apiCustomizations custom API parts to mock instead of actual ones
+ * @param {HitchyAPI=} apiOverlay custom API parts to mock instead of actual ones
  * @returns {function(name:string):object}
  */
-module.exports = function _apiMockUpGenerator( projectFolder = OS.tmpdir(), apiCustomizations = {} ) {
+module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), apiOverlay = {} } = {} ) {
 
 	/**
 	 * Supports loading module of hitchy project providing fake options and API.
@@ -72,8 +72,11 @@ module.exports = function _apiMockUpGenerator( projectFolder = OS.tmpdir(), apiC
 			bootstrap: {},
 			responder: {},
 			router: {}
-		}, apiCustomizations, {
+		}, apiOverlay, {
 			loader: _apiMockUpLoader,
+			log: function( namespace ) {
+				return require( "debug" )( namespace );
+			}
 		} );
 
 
