@@ -28,23 +28,27 @@
 
 "use strict";
 
-const ApiMockUp = require( "../../../../../tools" ).apiMockUp( {
-	apiOverlay: {
-		runtime: {
-			controllers: {
-				custom: class CustomController {
-					static myHandler( req, res ) {}
-				}
-			},
-			policies: {
-				filter: class FilterPolicy {
-					static myImplementation( req, res, next ) {}
-				}
-			},
-		}
+const customAPI = {
+	runtime: {
+		controllers: {
+			custom: class CustomController {
+				static myHandler( req, res ) {}
+			}
+		},
+		policies: {
+			filter: class FilterPolicy {
+				static myImplementation( req, res, next ) {}
+			}
+		},
 	}
+};
+
+const ApiMockUp = require( "../../../../../tools" ).apiMockUp( {
+	apiOverlay: customAPI
 } );
 
+const RouterModule = ApiMockUp( "lib/router" );
+const TypesModule = ApiMockUp( "lib/router/types" );
 const RouteModule = ApiMockUp( "lib/router/types/route" );
 
 const Route = RouteModule.Route;
@@ -55,13 +59,31 @@ const Should = require( "should" );
 
 // ----------------------------------------------------------------------------
 
+suite( "Library.Router.Types.Route", function() {
+	test( "is exposed properly", function() {
+		Should.exist( RouterModule );
+		Should.exist( RouterModule.types );
+		Should.exist( RouterModule.types.route );
+
+		Should.exist( TypesModule );
+		Should.exist( TypesModule.route );
+
+		RouterModule.types.should.eql( TypesModule );
+		TypesModule.route.should.eql( RouteModule );
+
+		Should.exist( RouteModule.Route );
+		Should.exist( RouteModule.PolicyRoute );
+		Should.exist( RouteModule.TerminalRoute );
+	} );
+} );
+
 suite( "Library.Router.Types.Route#Route", function() {
 	test( "exists", function() {
 		Route.should.be.ok().and.should.be.Object();
 	} );
 
 	test( "can be instantiated", function() {
-		( () => { new Route( "/", () => {} ) } ).should.not.throw();
+		( () => { new Route( "/", () => {}, ApiMockUp.mockedApi ) } ).should.not.throw();
 	} );
 
 	test( "provides static method for parsing routing source definitions", function() {
@@ -92,11 +114,11 @@ suite( "Library.Router.Types.Route#Route", function() {
 
 suite( "Library.Router.Types.Route#PolicyRoute", function() {
 	test( "can be instantiated", function() {
-		( () => { new PolicyRoute( "/", () => {} ) } ).should.not.throw();
+		( () => { new PolicyRoute( "/", () => {}, ApiMockUp.mockedApi ) } ).should.not.throw();
 	} );
 
 	test( "is class inheriting from Route", function() {
-		let route = new PolicyRoute( "/", () => {} );
+		let route = new PolicyRoute( "/", () => {}, ApiMockUp.mockedApi );
 		route.should.be.instanceof( PolicyRoute );
 		route.should.be.instanceof( Route );
 	} );
@@ -126,11 +148,11 @@ suite( "Library.Router.Types.Route#PolicyRoute", function() {
 
 suite( "Library.Router.Types.Route#TerminalRoute", function() {
 	test( "can be instantiated", function() {
-		( () => { new TerminalRoute( "/", () => {} ) } ).should.not.throw();
+		( () => { new TerminalRoute( "/", () => {}, ApiMockUp.mockedApi ) } ).should.not.throw();
 	} );
 
 	test( "is class inheriting from Route", function() {
-		let route = new TerminalRoute( "/", () => {} );
+		let route = new TerminalRoute( "/", () => {}, ApiMockUp.mockedApi );
 		route.should.be.instanceof( TerminalRoute );
 		route.should.be.instanceof( Route );
 	} );
@@ -364,7 +386,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 } );
 
 suite( "Library.Router.Types.Route.Route#parseTarget", function() {
-	test( "rejects invalid types of values for defining target of routing", function() {
+	test( "rejects any target definition w/o API as context of route", function() {
 		Route.parseTarget.bind( Route ).should.throw();
 		Route.parseTarget.bind( Route, null ).should.throw();
 		Route.parseTarget.bind( Route, undefined ).should.throw();
@@ -390,29 +412,55 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		Route.parseTarget.bind( Route, "Custom.myHandler" ).should.throw();
 		Route.parseTarget.bind( Route, "Filter::myImplementation" ).should.throw();
 		Route.parseTarget.bind( Route, "Filter.myImplementation" ).should.throw();
+
+		// valid target definitions, but still lacking API as context
+		PolicyRoute.parseTarget.bind( PolicyRoute, "Filter::myImplementation" ).should.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, "Filter.myImplementation" ).should.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Filter", method: "myImplementation" } ).should.throw();
+	} );
+
+	test( "rejects invalid types of values for defining target of routing", function() {
+		Route.parseTarget.bind( Route, null, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, undefined, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, false, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, true, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, 1.0, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, -0.0, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, [], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, [function() {}], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, ["Custom::myHandler"], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, ["Custom.myHandler"], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, ["Custom", "myHandler"], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, ["Filter::myImplementation"], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, ["Filter.myImplementation"], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, ["Filter", "myImplementation"], ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, {}, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, {controller:"Custom", method:"myHandler"}, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, {controller:"Filter", method:"myImplementation"}, ApiMockUp.mockedApi ).should.throw();
+		Route.parseTarget.bind( Route, "", ApiMockUp.mockedApi ).should.throw();
 	} );
 
 	test( "accepts policy target definitions as string", function() {
-		PolicyRoute.parseTarget.bind( PolicyRoute, "Filter::myImplementation" ).should.not.throw();
-		PolicyRoute.parseTarget.bind( PolicyRoute, "Filter.myImplementation" ).should.not.throw();
-		PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Filter", method: "myImplementation" } ).should.not.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, "Filter::myImplementation", ApiMockUp.mockedApi ).should.not.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, "Filter.myImplementation", ApiMockUp.mockedApi ).should.not.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Filter", method: "myImplementation" }, ApiMockUp.mockedApi ).should.not.throw();
 	} );
 
 	test( "rejects policy target definitions addressing actions in wrong collection", function() {
-		PolicyRoute.parseTarget.bind( PolicyRoute, "Custom::myHandler" ).should.throw();
-		PolicyRoute.parseTarget.bind( PolicyRoute, "Custom.myHandler" ).should.throw();
-		PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Custom", method: "myHandler" } ).should.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, "Custom::myHandler", ApiMockUp.mockedApi ).should.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, "Custom.myHandler", ApiMockUp.mockedApi ).should.throw();
+		PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Custom", method: "myHandler" }, ApiMockUp.mockedApi ).should.throw();
 	} );
 
 	test( "accepts terminal target definitions as string", function() {
-		TerminalRoute.parseTarget.bind( TerminalRoute, "Custom::myHandler" ).should.not.throw();
-		TerminalRoute.parseTarget.bind( TerminalRoute, "Custom.myHandler" ).should.not.throw();
-		TerminalRoute.parseTarget.bind( TerminalRoute, { controller: "Custom", method: "myHandler" } ).should.not.throw();
+		TerminalRoute.parseTarget.bind( TerminalRoute, "Custom::myHandler", ApiMockUp.mockedApi ).should.not.throw();
+		TerminalRoute.parseTarget.bind( TerminalRoute, "Custom.myHandler", ApiMockUp.mockedApi ).should.not.throw();
+		TerminalRoute.parseTarget.bind( TerminalRoute, { controller: "Custom", method: "myHandler" }, ApiMockUp.mockedApi ).should.not.throw();
 	} );
 
 	test( "rejects policy target definitions addressing actions in wrong collection", function() {
-		TerminalRoute.parseTarget.bind( TerminalRoute, "Filter::myImplementation" ).should.throw();
-		TerminalRoute.parseTarget.bind( TerminalRoute, "Filter.myImplementation" ).should.throw();
-		TerminalRoute.parseTarget.bind( TerminalRoute, { controller: "Filter", method: "myImplementation" } ).should.throw();
+		TerminalRoute.parseTarget.bind( TerminalRoute, "Filter::myImplementation", ApiMockUp.mockedApi ).should.throw();
+		TerminalRoute.parseTarget.bind( TerminalRoute, "Filter.myImplementation", ApiMockUp.mockedApi ).should.throw();
+		TerminalRoute.parseTarget.bind( TerminalRoute, { controller: "Filter", method: "myImplementation" }, ApiMockUp.mockedApi ).should.throw();
 	} );
 } );
