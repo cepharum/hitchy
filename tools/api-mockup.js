@@ -33,38 +33,33 @@ const OS = require( "os" );
 
 const _ = require( "lodash" );
 
+const LibTools = require( "./library" );
+
 /**
  * Helps with loading modules for testing purposes providing some mockup API as
  * part of common module pattern.
  *
  * @param {string=} projectFolder pathname to contain project, omit for temp folder of OS
+ * @param {HitchyOptions=} options runtime options customizing Hitchy instance
  * @param {HitchyAPI=} apiOverlay custom API parts to mock instead of actual ones
- * @returns {function(name:string):object}
+ * @param {object<string,object>} modules selects modules to instantly load
+ * @returns {Promise<(HitchyMockedModuleLoader|LoadedModules)>}
  */
-module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), apiOverlay = {} } = {} ) {
+module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), options = {}, apiOverlay = {}, modules = {} } = {} ) {
 
-	/** @type {HitchyAPI} */
-	const Api = _.merge( {
-		runtime: {
-			config: {},
-			models: {},
-			controllers: {},
-			services: {},
-			policies: {}
-		},
-		components: {},
-		utility: {},
-		bootstrap: {},
-		responder: {},
-		router: {}
-	}, apiOverlay, {
-		loader: _apiMockUpLoader,
-		log: function( namespace ) {
-			return require( "debug" )( namespace );
-		}
-	} );
+	/**
+	 * Selects folder containing Hitchy instance mocked-up API is used with.
+	 *
+	 * @type {string}
+	 */
+	const LocalHitchyFolder = Path.resolve( __dirname, ".." );
 
-
+	/**
+	 * Refers to mocked-up API.
+	 *
+	 * @type {HitchyAPI}
+	 */
+	const Api = LibTools.createAPI( options );
 
 	/**
 	 * Supports loading module of hitchy project providing fake options and API.
@@ -74,11 +69,11 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), ap
 	function _apiMockUpLoader( name, moduleArguments = [] ) {
 		const options = {
 			// always choose current hitchy framework instance to do the job
-			hitchyFolder: Path.resolve( __dirname, ".." ),
+			hitchyFolder: LocalHitchyFolder,
 
 			// choose optionally provided project folder or stick with temp
 			// folder by default
-			projectFolder: projectFolder,
+			projectFolder,
 		};
 
 		let api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
@@ -91,5 +86,48 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), ap
 
 	Object.defineProperty( _apiMockUpLoader, "mockedApi", { value: Api } );
 
-	return _apiMockUpLoader;
+	Api.loader = _apiMockUpLoader;
+
+
+	// load library of current hitchy instance
+	return LibTools.load( Api, Path.resolve( LocalHitchyFolder, "lib" ) )
+		.then( function() {
+			// apply custom overlay provided by caller
+			_.merge( Api, apiOverlay );
+
+			// test if caller provided description of modules to load implicitly
+			let targetNames = Object.keys( modules );
+			let nameCount = targetNames.length;
+			if ( nameCount > 0 ) {
+				// got some list of modules to load -> load now
+				let collector = {
+					// provide reference on mocked-up API
+					API: Api,
+					// provide loader
+					loader: _apiMockUpLoader,
+				};
+
+				// load every listed module and collect in that object using provided name
+				for ( let i = 0; i < nameCount; i++ ) {
+					let targetName = targetNames[i];
+					let moduleName = modules[targetName];
+
+					collector[targetName] = _apiMockUpLoader( moduleName );
+				}
+
+				return collector;
+			}
+
+			return _apiMockUpLoader;
+		} );
 };
+
+
+
+/**
+ * @typedef {object<string,object>} LoadedModules
+ */
+
+/**
+ * @typedef {function(name:string):object} HitchyMockedModuleLoader
+ */
