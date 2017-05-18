@@ -31,5 +31,6 @@ module.exports = {
 	promise: require( "./promise" ),
 	test: require( "./test" ),
 	apiMockUp: require( "./api-mockup" ),
+	library: require( "./library" ),
 	object: require( "./object" ),
 };
