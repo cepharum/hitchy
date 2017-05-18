@@ -28,23 +28,34 @@
 
 "use strict";
 
-const ApiMockUp = require( "../../../../tools" ).apiMockUp();
+const modules = {
+	Utility: "lib/utility",
+	FileUtility: "lib/utility/file",
+	IntroduceUtility: "lib/utility/introduce",
+	LoggerUtility: "lib/utility/logger",
+	ParserUtility: "lib/utility/parser",
+	PromiseUtility: "lib/utility/promise",
+};
 
-const Utility = ApiMockUp( "lib/utility" );
-const FileUtility = ApiMockUp( "lib/utility/file" );
-const IntroduceUtility = ApiMockUp( "lib/utility/introduce" );
-const LoggerUtility = ApiMockUp( "lib/utility/logger" );
-const ParserUtility = ApiMockUp( "lib/utility/parser" );
-const PromiseUtility = ApiMockUp( "lib/utility/promise" );
+const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
+
+// ----------------------------------------------------------------------------
+
+const Should = require( "should" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Library.Utility", function() {
 	test( "exports collection of submodules", function() {
-		Utility.file.should.be.eql( FileUtility );
-		Utility.introduce.should.be.eql( IntroduceUtility );
-		Utility.logger.should.be.eql( LoggerUtility );
-		Utility.parser.should.be.eql( ParserUtility );
-		Utility.promise.should.be.eql( PromiseUtility );
+		return ApiMockUp.then( function( { Utility, FileUtility, IntroduceUtility, LoggerUtility, ParserUtility, PromiseUtility } ) {
+			// NOTE This test compares provision of APIs using different ways
+			//      for accessing parts of it ... due to CMP providing code
+			//      bound to API
+			Utility.file.should.be.eql( FileUtility );
+			Utility.introduce.should.be.eql( IntroduceUtility );
+			Utility.logger.should.be.eql( LoggerUtility );
+			Utility.parser.should.be.eql( ParserUtility );
+			Utility.promise.should.be.eql( PromiseUtility );
+		} );
 	} );
 } );

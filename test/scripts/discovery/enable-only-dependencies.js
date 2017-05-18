@@ -21,7 +21,7 @@ suite( "Serving project w/ empty components", function() {
 				response.should.have.status( 200 );
 				response.should.be.json();
 
-				response.data.should.not.have.property( "empty-a" );        // due to project lacking dependency list thus loading EVERY available component
+				response.data.should.not.have.property( "empty-a" );    // due to project lacking dependency list thus loading EVERY available component
 				response.data.should.not.have.property( "aliased-b" );  // due to filling differently named role
 				response.data.should.not.have.property( "b" );
 				response.data.should.not.have.property( "final-c" );

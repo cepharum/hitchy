@@ -28,9 +28,11 @@
 
 "use strict";
 
-const ApiMockUp = require( "../../../../tools" ).apiMockUp();
+const modules = {
+	Introduce: "lib/utility/introduce",
+};
 
-const Introduce = ApiMockUp( "lib/utility" ).introduce;
+const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
@@ -40,26 +42,30 @@ const Should = require( "should" );
 
 suite( "Library.Utility.Introduce", function() {
 	test( "is exporting function for qualifying request descriptors", function() {
-		Introduce.should.be.Function();
-		Introduce.should.have.length( 1 );
+		return ApiMockUp.then( function( { Introduce } ) {
+			Introduce.should.be.Function();
+			Introduce.should.have.length( 1 );
+		} );
 	} );
 
 	test( "is qualifying request context provided as `this` in controllers and policies", function() {
-		let request = {};
+		return ApiMockUp.then( function( { Introduce } ) {
+			let request = {};
 
-		let before = Date.now();
-		let qualified = Introduce( request );
-		let after  = Date.now();
+			let before = Date.now();
+			let qualified = Introduce( request );
+			let after = Date.now();
 
-		qualified.should.be.exactly( request );
+			qualified.should.be.exactly( request );
 
-		qualified.startTime.should.be.Number().within( before, after );
+			qualified.startTime.should.be.Number().within( before, after );
 
-		qualified.should.have.property( "config" );
-		qualified.should.have.property( "models" );
-		qualified.should.have.property( "policies" );
-		qualified.should.have.property( "controllers" );
-		qualified.should.have.property( "services" );
-		qualified.should.have.property( "api" );
+			qualified.should.have.property( "config" );
+			qualified.should.have.property( "models" );
+			qualified.should.have.property( "policies" );
+			qualified.should.have.property( "controllers" );
+			qualified.should.have.property( "services" );
+			qualified.should.have.property( "api" );
+		} );
 	} );
 } );

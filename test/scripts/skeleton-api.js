@@ -28,9 +28,11 @@
 
 "use strict";
 
-const ApiMockUp = require( "../../tools" ).apiMockUp();
+const modules = {
+	Utilities: "lib/utility",
+};
 
-const Utilities = ApiMockUp( "lib/utility" );
+const ApiMockUp = require( "../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
@@ -40,9 +42,12 @@ const Should = require( "should" );
 
 suite( "Testing", function() {
 	test( "is running test", function() {
-		return Promise.resolve( true )
-			.then( function( result ) {
-				result.should.be.true();
-			} );
+		return ApiMockUp.then( function( { API, loader, Utilities } ) {
+			// put your test code relying on API here
+			return Promise.resolve( true )
+				.then( function( result ) {
+					result.should.be.true();
+				} );
+		} );
 	} );
 } );

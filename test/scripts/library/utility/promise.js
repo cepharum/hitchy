@@ -28,21 +28,30 @@
 
 "use strict";
 
-const ApiMockUp = require( "../../../../tools" ).apiMockUp();
+const modules = {
+	PromiseUtility: "lib/utility/promise",
+};
 
-const PromiseUtility = ApiMockUp( "lib/utility" ).promise;
-const PromiseTool = require( "../../../../tools" ).promise;
+const Tools = require( "../../../../tools" );
+const ApiMockUp = Tools.apiMockUp( { modules } );
+const PromiseTool = Tools.promise;
+
+// ----------------------------------------------------------------------------
+
+const Should = require( "should" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Library.Utility.Promise", function() {
 	test( "provides same API as Tools.Promise", function() {
-		PromiseUtility.each.should.be.exactly( PromiseTool.each );
-		PromiseUtility.filter.should.be.exactly( PromiseTool.filter );
-		PromiseUtility.map.should.be.exactly( PromiseTool.map );
-		PromiseUtility.multiMap.should.be.exactly( PromiseTool.multiMap );
-		PromiseUtility.find.should.be.exactly( PromiseTool.find );
-		PromiseUtility.indexOf.should.be.exactly( PromiseTool.indexOf );
-		PromiseUtility.delay.should.be.exactly( PromiseTool.delay );
+		return ApiMockUp.then( function( { PromiseUtility } ) {
+			PromiseUtility.each.should.be.exactly( PromiseTool.each );
+			PromiseUtility.filter.should.be.exactly( PromiseTool.filter );
+			PromiseUtility.map.should.be.exactly( PromiseTool.map );
+			PromiseUtility.multiMap.should.be.exactly( PromiseTool.multiMap );
+			PromiseUtility.find.should.be.exactly( PromiseTool.find );
+			PromiseUtility.indexOf.should.be.exactly( PromiseTool.indexOf );
+			PromiseUtility.delay.should.be.exactly( PromiseTool.delay );
+		} );
 	} );
 } );
