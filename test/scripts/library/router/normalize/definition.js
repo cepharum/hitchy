@@ -46,13 +46,13 @@ suite( "Route definition normalizer", function() {
 } );
 
 suite( "Normalizer for module-related route definitions", function() {
-	test( "does not throw on processing empty module route definition", function() {
+	test( "does not throw on processing empty route definition", function() {
 		Normalizer.Module.should.not.throw();
 		Normalizer.Module.bind( Normalizer, null ).should.not.throw();
 		Normalizer.Module.bind( Normalizer, undefined ).should.not.throw();
 	} );
 
-	test( "throws on processing invalid module route definition", function() {
+	test( "throws on processing invalid route definition", function() {
 		Normalizer.Module.bind( Normalizer, false ).should.throw();
 		Normalizer.Module.bind( Normalizer, true ).should.throw();
 		Normalizer.Module.bind( Normalizer, 0 ).should.throw();
@@ -74,8 +74,7 @@ suite( "Normalizer for module-related route definitions", function() {
 
 		Should.exist( a );
 		a.should.be.Object();
-		a.should.have.properties( "before", "after" );
-		Object.keys( a ).should.have.length( 2 );
+		a.should.have.properties( "before", "after" ).and.have.size( 2 );
 	} );
 
 	test( "does not care for actually provided definitions", function() {
@@ -172,8 +171,7 @@ suite( "Normalizer for module-related route definitions", function() {
 		} );
 
 		normalized.should.be.Object().and.have.properties( "before", "after" );
-		normalized.before.should.be.Object().and.have.properties( "something" );
-		Object.keys( normalized.before ).should.have.length( 1 );
+		normalized.before.should.be.Object().and.have.properties( "something" ).and.have.size( 1 );
 		normalized.after.should.be.Object().and.be.empty();
 	} );
 
@@ -206,5 +204,233 @@ suite( "Normalizer for module-related route definitions", function() {
 		Normalizer.Module.bind( Normalizer, { before: "everything", after: "something", early: "anything", extra: "extra" } ).should.not.throw();
 		Normalizer.Module.bind( Normalizer, { before: "everything", after: "something", late: "anything", extra: "extra" } ).should.not.throw();
 		Normalizer.Module.bind( Normalizer, { before: "everything", after: "something", early: "anything", late: "nothing", extra: "extra" } ).should.not.throw();
+	} );
+} );
+
+suite( "Normalizer for application-related custom route definitions", function() {
+	test( "does not throw on processing empty route definition", function() {
+		Normalizer.Custom.should.not.throw();
+		Normalizer.Custom.bind( Normalizer, null ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, undefined ).should.not.throw();
+	} );
+
+	test( "throws on processing invalid route definition", function() {
+		Normalizer.Custom.bind( Normalizer, false ).should.throw();
+		Normalizer.Custom.bind( Normalizer, true ).should.throw();
+		Normalizer.Custom.bind( Normalizer, 0 ).should.throw();
+		Normalizer.Custom.bind( Normalizer, 1 ).should.throw();
+		Normalizer.Custom.bind( Normalizer, -2 ).should.throw();
+		Normalizer.Custom.bind( Normalizer, "" ).should.throw();
+		Normalizer.Custom.bind( Normalizer, "0" ).should.throw();
+		Normalizer.Custom.bind( Normalizer, function() {} ).should.throw();
+		Normalizer.Custom.bind( Normalizer, () => {} ).should.throw();
+	} );
+
+	test( "does not throw on processing valid definition without any element", function() {
+		Normalizer.Custom.bind( Normalizer, {} ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, [] ).should.not.throw();
+	} );
+
+	test( "provides object always covering either supported stage", function() {
+		let a = Normalizer.Custom( Normalizer, {} );
+
+		Should.exist( a );
+		a.should.be.Object();
+		a.should.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
+	} );
+
+	test( "does not care for actually provided definitions", function() {
+		Normalizer.Custom.bind( Normalizer, {
+			null: null,
+			false: false,
+			true: true,
+			undefined: undefined,
+			emptyString: "",
+			string: "some value",
+			emptyArray: [],
+			array: [ "some value" ],
+			emptyObject: {},
+			object: { someValue: "some value" },
+			function: () => {},
+		} ).should.not.throw();
+	} );
+
+	test( "detects explicit provision of definitions for before-stage", function() {
+		let normalized = Normalizer.Custom( {
+			before: "anything",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.equal( "anything" );
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.be.Object().and.be.empty();
+	} );
+
+	test( "detects explicit provision of definitions for after-stage", function() {
+		let normalized = Normalizer.Custom( {
+			after: "anything",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.be.Object().and.be.empty();
+		normalized.after.should.equal( "anything" );
+		normalized.late.should.be.Object().and.be.empty();
+	} );
+
+	test( "detects explicit provision of definitions for early-stage", function() {
+		let normalized = Normalizer.Custom( {
+			early: "anything",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.equal( "anything" );
+		normalized.before.should.be.Object().and.be.empty();
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.be.Object().and.be.empty();
+	} );
+
+	test( "detects explicit provision of definitions for late-stage", function() {
+		let normalized = Normalizer.Custom( {
+			late: "anything",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.be.Object().and.be.empty();
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.equal( "anything" );
+	} );
+
+	test( "detects explicit provisions of definitions for early-, before-, after- and late-stage", function() {
+		let normalized = Normalizer.Custom( {
+			early: "everything",
+			before: "something",
+			after: "anything",
+			late: "nothing",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.equal( "everything" );
+		normalized.before.should.equal( "something" );
+		normalized.after.should.equal( "anything" );
+		normalized.late.should.equal( "nothing" );
+	} );
+
+	test( "considers any definition 'non-conforming' on including at least one property not addressing some known stage", function() {
+		// fully conforming with explicit provision of route definitions
+		let normalized = Normalizer.Custom( {
+			early: "everything",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.eql( "everything" );
+		normalized.before.should.be.Object().and.be.empty();
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.be.Object().and.be.empty();
+
+		// fully conforming with explicit provision of route definitions
+		normalized = Normalizer.Custom( {
+			before: "anything",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.eql( "anything" );
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.be.Object().and.be.empty();
+
+		// fully conforming with explicit provision of route definitions
+		normalized = Normalizer.Custom( {
+			after: "something",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.be.Object().and.be.empty();
+		normalized.after.should.eql( "something" );
+		normalized.late.should.be.Object().and.be.empty();
+
+		// fully conforming with explicit provision of route definitions
+		normalized = Normalizer.Custom( {
+			late: "nothing",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.be.Object().and.be.empty();
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.eql( "nothing" );
+
+		// fully conforming with explicit provision of route definitions
+		normalized = Normalizer.Custom( {
+			early: "everything",
+			before: "anything",
+			after: "something",
+			late: "nothing",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		normalized.early.should.eql( "everything" );
+		normalized.before.should.eql( "anything" );
+		normalized.after.should.eql( "something" );
+		normalized.late.should.eql( "nothing" );
+
+		// partially NOT conforming with explicit provision of route definitions
+		normalized = Normalizer.Custom( {
+			early: "everything",
+			before: "anything",
+			after: "something",
+			late: "nothing",
+			extra: "extra",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
+		normalized.early.should.be.Object().and.be.empty();
+		normalized.before.should.be.Object().and.have.properties( "early", "before", "after", "late", "extra" ).and.have.size( 5 );
+		normalized.after.should.be.Object().and.be.empty();
+		normalized.late.should.be.Object().and.be.empty();
+	} );
+
+	test( "considers any non-conforming definition related to before-stage implicitly", function() {
+		let normalized = Normalizer.Custom( {
+			something: "something",
+		} );
+
+		normalized.should.be.Object().and.have.properties( "before", "after" );
+		normalized.before.should.be.Object().and.have.properties( "something" ).and.have.size( 1 );
+		normalized.after.should.be.Object().and.be.empty();
+	} );
+
+	test( "supports additional stages in opposition to module route definitions", function() {
+		Normalizer.Custom.bind( Normalizer, { before: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { after: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { early: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { late: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { early: "something", late: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "something", early: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "something", late: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { after: "something", early: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { after: "something", late: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", early: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", late: "anything" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", early: "anything", late: "nothing" } ).should.not.throw();
+	} );
+
+	test( "does not throw on combining conforming definitions with non-conforming ones", function() {
+		Normalizer.Custom.bind( Normalizer, { extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { after: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { early: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { late: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { early: "something", late: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "something", early: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "something", late: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { after: "something", early: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { after: "something", late: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", early: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", late: "anything", extra: "extra" } ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", early: "anything", late: "nothing", extra: "extra" } ).should.not.throw();
 	} );
 } );
