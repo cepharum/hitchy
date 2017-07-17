@@ -106,6 +106,23 @@ suite( "An instance of OrderedQueue", function() {
 		queue.isAdjustable.should.be.equal( false );
 	} );
 
+	test( "exposes method for compacting managed lists making them non-adjustable", function() {
+		var i = 0;
+
+		queue.should.have.property( "compact" );
+		queue.compact.should.be.Function();
+
+		queue.before.length.should.be.greaterThan( 3 );
+		queue.after.length.should.be.greaterThan( 3 );
+		queue.compact.bind( queue, countThree ).should.not.throw();
+		queue.before.length.should.be.equal( 3 );
+		queue.after.length.should.be.equal( 0 );
+
+		function countThree( item ) {
+			return i++ < 3;
+		}
+	} );
+
 	test( "initially consists of unset slots, only (to be removed on compacting)", function() {
 		Should( queue.before.length + queue.after.length ).be.greaterThanOrEqual( 2 * moduleNumber );
 		queue.compact();
@@ -113,7 +130,7 @@ suite( "An instance of OrderedQueue", function() {
 	} );
 } );
 
-suite( "For managing module-related slots an instance of OrderedQueue", function() {
+suite( "On managing module-related slots using an instance of OrderedQueue", function() {
 	let queue;
 	const moduleNumber = 10;
 
@@ -325,7 +342,7 @@ suite( "For managing module-related slots an instance of OrderedQueue", function
 	} );
 } );
 
-suite( "For managing custom slots an instance of OrderedQueue", function() {
+suite( "On managing custom slots using an instance of OrderedQueue", function() {
 	let queue;
 	const moduleNumber = 10;
 
@@ -509,7 +526,7 @@ suite( "For managing custom slots an instance of OrderedQueue", function() {
 	} );
 } );
 
-suite( "For managing inner-action slot an instance of OrderedQueue", function() {
+suite( "On managing inner-action slot using an instance of OrderedQueue", function() {
 	let queue;
 	const moduleNumber = 10;
 
