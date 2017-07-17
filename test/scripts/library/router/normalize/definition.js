@@ -70,7 +70,7 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "provides object always covering either supported stage", function() {
-		let a = Normalizer.Module( Normalizer, {} );
+		let a = Normalizer.Module( {} );
 
 		Should.exist( a );
 		a.should.be.Object();
@@ -94,32 +94,44 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "detects explicit provision of definitions for before-stage", function() {
-		let normalized = Normalizer.Module( {
+		let definition = {
 			before: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after" );
+		let normalized = Normalizer.Module( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after" ).and.have.size( 2 );
 		normalized.before.should.equal( "anything" );
 		normalized.after.should.be.Object().and.be.empty();
 	} );
 
 	test( "detects explicit provision of definitions for after-stage", function() {
-		let normalized = Normalizer.Module( {
+		let definition = {
 			after: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after" );
+		let normalized = Normalizer.Module( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after" ).and.have.size( 2 );
 		normalized.before.should.be.Object().and.be.empty();
 		normalized.after.should.equal( "anything" );
 	} );
 
 	test( "detects explicit provisions of definitions for before- and after-stage", function() {
-		let normalized = Normalizer.Module( {
+		let definition = {
 			before: "something",
 			after: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after" );
+		let normalized = Normalizer.Module( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after" ).and.have.size( 2 );
 		normalized.before.should.equal( "something" );
 		normalized.after.should.equal( "anything" );
 	} );
@@ -232,7 +244,7 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "provides object always covering either supported stage", function() {
-		let a = Normalizer.Custom( Normalizer, {} );
+		let a = Normalizer.Custom( {} );
 
 		Should.exist( a );
 		a.should.be.Object();
@@ -256,11 +268,15 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "detects explicit provision of definitions for before-stage", function() {
-		let normalized = Normalizer.Custom( {
+		let definition = {
 			before: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		let normalized = Normalizer.Custom( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
 		normalized.early.should.be.Object().and.be.empty();
 		normalized.before.should.equal( "anything" );
 		normalized.after.should.be.Object().and.be.empty();
@@ -268,11 +284,15 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "detects explicit provision of definitions for after-stage", function() {
-		let normalized = Normalizer.Custom( {
+		let definition = {
 			after: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		let normalized = Normalizer.Custom( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
 		normalized.early.should.be.Object().and.be.empty();
 		normalized.before.should.be.Object().and.be.empty();
 		normalized.after.should.equal( "anything" );
@@ -280,11 +300,15 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "detects explicit provision of definitions for early-stage", function() {
-		let normalized = Normalizer.Custom( {
+		let definition = {
 			early: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		let normalized = Normalizer.Custom( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
 		normalized.early.should.equal( "anything" );
 		normalized.before.should.be.Object().and.be.empty();
 		normalized.after.should.be.Object().and.be.empty();
@@ -292,11 +316,15 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "detects explicit provision of definitions for late-stage", function() {
-		let normalized = Normalizer.Custom( {
+		let definition = {
 			late: "anything",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		let normalized = Normalizer.Custom( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
 		normalized.early.should.be.Object().and.be.empty();
 		normalized.before.should.be.Object().and.be.empty();
 		normalized.after.should.be.Object().and.be.empty();
@@ -304,14 +332,18 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "detects explicit provisions of definitions for early-, before-, after- and late-stage", function() {
-		let normalized = Normalizer.Custom( {
+		let definition = {
 			early: "everything",
 			before: "something",
 			after: "anything",
 			late: "nothing",
-		} );
+		};
 
-		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" );
+		let normalized = Normalizer.Custom( definition );
+
+		normalized.should.not.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
 		normalized.early.should.equal( "everything" );
 		normalized.before.should.equal( "something" );
 		normalized.after.should.equal( "anything" );
@@ -432,5 +464,167 @@ suite( "Normalizer for application-related custom route definitions", function()
 		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", early: "anything", extra: "extra" } ).should.not.throw();
 		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", late: "anything", extra: "extra" } ).should.not.throw();
 		Normalizer.Custom.bind( Normalizer, { before: "everything", after: "something", early: "anything", late: "nothing", extra: "extra" } ).should.not.throw();
+	} );
+} );
+
+suite( "Normalizer for blueprint route definitions", function() {
+	test( "does not throw on processing empty route definition", function() {
+		Normalizer.Blueprint.should.not.throw();
+		Normalizer.Blueprint.bind( Normalizer, null ).should.not.throw();
+		Normalizer.Blueprint.bind( Normalizer, undefined ).should.not.throw();
+
+		Normalizer.Blueprint( null ).should.be.Object();
+		Normalizer.Blueprint( undefined ).should.be.Object();
+	} );
+
+	test( "throws on processing invalid route definition", function() {
+		Normalizer.Blueprint.bind( Normalizer, false ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, true ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, 0 ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, 1 ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, -2 ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, "" ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, "0" ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, function() {} ).should.throw();
+		Normalizer.Blueprint.bind( Normalizer, () => {} ).should.throw();
+	} );
+
+	test( "does not throw on processing valid definition without any element", function() {
+		Normalizer.Blueprint.bind( Normalizer, {} ).should.not.throw();
+		Normalizer.Blueprint.bind( Normalizer, [] ).should.not.throw();
+	} );
+
+	test( "provides raw definition on matching expected type", function() {
+		let definition = {};
+
+		let a = Normalizer.Blueprint( definition );
+
+		a.should.be.Object().and.equal( definition );
+	} );
+
+	test( "does not care for actually provided definitions", function() {
+		Normalizer.Blueprint.bind( Normalizer, {
+			null: null,
+			false: false,
+			true: true,
+			undefined: undefined,
+			emptyString: "",
+			string: "some value",
+			emptyArray: [],
+			array: [ "some value" ],
+			emptyObject: {},
+			object: { someValue: "some value" },
+			function: () => {},
+		} ).should.not.throw();
+	} );
+
+	test( "ignores explicit provision of definitions bound to 'before'-stage due to not supporting any staging", function() {
+		let definition = {
+			before: "anything",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before" ).and.have.size( 1 );
+
+		normalized.before.should.equal( "anything" );
+	} );
+
+	test( "ignores explicit provision of definitions bound to 'after'-stage due to not supporting any staging", function() {
+		let definition = {
+			after: "anything",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "after" ).and.have.size( 1 );
+
+		normalized.after.should.equal( "anything" );
+	} );
+
+	test( "ignores explicit provision of definitions bound to 'early'-stage due to not supporting any staging", function() {
+		let definition = {
+			early: "anything",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "early" ).and.have.size( 1 );
+
+		normalized.early.should.equal( "anything" );
+	} );
+
+	test( "ignores explicit provision of definitions bound to 'late'-stage due to not supporting any staging", function() {
+		let definition = {
+			late: "anything",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "late" ).and.have.size( 1 );
+
+		normalized.late.should.equal( "anything" );
+	} );
+
+	test( "ignores explicit provisions of definitions bound to early-, before-, after- and late-stage due to not supporting any staging", function() {
+		let definition = {
+			early: "everything",
+			before: "something",
+			after: "anything",
+			late: "nothing",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late" ).and.have.size( 4 );
+		normalized.early.should.equal( "everything" );
+		normalized.before.should.equal( "something" );
+		normalized.after.should.equal( "anything" );
+		normalized.late.should.equal( "nothing" );
+	} );
+
+	test( "does not care for any definition 'non-conforming' on including at least one property not addressing some known stage", function() {
+		// partially NOT conforming with explicit provision of route definitions
+		let definition = {
+			early: "everything",
+			before: "anything",
+			after: "something",
+			late: "nothing",
+			extra: "extra",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.have.properties( "before", "after", "early", "late", "extra" ).and.have.size( 5 );
+		normalized.early.should.be.String();
+		normalized.before.should.be.String();
+		normalized.after.should.be.String();
+		normalized.late.should.be.String();
+		normalized.extra.should.be.String();
+	} );
+
+	test( "does not consider any non-conforming definition related to before-stage implicitly", function() {
+		let definition = {
+			something: "something",
+		};
+
+		let normalized = Normalizer.Blueprint( definition );
+
+		normalized.should.equal( definition );
+
+		normalized.should.be.Object().and.not.have.properties( "before", "after" ).and.have.size( 1 );
+		normalized.should.have.properties( "something" );
 	} );
 } );
