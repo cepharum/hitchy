@@ -5,6 +5,9 @@ let options = {
 	//debug: true,
 };
 
+const Should = require( "should" );
+const ShouldHttp = require( "should-http" );
+
 const Test = require( "../../../tools" ).test;
 const Hitchy = require( "../../../injector" )["node"]( options );
 

@@ -270,7 +270,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 	test( "provides uppercase name of HTTP method route is bound to", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const tests = {
-				"/": "GET",
+				"/": "ALL",
 				"get /": "GET",
 				"GET /": "GET",
 				"put /": "PUT",
@@ -279,7 +279,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 				"ANYTHING /": "ANYTHING",
 				"some-tYPE /": "SOME-TYPE",
 				"SOME-type /": "SOME-TYPE",
-				"* /": "*",
+				"* /": "ALL",
 			};
 
 			Object.keys( tests ).forEach( source => {
@@ -289,12 +289,12 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "maps defined HTTP method ALL to *", function() {
+	test( "maps defined HTTP method * to ALL", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const tests = {
-				"* /": "*",
-				"all /": "*",
-				"ALL /": "*",
+				"* /": "ALL",
+				"all /": "ALL",
+				"ALL /": "ALL",
 				"ALLe /": "ALLE",
 				"any /": "ANY",
 			};
@@ -506,33 +506,77 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 
 	test( "accepts policy target definitions as string", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
-			PolicyRoute.parseTarget.bind( PolicyRoute, "Filter::myImplementation", API ).should.not.throw();
-			PolicyRoute.parseTarget.bind( PolicyRoute, "Filter.myImplementation", API ).should.not.throw();
-			PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Filter", method: "myImplementation" }, API ).should.not.throw();
+			let target = PolicyRoute.parseTarget( "Filter::myImplementation", API );
+			Should.exist( target );
+			target.handler.should.be.Function();
+			Should( target.warning ).not.be.ok();
+
+			target = PolicyRoute.parseTarget( "Filter.myImplementation", API );
+			Should.exist( target );
+			target.handler.should.be.Function();
+			Should( target.warning ).not.be.ok();
+
+			target = PolicyRoute.parseTarget( { controller: "Filter", method: "myImplementation" }, API );
+			Should.exist( target );
+			target.handler.should.be.Function();
+			Should( target.warning ).not.be.ok();
 		} );
 	} );
 
 	test( "rejects policy target definitions addressing actions in wrong collection", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
-			PolicyRoute.parseTarget.bind( PolicyRoute, "Custom::myHandler", API ).should.throw();
-			PolicyRoute.parseTarget.bind( PolicyRoute, "Custom.myHandler", API ).should.throw();
-			PolicyRoute.parseTarget.bind( PolicyRoute, { controller: "Custom", method: "myHandler" }, API ).should.throw();
+			let target = PolicyRoute.parseTarget( "Custom::myHandler", API );
+			Should.exist( target );
+			Should.not.exist( target.handler );
+			target.warning.should.be.String().and.not.empty();
+
+			target = PolicyRoute.parseTarget( "Custom.myHandler", API );
+			Should.exist( target );
+			Should.not.exist( target.handler );
+			target.warning.should.be.String().and.not.empty();
+
+			target = PolicyRoute.parseTarget( { controller: "Custom", method: "myHandler" }, API );
+			Should.exist( target );
+			Should.not.exist( target.handler );
+			target.warning.should.be.String().and.not.empty();
 		} );
 	} );
 
 	test( "accepts terminal target definitions as string", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
-			TerminalRoute.parseTarget.bind( TerminalRoute, "Custom::myHandler", API ).should.not.throw();
-			TerminalRoute.parseTarget.bind( TerminalRoute, "Custom.myHandler", API ).should.not.throw();
-			TerminalRoute.parseTarget.bind( TerminalRoute, { controller: "Custom", method: "myHandler" }, API ).should.not.throw();
+			let target = TerminalRoute.parseTarget( "Custom::myHandler", API );
+			Should.exist( target );
+			target.handler.should.be.Function();
+			Should( target.warning ).not.be.ok();
+
+			target = TerminalRoute.parseTarget( "Custom.myHandler", API );
+			Should.exist( target );
+			target.handler.should.be.Function();
+			Should( target.warning ).not.be.ok();
+
+			target = TerminalRoute.parseTarget( { controller: "Custom", method: "myHandler" }, API );
+			Should.exist( target );
+			target.handler.should.be.Function();
+			Should( target.warning ).not.be.ok();
 		} );
 	} );
 
 	test( "rejects policy target definitions addressing actions in wrong collection", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
-			TerminalRoute.parseTarget.bind( TerminalRoute, "Filter::myImplementation", API ).should.throw();
-			TerminalRoute.parseTarget.bind( TerminalRoute, "Filter.myImplementation", API ).should.throw();
-			TerminalRoute.parseTarget.bind( TerminalRoute, { controller: "Filter", method: "myImplementation" }, API ).should.throw();
+			let target = TerminalRoute.parseTarget( "Filter::myImplementation", API );
+			Should.exist( target );
+			Should.not.exist( target.handler );
+			target.warning.should.be.String().and.not.empty();
+
+			target = TerminalRoute.parseTarget( "Filter.myImplementation", API );
+			Should.exist( target );
+			Should.not.exist( target.handler );
+			target.warning.should.be.String().and.not.empty();
+
+			target = TerminalRoute.parseTarget( { controller: "Filter", method: "myImplementation" }, API );
+			Should.exist( target );
+			Should.not.exist( target.handler );
+			target.warning.should.be.String().and.not.empty();
 		} );
 	} );
 } );

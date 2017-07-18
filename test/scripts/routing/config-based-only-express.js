@@ -5,6 +5,9 @@ let options = {
 	//debug: true,
 };
 
+require( "should" );
+require( "should-http" );
+
 const Test = require( "../../../tools" ).test;
 const Hitchy = require( "../../../injector" )["express"]( options );
 
