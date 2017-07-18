@@ -6,7 +6,7 @@ let options = {
 };
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector/index" )["node"]( options );
+const Hitchy = require( "../../../injector/index" ).node( options );
 
 // ----------------------------------------------------------------------------
 
