@@ -19,7 +19,7 @@ suite( "Serving project w/ empty components", function() {
 	suiteTeardown( () => Hitchy.stop() );
 
 	test( "enables only requested components", function() {
-		return Test.get( "/", undefined, { accept: "text/json" } )
+		return Hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "text/json" } )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -32,6 +32,6 @@ suite( "Serving project w/ empty components", function() {
 				response.data.should.not.have.property( "weak-role" );  // due to filling differently named role
 				response.data.should.have.property( "important" );      // role filled by either of the two
 				response.data.should.not.have.property( "non-extension" );
-			} );
+			} ) );
 	} );
 } );

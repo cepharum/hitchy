@@ -18,105 +18,105 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	suiteTeardown( () => Hitchy.stop() );
 
 	test( "GETs /", function() {
-		return Test.get( "/" )
+		return Hitchy.onStarted.then( () => Test.get( "/" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.html();
 				response.text.should.be.String().and.match( /\bwelcome\b/i ).and.match( /<p>/i );
-			} )
+			} ) );
 	} );
 
 	test( "misses POSTing /", function() {
-		return Test.post( "/" )
+		return Hitchy.onStarted.then( () => Test.post( "/" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
 				response.text.should.be.String().and.match( /\bnot\s+found\b/i ).and.match( /<html\b/i );
-			} )
+			} ) );
 	} );
 
 	test( "misses GETting /view", function() {
-		return Test.get( "/view" )
+		return Hitchy.onStarted.then( () => Test.get( "/view" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
 				response.text.should.be.String().and.match( /\bnot\s+found\b/i ).and.match( /<html\b/i );
-			} )
+			} ) );
 	} );
 
 	test( "misses POSTing /view", function() {
-		return Test.post( "/view" )
+		return Hitchy.onStarted.then( () => Test.post( "/view" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
 				response.text.should.be.String().and.match( /\bnot\s+found\b/i ).and.match( /<html\b/i );
-			} )
+			} ) );
 	} );
 
 	test( "GETs /view/read", function() {
-		return Test.get( "/view/read" )
+		return Hitchy.onStarted.then( () => Test.get( "/view/read" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "instant session!" );
 				require( "should" )( response.data.id ).be.undefined();
-			} )
+			} ) );
 	} );
 
 	test( "POSTs /view/read", function() {
-		return Test.post( "/view/read" )
+		return Hitchy.onStarted.then( () => Test.post( "/view/read" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "instant session!" );
 				require( "should" )( response.data.id ).be.undefined();
-			} )
+			} ) );
 	} );
 
 	test( "GETs /view/read/1234", function() {
-		return Test.get( "/view/read/1234" )
+		return Hitchy.onStarted.then( () => Test.get( "/view/read/1234" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				require( "should" )( response.data.session ).be.undefined();
 				response.data.id.should.be.String().and.equal( "1234" );
-			} )
+			} ) );
 	} );
 
 	test( "POSTs /view/read/1234", function() {
-		return Test.post( "/view/read/1234" )
+		return Hitchy.onStarted.then( () => Test.post( "/view/read/1234" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				response.data.id.should.be.String().and.equal( "1234" );
-			} )
+			} ) );
 	} );
 
 	test( "GETs /view/create", function() {
-		return Test.get( "/view/create" )
+		return Hitchy.onStarted.then( () => Test.get( "/view/create" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				require( "should" )( response.data.id ).be.undefined();
 				require( "should" )( response.data.name ).be.undefined();
-			} )
+			} ) );
 	} );
 
 	test( "GETs /view/create/someId", function() {
-		return Test.get( "/view/create/someId" )
+		return Hitchy.onStarted.then( () => Test.get( "/view/create/someId" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				require( "should" )( response.data.id ).be.undefined();
 				response.data.name.should.be.String().and.equal( "someId" );
-			} )
+			} ) );
 	} );
 
 	test( "POSTs /view/create/someSimpleName?extra=1", function() {
-		return Test.post( "/view/create/someSimpleName?extra=1" )
+		return Hitchy.onStarted.then( () => Test.post( "/view/create/someSimpleName?extra=1" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -124,11 +124,11 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 				require( "should" )( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "someSimpleName" ] );
 				response.data.extra.should.be.String().and.equal( "1" );
-			} )
+			} ) );
 	} );
 
 	test( "POSTs /view/create/some/complex/name?extra[]=foo&extra[]=bar", function() {
-		return Test.post( "/view/create/some/complex/name?extra[]=foo&extra[]=bar" )
+		return Hitchy.onStarted.then( () => Test.post( "/view/create/some/complex/name?extra[]=foo&extra[]=bar" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -136,6 +136,6 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 				require( "should" )( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "some", "complex", "name" ] );
 				response.data.extra.should.be.Array().and.eql( [ "foo", "bar" ] );
-			} )
+			} ) );
 	} );
 } );

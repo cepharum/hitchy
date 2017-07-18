@@ -15,7 +15,7 @@ suite( "Serving project w/ empty components", function() {
 	suiteTeardown( () => Hitchy.stop() );
 
 	test( "detects all components enabled by default", function() {
-		return Test.get( "/", undefined, { accept: "text/json" } )
+		return Hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "text/json" } )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -32,6 +32,6 @@ suite( "Serving project w/ empty components", function() {
 				response.data["final-c"].index.should.be.above( response.data["b"].index );
 				response.data["final-c"].index.should.be.above( response.data["important"].index );
 				response.data["b"].index.should.be.above( response.data["important"].index );
-			} );
+			} ) );
 	} );
 } );

@@ -38,10 +38,10 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 				} );
 		}
 
-		return Promises.each( new Array( Chunks ), function( value, index ) {
+		return Hitchy.onStarted.then( () => Promises.each( new Array( Chunks ), () => {
 			return Promise.all( requests )
 				.then( () => Promises.delay( DelayPerChunk ) );
-		} );
+		} ) );
 	} );
 
 	test( "GETs /view/read/<id> w/ random <id>", function() {
@@ -61,9 +61,9 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 				} );
 		}
 
-		return Promises.each( new Array( Chunks ), function( value, index ) {
+		return Hitchy.onStarted.then( () => Promises.each( new Array( Chunks ), () => {
 			return Promise.all( requests )
 				.then( () => Promises.delay( DelayPerChunk ) );
-		} );
+		} ) );
 	} );
 } );

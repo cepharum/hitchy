@@ -47,13 +47,13 @@ suite( "Testing runtime", function() {
 	suiteTeardown( () => Hitchy.stop() );
 
 	test( "is assessing request", function() {
-		return Test.get( "/" )
+		return Hitchy.onStarted.then( () => Test.get( "/" )
 			.then( function( response ) {
 				/*
 				response.should.have.status( 200 );
 				response.should.be.html();
 				response.text.should.be.String().and.match( /\bwelcome\b/i ).and.match( /<p>/i );
 				*/
-			} );
+			} ) );
 	} );
 } );
