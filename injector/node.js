@@ -119,10 +119,10 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			hitchy.log( "debug" )( "got request during startup resulting in error", error );
+			console.error( "got request during startup resulting in error", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
-			hitchy.log( "debug" )( "got request during startup, sending splash" );
+			console.error( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	}
