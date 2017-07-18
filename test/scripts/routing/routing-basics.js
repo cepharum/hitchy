@@ -1,7 +1,7 @@
 "use strict";
 
 let options = {
-	projectFolder: "test/projects/basic-routing-core",
+	projectFolder: "test/projects/routing-basics",
 	scenario: "default",
 	//debug: true,
 };
@@ -10,7 +10,7 @@ require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector/index" )["node"]( options );
+const Hitchy = require( "../../../injector/index" ).node( options );
 
 // ----------------------------------------------------------------------------
 
