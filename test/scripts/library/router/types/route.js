@@ -52,6 +52,7 @@ const modules = {
 const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, modules } );
 
 const Should = require( "should" );
+const PathToRegExp = require( "path-to-regexp" );
 
 // ----------------------------------------------------------------------------
 
@@ -253,17 +254,16 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 
 	test( "provides all information on parsed source of defined route", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
-			const route = Route.parseSource( "/" );
+			const source = Route.parseSource( "/" );
 
-			Should.exist( route );
-			route.should.have.keys( "method", "prefix", "pattern", "parameters" );
-			Object.keys( route ).should.have.length( 5 );
+			Should.exist( source );
+			source.should.have.keys( "method", "definition", "prefix", "pattern", "parameters", "render" ).and.have.size( 6 );
 
-			route.method.should.be.String();
-			route.prefix.should.be.String();
-			route.pattern.should.be.instanceof( RegExp );
-			route.parameters.should.be.Array();
-			route.render.should.be.Function();
+			source.method.should.be.String();
+			source.prefix.should.be.String();
+			source.pattern.should.be.instanceof( RegExp );
+			source.parameters.should.be.Array();
+			source.render.should.be.Function();
 		} );
 	} );
 
@@ -579,4 +579,339 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			target.warning.should.be.String().and.not.empty();
 		} );
 	} );
+} );
+
+suite( "Library.Router.Types.Route.Route#generateExamples", function() {
+	test( "provides given 'pattern' as example on a route bound to fully static path", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples();
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.be.equal( path );
+
+			path = "/some/static/test/path";
+			route = new Route( path, () => {}, API );
+
+			examples = route.generateExamples();
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( path );
+		} );
+	} );
+
+	test( "generates single example on a route bound to path including single mandatory named parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[0].endsWith( "/more-static" ).should.be.ok();
+			examples[0].should.not.equal( path );
+		} );
+	} );
+
+	test( "generates single example on a route bound to path including multiple mandatory named parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param/:info/:id/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[0].endsWith( "/more-static" ).should.be.ok();
+			examples[0].should.not.equal( path );
+		} );
+	} );
+
+	test( "generates two examples on a route bound to path including single optional named parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param?/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 2 );
+			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[0].endsWith( "/more-static" ).should.be.ok();
+			examples[0].should.equal( "/myPrefix/more-static" );
+
+			examples[1].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[1].endsWith( "/more-static" ).should.be.ok();
+			examples[1].should.not.equal( "/myPrefix/more-static" );
+			examples[1].should.not.equal( path );
+		} );
+	} );
+
+	test( "generates single example on a route bound to path including single optional named parameter due to providing custom value", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param?/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( { param: "test" } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[0].endsWith( "/more-static" ).should.be.ok();
+			examples[0].should.equal( "/myPrefix/test/more-static" );
+		} );
+	} );
+
+	test( "requires provision of custom value matching name of parameter explicitly", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param?/:item?/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( { param: "test", item: "rest" } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( "/myPrefix/test/rest/more-static" );
+
+			examples = route.generateExamples( {} );
+
+			examples.should.be.Array().and.have.length( 4 );
+			examples[0].should.equal( "/myPrefix/more-static" );
+			examples[3].should.not.equal( "/myPrefix/more-static" );
+			examples[3].should.not.equal( "/myPrefix/undefined/undefined/more-static" );
+		} );
+	} );
+
+	test( "generates three examples with up to three elements per repeatable mandatory named parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param+/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 3 );
+			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[0].endsWith( "/more-static" ).should.be.ok();
+			examples[0].should.not.equal( "/myPrefix/more-static" );
+
+			examples[1].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[1].endsWith( "/more-static" ).should.be.ok();
+			examples[1].should.not.equal( "/myPrefix/more-static" );
+
+			examples[2].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[2].endsWith( "/more-static" ).should.be.ok();
+			examples[2].should.not.equal( "/myPrefix/more-static" );
+		} );
+	} );
+
+	test( "generates four examples with up to three elements per repeatable optional named parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param*/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 4 );
+			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[0].endsWith( "/more-static" ).should.be.ok();
+			examples[0].should.equal( "/myPrefix/more-static" );
+
+			examples[1].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[1].endsWith( "/more-static" ).should.be.ok();
+			examples[1].should.not.equal( "/myPrefix/more-static" );
+
+			examples[2].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[2].endsWith( "/more-static" ).should.be.ok();
+			examples[2].should.not.equal( "/myPrefix/more-static" );
+
+			examples[3].startsWith( "/myPrefix/" ).should.be.ok();
+			examples[3].endsWith( "/more-static" ).should.be.ok();
+			examples[3].should.not.equal( "/myPrefix/more-static" );
+		} );
+	} );
+
+	test( "doubles number of generated examples per optional named parameter in path", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let route = new Route( "/myPrefix/:param?/more-static", () => {}, API );
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 2 );
+
+			route = new Route( "/myPrefix/:param?/:info?/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 4 );
+
+			route = new Route( "/myPrefix/:param?/:info?/:id?/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 8 );
+
+			route = new Route( "/myPrefix/:param?/:info?/:id?/:test?/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 16 );
+		} );
+	} );
+
+	test( "multiplies number of generated examples by three per mandatory repeatable named parameter in path", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let route = new Route( "/myPrefix/:param+/more-static", () => {}, API );
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 3 );
+
+			route = new Route( "/myPrefix/:param+/:info+/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 9 );
+
+			route = new Route( "/myPrefix/:param+/:info+/:id+/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 27 );
+
+			route = new Route( "/myPrefix/:param+/:info+/:id+/:test+/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 81 );
+		} );
+	} );
+
+	test( "multiplies number of generated examples by four per optional repeatable named parameter in path", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let route = new Route( "/myPrefix/:param*/more-static", () => {}, API );
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 4 );
+
+			route = new Route( "/myPrefix/:param*/:info*/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 16 );
+
+			route = new Route( "/myPrefix/:param*/:info*/:id*/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 64 );
+
+			route = new Route( "/myPrefix/:param*/:info*/:id*/:test*/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 256 );
+		} );
+	} );
+
+	test( "multiplies accordingly on combining different kinds of parameter options in path", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let route = new Route( "/myPrefix/:param*/more-static", () => {}, API );
+			let examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 4 );
+
+			route = new Route( "/myPrefix/:param*/:info+/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 12 );
+
+			route = new Route( "/myPrefix/:param*/:info+/:id?/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 24 );
+
+			route = new Route( "/myPrefix/:param*/:info+/:id?/:test/more-static", () => {}, API );
+			examples = route.generateExamples();
+
+			examples.should.be.Array().and.have.length( 24 );
+		} );
+	} );
+
+	test( "generates single example on a route with all its parameters mandatorily bound to fixed value", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param/:test/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( { param: "first", test: "second" } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( "/myPrefix/first/second/more-static" );
+
+			examples = route.generateExamples( { param: "first", test: "second" }, { fixValue: "*" } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( "/myPrefix/*/*/more-static" );
+		} );
+	} );
+
+	test( "generates single example with minimum use of parameters ignoring usual number of probable use cases", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param?/:item?/:id?/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( {} );
+
+			examples.should.be.Array();
+			examples.length.should.be.greaterThan( 1 );
+
+			examples = route.generateExamples( {}, { minLengthOnly: true, fixValue: "*" } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( "/myPrefix/more-static" );
+		} );
+	} );
+
+	test( "generates single example with maximum use of parameters ignoring usual number of probable use cases", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param?/:item?/:id?/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( {} );
+
+			examples.should.be.Array();
+			examples.length.should.be.greaterThan( 1 );
+
+			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: "*" } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( "/myPrefix/*/*/*/more-static" );
+		} );
+	} );
+
+	test( "generates single example with provided set of data on a repeating parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param*/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( {} );
+
+			examples.should.be.Array();
+			examples.length.should.be.greaterThan( 1 );
+
+			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: ["*", "-", ".", "_"] } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].should.equal( "/myPrefix/*/-/./_/more-static" );
+		} );
+	} );
+
+	test( "generates single example of maximum size with at most three random values on a repeating parameter", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			let path = "/myPrefix/:param*/more-static";
+			let route = new Route( path, () => {}, API );
+
+			let examples = route.generateExamples( {} );
+
+			examples.should.be.Array();
+			examples.length.should.be.greaterThan( 1 );
+
+			examples = route.generateExamples( {}, { maxLengthOnly: true } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].split( "/" ).should.have.length( 6 );   // empty prefix to leading /, two static segments and three random values
+
+			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: ["*", "-", ".", "_"] } );
+
+			examples.should.be.Array().and.have.length( 1 );
+			examples[0].split( "/" ).should.have.length( 7 );   // same as above, but using all four provided values
+		} );
+	} );
+
 } );
