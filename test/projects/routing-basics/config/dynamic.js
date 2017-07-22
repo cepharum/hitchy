@@ -40,6 +40,18 @@ module.exports = function( options ) {
 				},
 			};
 
+		case "blueprint" :
+			return {
+				routes: {
+					before: {
+						"GET /blueprint/catched": "terminal.mirror",
+					},
+					after: {
+						"/blueprint/missed": "terminal.mirror",
+					}
+				},
+			};
+
 		default :
 			return {
 				policies: {

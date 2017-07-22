@@ -2,7 +2,7 @@
 
 let options = {
 	projectFolder: "test/projects/core-only",
-	//debug: true,
+	// debug: true,
 };
 
 require( "should" );
