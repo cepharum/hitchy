@@ -348,7 +348,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 
 	test( "extract static prefix from route's declared path", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
-			Route.parseSource( "/" ).prefix.should.equal( "" );
+			Route.parseSource( "/" ).prefix.should.equal( "/" );
 			Route.parseSource( "/test" ).prefix.should.equal( "/test" );
 			Route.parseSource( "/test/" ).prefix.should.equal( "/test" );
 			Route.parseSource( "/test/more" ).prefix.should.equal( "/test/more" );
@@ -914,4 +914,144 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
+} );
+
+suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", function() {
+	test( "requires list of prefixes to be filtered", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute, TerminalRoute } } ) {
+			let route = new TerminalRoute( "/", () => {}, API );
+
+			route.selectProbablyCoveredPrefixes.bind( route ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, null ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, undefined ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, false ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, true ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, 1.0 ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, -0.0 ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, [function() {}] ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, [""] ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, {} ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, {prefix:"/test"} ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, "" ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, "/test" ).should.throw();
+
+			route.selectProbablyCoveredPrefixes.bind( route, [] ).should.not.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, ["/test"] ).should.not.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, ["/test", "/taste"] ).should.not.throw();
+
+			route = new PolicyRoute( "/", () => {}, API );
+
+			route.selectProbablyCoveredPrefixes.bind( route ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, null ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, undefined ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, false ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, true ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, 1.0 ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, -0.0 ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, [function() {}] ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, [""] ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, {} ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, {prefix:"/test"} ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, "" ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, "/test" ).should.throw();
+
+			route.selectProbablyCoveredPrefixes.bind( route, [] ).should.not.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, ["/test"] ).should.not.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, ["/test", "/taste"] ).should.not.throw();
+		} );
+	} );
+
+	test( "considers some generic route probably covering some specific prefix", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route, TerminalRoute } } ) {
+			[
+				{ generic: "/", specific: "/test/name/sub" },
+				{ generic: "/test/name/sub", specific: "/test/name/sub", full: true },
+				{ generic: "/test/name/s", specific: "/test/name/sub" },
+				{ generic: "/test/n", specific: "/test/name/sub" },
+				{ generic: "/test/name", specific: "/test/name/sub" },
+				{ generic: "/test", specific: "/test/name/sub" },
+				{ generic: "/tes", specific: "/test/name/sub" },
+				{ generic: "/te", specific: "/test/name/sub" },
+				{ generic: "/t", specific: "/test/name/sub" },
+/* path-to-regexp is falsely considering ? and + literal characters here
+				{ generic: "/test?", specific: "/test/name/sub" },
+				{ generic: "/test+", specific: "/test/name/sub" },
+*/
+				{ generic: "/test*", specific: "/test/name/sub", full: true },
+				{ generic: "/(test)?", specific: "/test/name/sub" },
+				{ generic: "/(test)+", specific: "/test/name/sub" },
+				{ generic: "/(test)*", specific: "/test/name/sub" },
+				{ generic: "/(sth)?/test/name", specific: "/test/name/sub" },
+				{ generic: "/(sth)*/test/name", specific: "/test/name/sub" },
+				{ generic: "/(test)+/name", specific: "/test/name/sub" },
+				{ generic: "/test/:minor", specific: "/test/name/sub" },
+				{ generic: "/test/:minor?", specific: "/test/name/sub" },
+				{ generic: "/test/:minor+", specific: "/test/name/sub" },
+				{ generic: "/test/:minor*", specific: "/test/name/sub" },
+				{ generic: "/:major", specific: "/test/name/sub" },
+				{ generic: "/:major?", specific: "/test/name/sub" },
+				{ generic: "/:major+", specific: "/test/name/sub" },
+				{ generic: "/:major*", specific: "/test/name/sub" },
+				{ generic: "/:major/name", specific: "/test/name/sub" },
+				{ generic: "/:major?/test", specific: "/test/name/sub" },
+				{ generic: "/:major?/name", specific: "/test/name/sub" },
+				{ generic: "/:major*/test", specific: "/test/name/sub" },
+				{ generic: "/:major*/name", specific: "/test/name/sub" },
+				{ generic: "/:major*/sub", specific: "/test/name/sub" },
+				{ generic: "/:major+/name", specific: "/test/name/sub" },
+				{ generic: "/:major+/sub", specific: "/test/name/sub" },
+				{ generic: "/:major/:minor", specific: "/test/name/sub" },
+				{ generic: "/:major/:minor?", specific: "/test/name/sub" },
+				{ generic: "/:major/:minor+", specific: "/test/name/sub" },
+				{ generic: "/:major/:minor*", specific: "/test/name/sub" },
+				{ generic: "/test/:minor/sub", specific: "/test/name/sub" },
+				{ generic: "/test/:minor?/name", specific: "/test/name/sub" },
+				{ generic: "/test/:minor*/name", specific: "/test/name/sub" },
+				{ generic: "/test/:minor+/sub", specific: "/test/name/sub" },
+			]
+				.forEach( ( { generic, specific, full = false } ) => {
+					let route = new TerminalRoute( generic, () => {}, API );
+					let covered = route.selectProbablyCoveredPrefixes( [ specific ] );
+
+					// console.log( generic, "->", specific, "=", covered[specific] === Route.MATCH_FULL ? "full" : "partial" );
+
+					covered.should.be.Object()
+						.and.have.property( specific )
+						.and.be.greaterThanOrEqual( full ? Route.MATCH_FULL : Route.MATCH_PARTIAL, `invalid mark on ${specific} covered by ${generic}` );
+				} );
+		} );
+	} );
+
+	test( "considers some generic but divergent route never covering some specific prefix", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route, TerminalRoute } } ) {
+			[
+				{ generic: "/test/name/sub/item", specific: "/test/name/sub" },
+				{ generic: "/test/name/subs", specific: "/test/name/sub" },
+				{ generic: "/test/name/su/b", specific: "/test/name/sub" },
+				{ generic: "/teste", specific: "/test/name/sub" },
+				{ generic: "/tee", specific: "/test/name/sub" },
+				{ generic: "/s", specific: "/test/name/sub" },
+				{ generic: "/ta(st)?", specific: "/test/name/sub" },
+				{ generic: "/ta(st)*", specific: "/test/name/sub" },
+				{ generic: "/(tas)+", specific: "/test/name/sub" },
+				{ generic: "/tas*", specific: "/test/name/sub" },
+				{ generic: "/tast/:minor", specific: "/test/name/sub" },
+				{ generic: "/tast/:minor?", specific: "/test/name/sub" },
+				{ generic: "/tast/:minor*", specific: "/test/name/sub" },
+				{ generic: "/:major/neme", specific: "/test/name/sub" },
+				{ generic: "/:major?/neme", specific: "/test/name/sub" },
+				{ generic: "/:major*/neme", specific: "/test/name/sub" },
+				{ generic: "/:major+/neme", specific: "/test/name/sub" },
+			]
+				.forEach( ( { generic, specific } ) => {
+					let route = new TerminalRoute( generic, () => {}, API );
+					let covered = route.selectProbablyCoveredPrefixes( [ specific ] );
+
+					// console.log( generic, "->", specific );
+
+					covered.should.be.Object()
+						.and.not.have.property( specific );
+				} );
+		} );
+	} );
 } );
