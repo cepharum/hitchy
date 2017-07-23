@@ -695,17 +695,36 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { PolicyRoute } } ) {
 			let collector = new RoutesPerPrefix();
 
-			collector.append( new PolicyRoute( "/test", () => {}, API ) );
-			collector.prefixes.should.have.property( "/test" ).and.be.Array().and.have.length( 1 );
+			collector.append( new PolicyRoute( "/test/sub", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 1 );
 
 			collector.append( new PolicyRoute( "/te(st)?", () => {}, API ) );
-			collector.prefixes.should.have.property( "/test" ).and.be.Array().and.have.length( 2 );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 2 );
 
 			collector.append( new PolicyRoute( "/te(st)+", () => {}, API ) );
-			collector.prefixes.should.have.property( "/test" ).and.be.Array().and.have.length( 3 );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 3 );
 
 			collector.append( new PolicyRoute( "/test*", () => {}, API ) );
-			collector.prefixes.should.have.property( "/test" ).and.be.Array().and.have.length( 4 );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 4 );
+
+			collector.append( new PolicyRoute( "/:major/sub", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 5 );
+
+			collector.append( new PolicyRoute( "/:major?/test", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 6 );
+
+
+			collector.append( new PolicyRoute( "/test/su/b", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 6 );
+
+			collector.append( new PolicyRoute( "/te/st/sub", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 6 );
+
+			collector.append( new PolicyRoute( "/tast/sub", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 6 );
+
+			collector.append( new PolicyRoute( "/:major+/sup", () => {}, API ) );
+			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 6 );
 		} );
 	} );
 } );
