@@ -2,12 +2,15 @@
 
 let options = {
 	projectFolder: "test/projects/core-only",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../../tools" ).test;
 const Promises = require( "../../../tools" ).promise;
 const Hitchy = require( "../../../injector" ).node( options );
+
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
@@ -52,7 +55,7 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 		let requests = new Array( RequestsPerChunk );
 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
-			let value = String( 1000 * Math.random() );
+			let value = String( Math.ceil( 1000 * Math.random() ) );
 			requests[i] = Test.get( "/view/read/" + value )
 				.then( function( response ) {
 					response.should.have.value( "statusCode", 200 );
