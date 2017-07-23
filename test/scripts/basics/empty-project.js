@@ -10,6 +10,18 @@ const Hitchy = require( "../../../injector" ).node( options );
 
 // ----------------------------------------------------------------------------
 
+suite( "Hitchy standalone", function() {
+	test( "can be started", function() {
+		this.timeout( 3000 );  // for optionally requiring to install express first
+		return Test.startServer( Hitchy );
+	} );
+
+	test( "can be stopped", function() {
+		this.timeout( 3000 );  // for optionally requiring to install express first
+		return Hitchy.stop();
+	} );
+} );
+
 suite( "Serving empty project a request accepting HTML", function() {
 	suiteSetup( () => Test.startServer( Hitchy ) );
 	suiteTeardown( () => Hitchy.stop() );
