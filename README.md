@@ -2,6 +2,8 @@
 
 web application framework
 
+[![Build Status](https://travis-ci.org/hitchyjs/core.svg?branch=master)](https://travis-ci.org/hitchyjs/core)
+
 ## License
 
 Copyright (c) 2017 cepharum GmbH
@@ -26,9 +28,11 @@ SOFTWARE.
 
 ## About
 
-hitchy is yet another web application framework. 
+hitchy is yet another web application framework.
 
-## How To Get It` 
+> See the official documentation at https://hitchyjs.org for more information.
+
+## How To Get It?
 
 * [Clone on GitHub](https://github.com/hitchyjs/core)
 * [Install with npm](https://www.npmjs.com/package/hitchy)
@@ -53,6 +57,7 @@ several APIs globally bad practice. Because of all this sailsjs is currently
 dropping off the table.
 
 After that we evaluated different options for replacing sailsjs. 
+
 1. trailsjs does not look mature enough to start coding custom applications. 
    (Yes, at this time hitchy isn't even nearly as mature as trailsjs.) In 
    addition it suffers from trying to be too flexible reducing its integrated 
@@ -61,9 +66,11 @@ After that we evaluated different options for replacing sailsjs.
    storages via ORM: discussions on issue tracking revealed some limitations by 
    design when it comes to using benefits provided by one probable backend but 
    missing in another one (e.g. waterline-orm vs. knex).
+
 2. At first glance StrongLoop was a very promising framework, but finally we 
    dropped it either for being much too bloated for projects requiring lean and 
    fast server logic.
+
 3. mean was off the table prior to falling in love with sailsjs for focusing on 
    NoSQL backends whereas we need to cover SQL databases as well. Probably one 
    can integrate SQL backends with mean, too. But any software might be extended
@@ -212,13 +219,17 @@ component. Any module might ask for dependencies. This way any bootstrap stage
 supported by a component is invoked after related stage of its dependencies have
 passed before. By using Promises either component may delay its processing in
 any stage if required.
+
 * On shutting down an equivalent stage is triggered enabling any component to 
 properly shutdown. Components are processed in reverse order then compared to 
 startup phase.
+
 * By intention it's footprint on dependencies is quite low, currently. Actually
 we consider to keep the core nearly as simple as now and provide several
 extensions e.g. for enabling hitchy 
+
   * to support models with blueprint actions like in sails to store data in a 
     storage or 
+
   * to support development of angular-based client.
 

@@ -44,28 +44,94 @@ module.exports = {
 	 * Starts hitchy service using node's http server.
 	 *
 	 * @param {HitchyNodeInstance} hitchy
+	 * @param {object} options
 	 * @returns {Promise<Server>}
 	 */
-	startServer: function( hitchy ) {
-		switch ( process.env.HITCHY_MODE || "node" ) {
+	startServer: function( hitchy, options = {} ) {
+		switch ( hitchy.injector || process.env.HITCHY_MODE || "node" ) {
 			case "node" :
-				return new Promise( function( resolve, reject ) {
-					let server = Http.createServer( hitchy );
+				return _createHTTP( hitchy );
 
-					recentlyStartedServers.unshift( server );
+			case "connect" :
+			case "express" :
+				return new Promise( function _installAndLoadExpress( resolve, reject ) {
+					try {
+						let Express = require( "express" );
+						return resolve( Express );
+					} catch ( error ) {
+						if ( error.code !== "MODULE_NOT_FOUND" ) {
+							reject( error );
+						}
+					}
 
-					server.listen( 0, "0.0.0.0", 10240, function() {
-						hitchy.onStarted.then( function() {
-							resolve( server );
-						}, reject );
+					// need to install expressjs first
+					require( "child_process" ).exec( "npm install express", error => {
+						if ( error ) {
+							reject( error );
+						} else {
+							try {
+								let Express = require( "express" );
+								return resolve( Express );
+							} catch ( error ) {
+								reject( error );
+							}
+						}
 					} );
+				} )
+					.then( function _createSimpleExpressApp( Express ) {
+						let app = Express();
 
-					server.on( "error", reject );
-					server.on( "close", () => { recentlyStartedServers.filter( i => i === server ); } );
-				} );
+						let notFound = new Error( "Page not found." );
+						notFound.code = 404;
+
+						if ( options.prefix ) {
+							app.use( options.prefix, hitchy, _fakeError.bind( undefined, notFound ), _fakeError );
+						} else {
+							app.use( hitchy, _fakeError.bind( undefined, notFound ), _fakeError );
+						}
+
+						return _createHTTP( app );
+
+
+						function _fakeError( err, req, res, next ) {
+							res
+								.status( err.statusCode || err.code || 500 )
+								.format( {
+									html: function() {
+										res.send( `<html><body><p>${err.message}</p></body></html>` );
+									},
+									json: function() {
+										res.send( {
+											error: err.message,
+											code:  err.statusCode || err.code || 404,
+										} )
+									},
+									text: function() {
+										res.send( err.message );
+									}
+								} );
+						}
+					} );
 
 			default :
 				throw new Error( "this injection mode of hitchy is not fully supported yet" );
+		}
+
+		function _createHTTP( listener ) {
+			return new Promise( function( resolve, reject ) {
+				let server = Http.createServer( listener );
+
+				recentlyStartedServers.unshift( server );
+
+				server.on( "error", reject );
+				server.on( "close", () => { recentlyStartedServers.filter( i => i === server ); } );
+
+				server.listen( 0, "0.0.0.0", 10240, function() {
+					hitchy.onStarted.then( function() {
+						resolve( server );
+					}, reject );
+				} );
+			} );
 		}
 	},
 

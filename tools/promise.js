@@ -26,6 +26,8 @@
  * @author: cepharum
  */
 
+"use strict";
+
 module.exports = {
 
 	/** @borrows _toolPromiseEach as each */
@@ -42,6 +44,9 @@ module.exports = {
 
 	/** @borrows _toolPromiseFind as find */
 	find: _toolPromiseFind,
+
+	/** @borrows _toolPromiseIndexOf as indexOf */
+	indexOf: _toolPromiseIndexOf,
 
 	/** @borrows _toolPromiseDelay as delay */
 	delay: _toolPromiseDelay,
@@ -64,7 +69,15 @@ function _toolPromiseEach( items, fn ) {
 
 		function step( items, index, length ) {
 			if ( index < length ) {
-				Promise.resolve( fn( items[index], index, items ) )
+				let item = items[index], promise;
+
+				if ( item && item instanceof Promise ) {
+					promise = item.then( item => fn( item, index, items ) );
+				} else {
+					promise = Promise.resolve( fn( item, index, items ) );
+				}
+
+				promise
 					.then( function() {
 						step( items, index + 1, length );
 					}, reject );
@@ -88,11 +101,21 @@ function _toolPromiseEach( items, fn ) {
  */
 function _toolPromiseFilter( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		step( items, 0, items.length, new Array( items.length ), 0 );
+		let length = items.length;
+
+		step( items, 0, length, new Array( length ), 0 );
 
 		function step( items, index, length, target, writeIndex ) {
 			if ( index < length ) {
-				Promise.resolve( fn( items[index], index, items ) )
+				let item = items[index], promise;
+
+				if ( item instanceof Promise ) {
+					promise = item.then( item => fn( item, index, items ) );
+				} else {
+					promise = Promise.resolve( fn( item, index, items ) );
+				}
+
+				promise
 					.then( function( result ) {
 						if ( result ) {
 							target[writeIndex++] = items[index];
@@ -121,15 +144,25 @@ function _toolPromiseFilter( items, fn ) {
  */
 function _toolPromiseMap( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		step( items, 0, items.length, new Array( items.length ), 0 );
+		let length = items.length;
 
-		function step( items, index, length, target, writeIndex ) {
+		step( items, 0, length, new Array( length ) );
+
+		function step( items, index, length, target ) {
 			if ( index < length ) {
-				Promise.resolve( fn( items[index], index, items ) )
-					.then( function( result ) {
-						target[writeIndex++] = result;
+				let item = items[index], promise;
 
-						step( items, index + 1, length, target, writeIndex );
+				if ( item instanceof Promise ) {
+					promise = item.then( item => fn( item, index, items ) );
+				} else {
+					promise = Promise.resolve( fn( item, index, items ) );
+				}
+
+				promise
+					.then( function( result ) {
+						target[index] = result;
+
+						step( items, index + 1, length, target );
 					}, reject );
 			} else {
 				resolve( target );
@@ -156,7 +189,13 @@ function _toolPromiseMultiMap( items, fn ) {
 	let result = new Array( length );
 
 	for ( let index = 0; index < length; index++ ) {
-		result = Promise.resolve( fn( items[index], index, items ) );
+		let item = items[index];
+
+		if ( item instanceof Promise ) {
+			result[index] = item.then( item => fn( item, index, items ) );
+		} else {
+			result[index] = Promise.resolve( fn( item, index, items ) );
+		}
 	}
 
 	return Promise.all( result );
@@ -170,25 +209,79 @@ function _toolPromiseMultiMap( items, fn ) {
  *
  * @param {Array} items array of items to filter
  * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {boolean} getLast set true to get last match instead of first one
  * @returns {Promise<*>} promises first element callback returned truthy on or
  *          null if no item satisfies this
  */
-function _toolPromiseFind( items, fn ) {
+function _toolPromiseFind( items, fn, getLast = false ) {
 	return new Promise( function( resolve, reject ) {
-		step( items, 0, items.length );
+		let length = items.length;
 
-		function step( items, index, length ) {
-			if ( index < length ) {
-				Promise.resolve( fn( items[index], index, items ) )
+		step( items, getLast ? length - 1 : 0, getLast ? -1 : items.length, getLast ? -1 : +1 );
+
+		function step( items, index, stopAt, advanceBy ) {
+			if ( index !== stopAt ) {
+				let item = items[index], promise;
+
+				if ( item instanceof Promise ) {
+					promise = item.then( item => fn( item, index, items ) );
+				} else {
+					promise = Promise.resolve( fn( item, index, items ) );
+				}
+
+				promise
 					.then( function( result ) {
 						if ( result ) {
-							resolve( items[index] );
+							resolve( item );
 						} else {
-							step( items, index + 1, length );
+							step( items, index + advanceBy, stopAt, advanceBy );
 						}
 					}, reject );
 			} else {
 				resolve( null );
+			}
+		}
+	} );
+}
+
+/**
+ * Iterates over array of items invoking provided callback on each item stopping
+ * iteration on first item callback is returning truthy value.
+ *
+ * @note This method is capable of handling array-like collections, too.
+ *
+ * @param {Array} items array of items to filter
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {boolean} getLast set true to get index of last match instead of first one
+ * @returns {Promise<number>} promises index of first element callback returned
+ *          truthy on or -1 if no item satisfies this
+ */
+function _toolPromiseIndexOf( items, fn, getLast = false ) {
+	return new Promise( function( resolve, reject ) {
+		let length = items.length;
+
+		step( items, getLast ? length - 1 : 0, getLast ? -1 : length, getLast ? -1 : +1 );
+
+		function step( items, index, stopAt, advanceBy ) {
+			if ( index !== stopAt ) {
+				let item = items[index], promise;
+
+				if ( item instanceof Promise ) {
+					promise = item.then( item => fn( item, index, items ) );
+				} else {
+					promise = Promise.resolve( fn( item, index, items ) );
+				}
+
+				promise
+					.then( function( result ) {
+						if ( result ) {
+							resolve( index );
+						} else {
+							step( items, index + advanceBy, stopAt, advanceBy );
+						}
+					}, reject );
+			} else {
+				resolve( -1 );
 			}
 		}
 	} );

@@ -44,8 +44,8 @@ module.exports = function( options ) {
 	let error = null;
 
 	let starter = require( "../lib" )( options )
-		.then( function( runtime ) {
-			hitchy = runtime;
+		.then( function( api ) {
+			middleware.hitchy = Object.seal( hitchy = api );
 		}, function( cause ) {
 			error = cause;
 
@@ -83,10 +83,12 @@ module.exports = function( options ) {
 		}
 	} );
 
+	middleware.injector = "connect";
+
 	return middleware;
 
 
-	function middleware( req, res ) {
+	function middleware( req, res, next ) {
 		/** @type HitchyRequestContext */
 		let context = {
 			request: req,

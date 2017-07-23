@@ -44,8 +44,8 @@ module.exports = function( options ) {
 	let error = null;
 
 	let starter = require( "../lib" )( options )
-		.then( function( runtime ) {
-			hitchy = runtime;
+		.then( function( api ) {
+			middleware.hitchy = Object.seal( hitchy = api );
 		}, function( cause ) {
 			error = cause;
 
@@ -83,6 +83,8 @@ module.exports = function( options ) {
 		}
 	} );
 
+	middleware.injector = "node";
+
 	return middleware;
 
 
@@ -117,10 +119,10 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			hitchy.log( "debug" )( "got request during startup resulting in error", error );
+			console.error( "got request during startup resulting in error", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
-			hitchy.log( "debug" )( "got request during startup, sending splash" );
+			console.error( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	}
