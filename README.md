@@ -30,7 +30,7 @@ SOFTWARE.
 
 hitchy is yet another web application framework.
 
-> See the official documentation at https://hitchyjs.org for more information.
+> See the official documentation at http://hitchyjs.org for more information.
 
 ## How To Get It?
 
