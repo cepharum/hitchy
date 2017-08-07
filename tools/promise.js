@@ -74,7 +74,7 @@ function _toolPromiseEach( items, fn ) {
 				if ( item && item instanceof Promise ) {
 					promise = item.then( item => fn( item, index, items ) );
 				} else {
-					promise = Promise.resolve( fn( item, index, items ) );
+					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
 				}
 
 				promise
@@ -112,7 +112,7 @@ function _toolPromiseFilter( items, fn ) {
 				if ( item instanceof Promise ) {
 					promise = item.then( item => fn( item, index, items ) );
 				} else {
-					promise = Promise.resolve( fn( item, index, items ) );
+					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
 				}
 
 				promise
@@ -155,7 +155,7 @@ function _toolPromiseMap( items, fn ) {
 				if ( item instanceof Promise ) {
 					promise = item.then( item => fn( item, index, items ) );
 				} else {
-					promise = Promise.resolve( fn( item, index, items ) );
+					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
 				}
 
 				promise
@@ -194,7 +194,7 @@ function _toolPromiseMultiMap( items, fn ) {
 		if ( item instanceof Promise ) {
 			result[index] = item.then( item => fn( item, index, items ) );
 		} else {
-			result[index] = Promise.resolve( fn( item, index, items ) );
+			result[index] = new Promise( resolve => resolve( fn( item, index, items ) ) );
 		}
 	}
 
@@ -226,7 +226,7 @@ function _toolPromiseFind( items, fn, getLast = false ) {
 				if ( item instanceof Promise ) {
 					promise = item.then( item => fn( item, index, items ) );
 				} else {
-					promise = Promise.resolve( fn( item, index, items ) );
+					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
 				}
 
 				promise
@@ -269,7 +269,7 @@ function _toolPromiseIndexOf( items, fn, getLast = false ) {
 				if ( item instanceof Promise ) {
 					promise = item.then( item => fn( item, index, items ) );
 				} else {
-					promise = Promise.resolve( fn( item, index, items ) );
+					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
 				}
 
 				promise
