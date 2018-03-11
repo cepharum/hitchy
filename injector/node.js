@@ -40,6 +40,7 @@ const Common = require( "./common" );
 module.exports = function( options ) {
 	/** @type HitchyAPI */
 	let hitchy = null;
+
 	/** @type Error */
 	let error = null;
 
@@ -65,21 +66,28 @@ module.exports = function( options ) {
 	} );
 
 	Object.defineProperties( middleware, {
-		/** @name HitchyNodeInstance#onStarted */
+		/**
+		 * Promises hitchy node has been started successfully.
+		 *
+		 * @name HitchyNodeInstance#onStarted
+		 * @property {Promise}
+		 * @readonly
+		 */
 		onStarted: {
-			get: function() {
+			get: () => {
 				consumingStarter = true;
 				return starter;
-			}
+			},
 		},
+
+		/**
+		 * Shuts down hitchy node.
+		 *
+		 * @name HitchyNodeInstance#stop
+		 * @property {function():Promise}
+		 */
 		stop: {
-			/** @name HitchyNodeInstance#stop */
-			value: function() {
-				return starter
-					.then( function() {
-						return hitchy ? hitchy.bootstrap.shutdown() : undefined;
-					} );
-			}
+			value: () => starter.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
 		}
 	} );
 
