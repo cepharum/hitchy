@@ -17,10 +17,6 @@
     "node": ">=6.9.2",
     "npm": ">=3.0.0"
   },
-  "peerDependencies": {
-    "express": "*",
-    "gulp": "*"
-  },
   "dependencies": {
     "debug": "^2.6.0",
     "glob": "^7.1.1",
