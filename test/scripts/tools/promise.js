@@ -46,7 +46,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed filtering of array using each()", function() {
+	test( "supports sequential, probably delayed filtering of array using filter()", function() {
 		return PromiseTool
 			.filter( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
