@@ -5,8 +5,8 @@ let options = {
 	// debug: true,
 };
 
-require( "should" );
-require( "should-http" );
+const Should = require( "should" );
+const ShouldHttp = require( "should-http" ); // eslint-disable-line no-unused-var
 
 const Test = require( "../../../tools" ).test;
 const Hitchy = require( "../../../injector" )["express"]( options );
@@ -59,7 +59,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "instant session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 			} ) );
 	} );
 
@@ -69,7 +69,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "instant session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 			} ) );
 	} );
 
@@ -99,8 +99,8 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
-				require( "should" )( response.data.name ).be.undefined();
+				Should( response.data.id ).be.undefined();
+				Should( response.data.name ).be.undefined();
 			} ) );
 	} );
 
@@ -110,7 +110,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 				response.data.name.should.be.String().and.equal( "someId" );
 			} ) );
 	} );
@@ -121,7 +121,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "someSimpleName" ] );
 				response.data.extra.should.be.String().and.equal( "1" );
 			} ) );
@@ -133,7 +133,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "some", "complex", "name" ] );
 				response.data.extra.should.be.Array().and.eql( [ "foo", "bar" ] );
 			} ) );
@@ -186,7 +186,7 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "instant session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 			} ) );
 	} );
 
@@ -196,7 +196,7 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "instant session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 			} ) );
 	} );
 
@@ -226,8 +226,8 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
-				require( "should" )( response.data.name ).be.undefined();
+				Should( response.data.id ).be.undefined();
+				Should( response.data.name ).be.undefined();
 			} ) );
 	} );
 
@@ -237,7 +237,7 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 				response.data.name.should.be.String().and.equal( "someId" );
 			} ) );
 	} );
@@ -248,7 +248,7 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "someSimpleName" ] );
 				response.data.extra.should.be.String().and.equal( "1" );
 			} ) );
@@ -260,7 +260,7 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
-				require( "should" )( response.data.id ).be.undefined();
+				Should( response.data.id ).be.undefined();
 				response.data.name.should.be.Array().and.eql( [ "some", "complex", "name" ] );
 				response.data.extra.should.be.Array().and.eql( [ "foo", "bar" ] );
 			} ) );
