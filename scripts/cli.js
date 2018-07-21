@@ -49,6 +49,10 @@ if ( Args.project ) {
 	options.projectFolder = Args.project;
 }
 
+if ( Args.extensions ) {
+	options.extensionsFolder = Args.extensions;
+}
+
 require( "../tools/triangulate" )( options, process.cwd() )
 	.then( function( options ) {
 		switch ( command ) {
@@ -78,9 +82,13 @@ Default action is "start".
 
 Supported options are:
 
- --injector=name    Chooses injector to use (default: node, might be "express").
- --log-level=names  Selects active logging facilities (see npm package "debug").
- --debug            Enables noisy logging for debugging purposes.
+ --project=path    Selects directory containing hitchy-based project to control.
+                   Defaults to current working directory.
+ --extensions=path Selects directory containing node_modules folder with hitchy
+                   extensions to discover. Defaults to project's directory.
+ --injector=name   Chooses injector to use (default: "node", may be "express").
+ --log-level=names Selects active logging facilities (see npm package "debug").
+ --debug           Enables noisy logging for debugging purposes.
 ` );
 }
 
