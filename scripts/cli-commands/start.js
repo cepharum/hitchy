@@ -124,6 +124,13 @@ module.exports = function( options, args ) {
 			}
 
 			if ( server ) {
+				hitchy.onStarted.then( () => {
+					console.error( `
+
+Hitchy is ready to serve requests, now.
+` );
+				} );
+
 				// revise support for shutting down service running in
 				// foreground using Strg+C
 				server.on( "connection", _trackConnection.bind( server ) );
