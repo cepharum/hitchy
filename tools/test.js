@@ -65,7 +65,7 @@ module.exports = {
 					}
 
 					// need to install expressjs first
-					require( "child_process" ).exec( "npm install express", error => {
+					require( "child_process" ).exec( "npm install --no-save express", error => {
 						if ( error ) {
 							reject( error );
 						} else {
