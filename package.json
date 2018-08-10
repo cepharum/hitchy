@@ -1,6 +1,6 @@
 {
   "name": "hitchy",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "author": "cepharum GmbH",
   "homepage": "http://hitchyjs.github.io",
   "repository": "https://github.com/hitchyjs/core",
@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "debug": "^2.6.0",
-    "glob": "^7.1.1",
     "lodash": "^4.17.4",
     "minimist": "^1.2.0",
     "path-to-regexp": "^1.7.0"

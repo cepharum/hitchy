@@ -65,7 +65,7 @@ module.exports = {
 					}
 
 					// need to install expressjs first
-					require( "child_process" ).exec( "npm install express", error => {
+					require( "child_process" ).exec( "npm install --no-save express", error => {
 						if ( error ) {
 							reject( error );
 						} else {
@@ -153,7 +153,7 @@ module.exports = {
  * @param {object<string,string>} headers custom headers to include on request
  * @returns {Promise}
  */
-function request( method, url, data, headers ) {
+function request( method, url, data = null, headers = {} ) {
 	return new Promise( function( resolve, reject ) {
 		let server = recentlyStartedServers[0];
 		if ( !server ) {
@@ -172,6 +172,15 @@ function request( method, url, data, headers ) {
 		request.headers = {
 			"accept": "text/html",
 		};
+
+		if ( typeof data !== "string" && !Buffer.isBuffer( data ) ) {
+			if ( data != null ) {
+				data = JSON.stringify( data );
+				headers["content-type"] = "application/json";
+			} else {
+				data = null;
+			}
+		}
 
 		Object.keys( headers || {} )
 			.forEach( function( name ) {
