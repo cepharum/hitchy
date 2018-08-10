@@ -176,7 +176,7 @@ function request( method, url, data = null, headers = {} ) {
 		if ( typeof data !== "string" && !Buffer.isBuffer( data ) ) {
 			if ( data != null ) {
 				data = JSON.stringify( data );
-				headers["Content-Type"] = "application/json";
+				headers["content-type"] = "application/json";
 			} else {
 				data = null;
 			}
