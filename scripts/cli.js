@@ -35,7 +35,7 @@ if ( Args.help || Args.h ) {
 }
 
 if ( Args["log-level"] || !process.env.DEBUG ) {
-	process.env.DEBUG = Args["log-level"] || "bootstrap,request";
+	process.env.DEBUG = Args["log-level"] || "hitchy:bootstrap,hitchy:request";
 }
 
 process.on( "unhandledRejection", _unhandledRejection );
