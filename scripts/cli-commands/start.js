@@ -30,47 +30,50 @@ const File = require( "fs" );
 const Path = require( "path" );
 const Tools = require( "../../tools" );
 
+const Log = require( "debug" )( "hitchy:start" );
+const Debug = require( "debug" )( "hitchy:debug" );
+
+
 /**
  *
  * @param {HitchyOptions} options
  * @param {HitchyCLIArguments} args
  */
 module.exports = function( options, args ) {
-	let hitchy = null;
-
-
 	if ( args.injector ) {
 		return start();
-	} else {
-		/*
-		 * check if current project contains some script called server.js or
-		 * app.js or main.js and invoke this instead of trying to run some own
-		 * simple server internally.
-		 */
-		let files = ["server.js", "app.js", "main.js"]
-			.map( name => Path.resolve( options.projectFolder, name ) );
-
-		return Tools.promise.find( files, function( filename ) {
-			return new Promise( function( resolve, reject ) {
-				File.stat( filename, function( error, stat ) {
-					if ( error ) {
-						switch ( error.code ) {
-							case "ENOENT" :
-								return resolve( false );
-							default :
-								return reject( error );
-						}
-					}
-
-					resolve( stat.isFile() );
-				} )
-			} );
-		} )
-			.then( start, function( cause ) {
-				console.error( "error while looking for start script: " + ( cause.message || cause || "unknown error" ) );
-				process.exitCode = 1;
-			} );
 	}
+
+	/*
+	 * check if current project contains some script called server.js or
+	 * app.js or main.js and invoke this instead of trying to run some own
+	 * simple server internally.
+	 */
+	let files = ["server.js", "app.js", "main.js"]
+		.map( name => Path.resolve( options.projectFolder, name ) );
+
+	return Tools.promise.find( files, function( filename ) {
+		return new Promise( ( resolve, reject ) => {
+			File.stat( filename, ( error, stat ) => {
+				if ( error ) {
+					switch ( error.code ) {
+						case "ENOENT" :
+							return resolve( false );
+
+						default :
+							return reject( error );
+					}
+				}
+
+				resolve( stat.isFile() );
+			} )
+		} );
+	} )
+		.then( start, cause => {
+			console.error( "error while looking for start script: " + ( cause.message || cause || "unknown error" ) );
+			process.exitCode = 1;
+		} );
+
 
 	/**
 	 * Starts server preferring some found script over starting own simple
@@ -79,133 +82,220 @@ module.exports = function( options, args ) {
 	 * @param {string=} scriptname filename of script to run instead of internal server
 	 * @returns {Promise} promises result of having run server (this blocks if server stays in foreground!)
 	 */
-	function start( scriptname ) {
-		return new Promise( function( resolve, reject ) {
-			if ( scriptname ) {
-				console.error( `invoking custom start script ${scriptname} ...` );
+	function start( scriptname = null ) {
+		if ( scriptname ) {
+			return new Promise( ( resolve, reject ) => {
+				Log( `invoking custom start script ${scriptname} ...` );
 
 				let child = require( "child_process" ).fork( scriptname, {
 					cwd: options.projectFolder,
 					env: process.env,
 				} );
 
-				child.on( "exit", function( status, signal ) {
+				child.on( "exit", ( status, signal ) => {
 					if ( status !== 0 ) {
 						reject( new Error( "application script exited on " + ( status || signal ) ) );
 					} else {
 						resolve();
 					}
 				} );
+			} );
+		}
 
-				return;
-			}
 
+		Log( `starting application using internal server ...` );
 
-			console.error( `starting application using internal server ...` );
+		const port = args.port || process.env.PORT || 3000;
+		const addr = args.ip || process.env.IP || "127.0.0.1";
 
-			let port = args.port || process.env.PORT || 3000;
-			let ip = args.ip || process.env.IP || "127.0.0.1";
-			let server;
+		let startedServer = null;
+		let startedHitchy = null;
 
-			switch ( args.injector || "" ) {
-				case "node" :
-				case "" :
-					server = startWithNode( port, ip );
-					break;
+		return createServer()
+			.then( ( { server, hitchy } ) => {
+				startedServer = server;
+				startedHitchy = hitchy;
 
-				case "express" :
-				case "connect" :
-					server = startWithExpress( port, ip );
-					break;
+				server.on( "error", error => {
+					console.error( `server failed: ${error.message}` );
 
-				default :
-					console.error( "unknown injector: " + args.injector );
-					process.exitCode = 1;
-			}
-
-			if ( server ) {
-				hitchy.onStarted.then( () => {
-					console.error( `
-
-Hitchy is ready to serve requests, now.
-` );
+					process.exitCode = 2;
+					_handleCancel.call( {}, server, hitchy );
 				} );
 
-				// revise support for shutting down service running in
-				// foreground using Strg+C
-				server.on( "connection", _trackConnection.bind( server ) );
+				server.once( "listening", () => {
+					if ( !args.quiet ) {
+						console.error( `Hitchy is listening for requests at ${compileUrl( server )}, now.` );
+					}
+				} );
 
-				process.on( "SIGINT", _handleCancel.bind( server ) );
-				process.on( "SIGTERM", _handleCancel.bind( server ) );
+				hitchy.onStarted.then( () => {
+					server.on( "request", hitchy );
+
+					server.listen( port, addr, process.env.BACKLOG || 10240 );
+
+					if ( !args.quiet ) {
+						console.error( `Hitchy is ready to serve requests, now.` );
+					}
+				} );
+
+
+				// handle request for shutting down service either by pressing
+				// Ctrl+C with server running in foreground or by sending
+				// SIGINT/SIGTERM signal
+				server.on( "connection", _trackConnection.bind( {}, server, hitchy ) );
+
+				process.on( "SIGINT", _handleCancel.bind( {}, server, hitchy ) );
+				process.on( "SIGTERM", _handleCancel.bind( {}, server, hitchy ) );
 
 				if ( process.platform === "win32" ) {
 					require( "readline" ).createInterface( {
-						input:  process.stdin,
+						input: process.stdin,
 						output: process.stdout
 					} )
-						.on( "SIGINT", function() {
+						.on( "SIGINT", () => {
 							process.emit( "SIGINT" );
 						} );
 				}
-			}
-		} );
-	}
+			} )
+			.catch( error => {
+				console.error( error );
 
-	function startWithNode( port, ip ) {
-		hitchy = require( "../../injector" ).node( options );
+				process.exitCode = 1;
 
-		let httpd = require( "http" ).createServer( hitchy );
-
-		httpd.listen( port, ip, process.env.BACKLOG || 10240, onListening.bind( httpd ) );
-
-		return httpd;
-	}
-
-	function startWithExpress( port, ip ) {
-		hitchy = require( "../../injector" ).express( options );
-
-		let app = require( "express" )();
-
-		app.use( hitchy );
-
-		app.listen( port, ip, process.env.BACKLOG || 10240, onListening.bind( app ) );
-
-		return app;
+				if ( startedServer || startedHitchy ) {
+					_handleCancel.call( {}, startedServer, startedHitchy );
+				}
+			} );
 	}
 
 	/**
-	 * @this Server
+	 * Creates server listening for requests to be processed by hitchy instance
+	 * created and injected into that server, too.
+	 *
+	 * @returns {Promise<{server: *, hitchy: *}>} promises listening server and hitchy instance bound to it
 	 */
-	function onListening() {
-		if ( !args.quiet ) {
-			let addr = this.address(),
-			    port = addr.port,
-			    url;
+	function createServer() {
+		switch ( args.injector || "" ) {
+			case "node" :
+			case "" :
+				return startWithNode();
 
-			switch ( port ) {
-				case "80" :
-					url = "http://";
-					port = "";
-					break;
-				case "443" :
-					url = "https://";
-					port = "";
-					break;
-				default :
-					url = this.encrypted ? "https://" : "http://";
-					port = ":" + port;
-			}
+			case "express" :
+			case "connect" :
+				return startWithExpress();
 
-			url += addr.address + port;
-
-			console.error( `
-Service is running. Open 
-
-   ${url} 
-
-in your favourite browser now!
-` );
+			default :
+				return Promise.reject( new Error( `unknown injector: ${args.injector}` ) );
 		}
+	}
+
+	/**
+	 * Reads content of file selected by its name.
+	 *
+	 * @param {string} fileName name of file to read
+	 * @return {Promise<Buffer>} selected file's content
+	 */
+	function readFile( fileName ) {
+		return new Promise( ( resolve, reject ) => {
+			File.readFile( fileName, ( error, content ) => {
+				if ( error ) {
+					reject( error );
+				} else {
+					resolve( content );
+				}
+			} );
+		} );
+	}
+
+	/**
+	 * Creates HTTP server instance depending on provided arguments optionally
+	 * providing SSL key and certificates for running hitchy via HTTPS.
+	 *
+	 * @return {Promise<Server>} promises created HTTP(S) server instance
+	 */
+	function getHttpServer() {
+		const { sslKey, sslCert, sslCaCert } = args;
+
+		if ( sslKey && sslCert ) {
+			return Promise.all( [
+				readFile( sslKey ),
+				readFile( sslCert ),
+				sslCaCert ? readFile( sslCaCert ) : Promise.resolve( null ),
+			] )
+				.catch( error => {
+					throw new Error( `reading one or more SSL file(s) failed: ${error.message}` );
+				} )
+				.then( ( [ key, cert, ca ] ) => Object.assign( require( "https" ).createServer( {
+					key, cert, ca,
+				} ), { isHttps: true } ) );
+		}
+
+		if ( sslKey || sslCert ) {
+			return Promise.reject( "incomplete SSL configuration: provide filenames of key AND cert" );
+		}
+
+		return Promise.resolve( Object.assign( require( "http" ).createServer(), { isHttps: false } ) );
+	}
+
+	/**
+	 * Creates hitchy instance bound to dedicated HTTP(S) server instance.
+	 *
+	 * @returns {Promise<{server: *, hitchy: *}>} promises listening HTTP(S) service and bound hitchy instance
+	 */
+	function startWithNode() {
+		return getHttpServer().then( server => {
+			const hitchy = require( "../../injector" ).node( options );
+
+			return { server, hitchy };
+		} );
+	}
+
+	/**
+	 * Creates hitchy instance injected as middleware into a fresh application
+	 * based on expressjs.
+	 *
+	 * @returns {Promise<{server: *, hitchy: *}>} promises listening service (expressjs instance) and injected hitchy instance
+	 */
+	function startWithExpress() {
+		return new Promise( resolve => {
+			const hitchy = require( "../../injector" ).express( options );
+			const server = require( "express" )();
+
+			server.use( hitchy );
+
+			resolve( { server, hitchy } );
+		} );
+	}
+
+	/**
+	 * Compiles URL provided server instance is available at.
+	 *
+	 * @param {Server} server server instance
+	 * @returns {string} URL of provided server
+	 */
+	function compileUrl( server ) {
+		let addr = server.address(),
+			port = addr.port,
+			scheme;
+
+		switch ( port ) {
+			case "80" :
+				scheme = "http://";
+				port = "";
+				break;
+
+			case "443" :
+				scheme = "https://";
+				port = "";
+				break;
+
+			default :
+				scheme = server.isHttps ? "https://" : "http://";
+				port = ":" + port;
+		}
+
+		return scheme + addr.address + port;
 	}
 
 	/**
@@ -214,74 +304,84 @@ in your favourite browser now!
 	 * This method is reducing timeout on all active connections to shut down
 	 * service more instantly.
 	 *
-	 * @this Server
+	 * @param {Server} server server receiving requests to be forwarded hitchy
+	 * @param {Hitchy} hitchy instance of hitchy
+	 * @returns {void}
 	 * @private
 	 */
-	function _handleCancel() {
-		if ( !this.$stoppingServer ) {
-			this.$stoppingServer = true;
+	function _handleCancel( server, hitchy ) {
+		if ( !server.$stoppingServer ) {
+			server.$stoppingServer = true;
 
-			console.error( "shutting down server ... " );
+			Log( "shutting down server ... " );
 
-			// disable any keep-alive mode and reduce timeout on active connections
-			let s = this.$trackedSockets,
-			    i, l;
+			// disable keep-alives and reduce timeout on all active connections
+			const s = server.$trackedSockets;
 
 			if ( Array.isArray( s ) ) {
-				for ( i = 0, l = s.length; i < l; i++ ) {
+				const numSockets = s.length;
+
+				for ( let i = 0; i < numSockets; i++ ) {
 					s[i].setKeepAlive( false );
 					s[i].setTimeout( 1000 );
 				}
 			}
 
-			this.on( "close", function() {
-				if ( hitchy ) {
-					console.error( "shutting down hitchy ..." );
-					hitchy.stop()
-						.then( _exit );
-				} else {
-					_exit();
-				}
+			if ( server.listening ) {
+				server.once( "close", stopHitchy );
+				server.close();
+			} else {
+				stopHitchy();
+			}
 
-				function _exit() {
+			function stopHitchy() {
+				if ( hitchy ) {
+					Log( "shutting down hitchy ..." );
+					hitchy.stop().then( () => process.exit() );
+				} else {
 					process.exit();
 				}
-			} );
-
-			// close server's listening socket
-			this.close();
+			}
 		}
 	}
 
 	/**
 	 * Tracks connections established with running service.
 	 *
-	 * @this Server
-	 * @param {Socket} newSocket
+	 * @param {Server} server server receiving requests to be forwarded hitchy
+	 * @param {Hitchy} hitchy instance of hitchy
+	 * @param {Socket} socket new incoming connection for sending request(s)
+	 * @returns {void}
 	 * @private
 	 */
-	function _trackConnection( newSocket ) {
-		let that = this;
-
-		if ( !Array.isArray( this.$trackedSockets ) ) {
-			this.$trackedSockets = [];
+	function _trackConnection( server, hitchy, socket ) {
+		if ( !Array.isArray( server.$trackedSockets ) ) {
+			server.$trackedSockets = [];
 		}
 
-		this.$trackedSockets.push( newSocket );
+		if ( options.debug ) {
+			Debug( `new connection from ${socket.remoteAddress}:${socket.remotePort}` )
+		}
+
+		server.$trackedSockets.push( socket );
 
 		// keep track of closing connection established now
-		newSocket.on( "close", function() {
-			let s = that.$trackedSockets,
-			    i, l;
+		socket.once( "close", () => {
+			if ( options.debug ) {
+				Debug( `closed connection from ${socket.remoteAddress}:${socket.remotePort}` )
+			}
+
+			let s = server.$trackedSockets,
+				i, l;
 
 			for ( i = 0, l = s.length; i < l; i++ ) {
-				if ( s[i] === newSocket ) {
+				if ( s[i] === socket ) {
 					break;
 				}
 			}
 
 			if ( i < l ) {
-				that.$trackedSockets.splice( i, 1 );
+				server.$trackedSockets.splice( i, 1 );
 			}
 		} );
 	}
