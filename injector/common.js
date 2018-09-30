@@ -99,7 +99,7 @@ function _showError( options, error ) {
 	let status = require( "../lib/responder/normalize/status" ).bind( this );
 	let send   = require( "../lib/responder/normalize/send" ).bind( this );
 
-	this.api.log( "debug" )( "rendering error internally", error );
+	this.api.log( "hitchy:debug" )( "rendering error internally", error );
 
 	_.defaults( error, {
 		status:  parseInt( error.code ) || 500,
