@@ -72,23 +72,33 @@ Usage: hitchy <action> [ options ]
 
 Supported actions are:
 
- start     Start presentation application in current folder.
- stop      Stop presentation of application in current folder.
- lock      Shutdown request processing but keep service running (site down).
- unlock    Re-enable request processing.
- open      Open browser requesting homepage of application.
+ start    Start presentation application in current folder.
+ stop     tba: Stop presentation of application in current folder.
+ lock     tba: Shutdown request processing but keep service running (site down).
+ unlock   tba: Re-enable request processing.
+ open     tba: Open browser requesting homepage of application.
  
 Default action is "start".
 
-Supported options are:
+Common options are:
 
  --project=path    Selects directory containing hitchy-based project to control.
                    Defaults to current working directory.
  --extensions=path Selects directory containing node_modules folder with hitchy
                    extensions to discover. Defaults to project's directory.
- --injector=name   Chooses injector to use (default: "node", may be "express").
- --log-level=names Selects active logging facilities (see npm package "debug").
  --debug           Enables noisy logging for debugging purposes.
+ --log-level=names Selects active logging facilities (see npm package "debug").
+ 
+ Action "start" supports additional options:
+ 
+ --injector=name   Chooses injector to use (default: "node", may be "express").
+ --port=number     Chooses port to listen on for incoming requests.
+ --ip=address      Chooses IP address to listen on for incoming requests.
+ --quiet           Suppresses output regarding successful start of service.
+ --sslKey=file     Names file containing SSL key for serving over HTTPS.
+ --sslCert=file    Names file containing SSL certificate for serving over HTTPS.
+ --sslCaCert=file  Names file containing SSL chain certificates.
+
 ` );
 }
 
