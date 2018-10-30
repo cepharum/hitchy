@@ -94,7 +94,11 @@ module.exports = function( options ) {
 			request: req,
 			response: res,
 			done: next,
-			local: {}
+			local: {},
+			consumed: {
+				byPolicy: false,
+				byTerminal: false,
+			},
 		};
 
 		if ( hitchy ) {

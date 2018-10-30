@@ -103,6 +103,10 @@ module.exports = function( options ) {
 			response: res,
 			done: function() {},
 			local: {},
+			consumed: {
+				byPolicy: false,
+				byTerminal: false,
+			},
 		};
 
 		if ( hitchy ) {
