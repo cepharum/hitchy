@@ -105,9 +105,15 @@ module.exports = function( options ) {
 			hitchy.utility.introduce( context );
 
 			hitchy.router.dispatch( context )
-				.then( function() {
-					if ( !res.finished ) {
-						next();
+				.then( context => {
+					const { byTerminal, byPolicy } = context.consumed;
+
+					if ( !res.finished && !byTerminal ) {
+						if ( byPolicy ) {
+							Common.errorHandler.call( context, options );
+						} else {
+							next();
+						}
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {

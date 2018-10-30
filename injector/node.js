@@ -113,15 +113,15 @@ module.exports = function( options ) {
 			hitchy.utility.introduce( context );
 
 			hitchy.router.normalize( context )
-				.then( function( context ) {
+				.then( context => {
 					// responder normalization works synchronously currently, so
 					// don't waste time on wrapping it in another promise
 					hitchy.responder.normalize( context );
 
 					return hitchy.router.dispatch( context );
 				} )
-				.then( function() {
-					if ( !res.finished ) {
+				.then( context => {
+					if ( !context.consumed.byTerminal && !res.finished ) {
 						let error = new Error( "Page not found!" );
 						error.status = 404;
 
@@ -147,6 +147,6 @@ module.exports = function( options ) {
  */
 
 /**
- * @typedef function(request:IncomingMessage, response:ServerResponse) HitchyNodeInstance
+ * @typedef {function(request:IncomingMessage,response:ServerResponse)} HitchyNodeInstance
  * @extends HitchyInstance
  */
