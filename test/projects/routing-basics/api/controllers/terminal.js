@@ -32,14 +32,54 @@ module.exports = {
 	/**
 	 * @param {IncomingMessage} req
 	 * @param {ServerResponse} res
+	 * @param {string} args
 	 */
-	mirror: function( req, res ) {
+	mirror: function( req, res, ...args ) {
 		res.json( {
 			method: req.method,
 			params: req.params,
-			args: [].slice.call( arguments, 2 ),
+			args: args,
 			query: req.query,
 			session: req.session,
+			type: "instant",
 		} );
-	}
+	},
+
+	/**
+	 * @param {IncomingMessage} req
+	 * @param {ServerResponse} res
+	 * @param {string} args
+	 */
+	deferredMirror: function( req, res, ...args ) {
+		const data = {
+			method: req.method,
+			params: req.params,
+			args: args,
+			query: req.query,
+			session: req.session,
+			type: "deferred",
+		};
+
+		setTimeout( () => {
+			res.json( data );
+		}, 50 );
+	},
+
+	/**
+	 * @param {IncomingMessage} req
+	 * @param {ServerResponse} res
+	 * @param {string} args
+	 */
+	fullyDeferredMirror: function( req, res, ...args ) {
+		setTimeout( () => {
+			res.json( {
+				method: req.method,
+				params: req.params,
+				args: args,
+				query: req.query,
+				session: req.session,
+				type: "deferred",
+			} );
+		}, 50 );
+	},
 };

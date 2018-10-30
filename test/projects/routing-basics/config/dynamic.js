@@ -36,7 +36,9 @@ module.exports = function( options ) {
 		case "simple-terminal" :
 			return {
 				routes: {
-					"/": "terminal.mirror",
+					"/instant": "terminal.mirror",
+					"/partial/deferred": "terminal.deferredMirror",
+					"/full/deferred": "terminal.fullyDeferredMirror",
 				},
 			};
 
