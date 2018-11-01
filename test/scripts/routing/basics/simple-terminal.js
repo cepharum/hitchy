@@ -34,7 +34,6 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 	test( "GETs /partial/deferred", function() {
 		return Hitchy.onStarted.then( () => Test.get( "/partial/deferred" )
 			.then( function( response ) {
-				console.log( response.data );
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.method.should.equal( "GET" );
@@ -48,7 +47,6 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 	test( "GETs /full/deferred", function() {
 		return Hitchy.onStarted.then( () => Test.get( "/full/deferred" )
 			.then( function( response ) {
-				console.log( response.data );
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.method.should.equal( "GET" );
