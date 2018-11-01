@@ -98,10 +98,14 @@ module.exports = function( options ) {
 
 	function middleware( req, res ) {
 		/** @type HitchyRequestContext */
-		let context = {
+		const context = {
 			request: req,
 			response: res,
-			done: function() {},
+			done: error => {
+				if ( error ) {
+					console.error( `got error on dispatching ${req.method} ${req.url}: ${error.message}` );
+				}
+			},
 			local: {},
 			consumed: {
 				byPolicy: false,
