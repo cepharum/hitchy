@@ -154,7 +154,7 @@ module.exports = {
 		res.send( req.params );
 	},
 	bodyPosted: function( req, res ) {
-		res.send( req.body );
+		req.fetchBody().then( body => res.send( body ) );
 	},
 	bodyNormal: function( req, res ) {
 		res.send( "normal request" );
