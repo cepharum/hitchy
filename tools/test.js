@@ -209,6 +209,11 @@ function request( method, url, data = null, headers = {} ) {
 		} );
 
 		handle.on( "error", reject );
-		handle.end( data );
+
+		if ( data != null ) {
+			handle.write( data, "utf8" );
+		}
+
+		handle.end();
 	} );
 }
