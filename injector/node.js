@@ -43,27 +43,27 @@ module.exports = function( options ) {
 
 	/** @type Error */
 	let error = null;
+	let consumingStarter = false;
 
 	let starter = require( "../lib" )( options )
-		.then( function( api ) {
+		.then( api => {
 			middleware.hitchy = Object.seal( hitchy = api );
-		}, function( cause ) {
+		}, cause => {
 			error = cause;
 
 			require( "debug" )( "bootstrap" )( "ERROR: starting hitchy failed", cause );
 
 			// keep rejecting promise
 			throw cause;
+		} )
+		.catch( cause => {
+			if ( consumingStarter ) {
+				throw cause;
+			} else {
+				console.error( "Unhandled Hitchy error:", cause );
+			}
 		} );
 
-
-	let consumingStarter = false;
-
-	starter.catch( cause => {
-		if ( consumingStarter ) {
-			throw cause;
-		}
-	} );
 
 	Object.defineProperties( middleware, {
 		/**
