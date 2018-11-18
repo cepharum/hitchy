@@ -118,20 +118,50 @@ module.exports = {
 		}
 
 		function _createHTTP( listener ) {
-			return new Promise( function( resolve, reject ) {
-				let server = Http.createServer( listener );
+			return hitchy.onStarted
+				.then( () => new Promise( ( resolve, reject ) => {
+					let server = Http.createServer( listener );
+					let stopResolve = null;
+					let stopReject = null;
+
+					const onStopped = new Promise( ( _resolve, _reject ) => {
+						stopResolve = _resolve;
+						stopReject = _reject;
+					} );
+
 
 				recentlyStartedServers.unshift( server );
 
-				server.on( "error", reject );
-				server.on( "close", () => { recentlyStartedServers.filter( i => i === server ); } );
+					server.once( "error", reject );
+					server.once( "close", () => {
+						let numServers = recentlyStartedServers.length;
 
-				server.listen( 0, "0.0.0.0", 10240, function() {
-					hitchy.onStarted.then( function() {
+						for ( let i = 0; i < numServers; i++ ) {
+							if ( recentlyStartedServers[i] === server ) {
+								recentlyStartedServers.splice( i, 1 );
+
+								i--;
+								numServers--;
+							}
+						}
+
+						hitchy.stop()
+							.then( stopResolve )
+							.catch( stopReject );
+					} );
+
+					server.stop = () => {
+						server.once( "error", error => stopReject( error ) );
+
+						server.close();
+
+						return onStopped;
+					};
+
+					server.listen( 0, "0.0.0.0", 10240, () => {
 						resolve( server );
-					}, reject );
-				} );
-			} );
+					} );
+				} ) );
 		}
 	},
 
