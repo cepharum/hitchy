@@ -6,16 +6,22 @@ let options = {
 };
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector/index" )["express"]( options );
+const Hitchy = require( "../../../injector" ).express;
+
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Serving project w/ expressjs with invalid responder routes", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "GETs /test", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/test" )
+		return hitchy.onStarted.then( () => Test.get( "/test" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -24,21 +30,21 @@ suite( "Serving project w/ expressjs with invalid responder routes", function() 
 	} );
 
 	test( "misses GETting /missing-controller", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/missing-controller" )
+		return hitchy.onStarted.then( () => Test.get( "/missing-controller" )
 			.then( function( response ) {
 				response.should.have.status( 404 );
 			} ) );
 	} );
 
 	test( "misses GETting /missing-method", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/missing-method" )
+		return hitchy.onStarted.then( () => Test.get( "/missing-method" )
 			.then( function( response ) {
 				response.should.have.status( 404 );
 			} ) );
 	} );
 
 	test( "GETs /something", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/something" )
+		return hitchy.onStarted.then( () => Test.get( "/something" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -47,7 +53,7 @@ suite( "Serving project w/ expressjs with invalid responder routes", function() 
 	} );
 
 	test( "GETs /addon", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/addon" )
+		return hitchy.onStarted.then( () => Test.get( "/addon" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -57,11 +63,14 @@ suite( "Serving project w/ expressjs with invalid responder routes", function() 
 } );
 
 suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", function() {
-	suiteSetup( () => Test.startServer( Hitchy, { prefix: "/injected/hitchy" } ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy, { prefix: "/injected/hitchy" } ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "GETs /test", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/test" )
+		return hitchy.onStarted.then( () => Test.get( "/test" )
 			.then( function( response ) {
 				// was working above when used w/o prefix
 				response.should.have.status( 404 );
@@ -69,21 +78,21 @@ suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", f
 	} );
 
 	test( "misses GETting /missing-controller", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/missing-controller" )
+		return hitchy.onStarted.then( () => Test.get( "/missing-controller" )
 			.then( function( response ) {
 				response.should.have.status( 404 );
 			} ) );
 	} );
 
 	test( "misses GETting /missing-method", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/missing-method" )
+		return hitchy.onStarted.then( () => Test.get( "/missing-method" )
 			.then( function( response ) {
 				response.should.have.status( 404 );
 			} ) );
 	} );
 
 	test( "GETs /something", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/something" )
+		return hitchy.onStarted.then( () => Test.get( "/something" )
 			.then( function( response ) {
 				// was working above when used w/o prefix
 				response.should.have.status( 404 );
@@ -91,7 +100,7 @@ suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", f
 	} );
 
 	test( "GETs /addon", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/addon" )
+		return hitchy.onStarted.then( () => Test.get( "/addon" )
 			.then( function( response ) {
 				// was working above when used w/o prefix
 				response.should.have.status( 404 );
@@ -99,7 +108,7 @@ suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", f
 	} );
 
 	test( "GETs /injected/hitchy/test", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/injected/hitchy/test" )
+		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/test" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -108,21 +117,21 @@ suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", f
 	} );
 
 	test( "misses GETting /injected/hitchy/missing-controller", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/injected/hitchy/missing-controller" )
+		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/missing-controller" )
 			.then( function( response ) {
 				response.should.have.status( 404 );
 			} ) );
 	} );
 
 	test( "misses GETting /injected/hitchy/missing-method", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/injected/hitchy/missing-method" )
+		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/missing-method" )
 			.then( function( response ) {
 				response.should.have.status( 404 );
 			} ) );
 	} );
 
 	test( "GETs /injected/hitchy/something", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/injected/hitchy/something" )
+		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/something" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -131,7 +140,7 @@ suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", f
 	} );
 
 	test( "GETs /injected/hitchy/addon", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/injected/hitchy/addon" )
+		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/addon" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();

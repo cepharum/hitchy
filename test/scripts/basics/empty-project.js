@@ -6,28 +6,37 @@ let options = {
 };
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" ).node( options );
+const Hitchy = require( "../../../injector" ).node;
+
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Hitchy standalone", function() {
+	const hitchy = Hitchy( options );
+	let server = null;
+
 	test( "can be started", function() {
 		this.timeout( 3000 );  // for optionally requiring to install express first
-		return Test.startServer( Hitchy );
+		return Test.startServer( hitchy ).then( s => ( server = s ) );
 	} );
 
 	test( "can be stopped", function() {
 		this.timeout( 3000 );  // for optionally requiring to install express first
-		return Hitchy.stop();
+		return server.stop();
 	} );
 } );
 
 suite( "Serving empty project a request accepting HTML", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "misses GETting /", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/" )
+		return hitchy.onStarted.then( () => Test.get( "/" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -36,7 +45,7 @@ suite( "Serving empty project a request accepting HTML", function() {
 	} );
 
 	test( "misses POSTing /", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/" )
+		return hitchy.onStarted.then( () => Test.post( "/" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -45,7 +54,7 @@ suite( "Serving empty project a request accepting HTML", function() {
 	} );
 
 	test( "misses GETting /view", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view" )
+		return hitchy.onStarted.then( () => Test.get( "/view" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -54,7 +63,7 @@ suite( "Serving empty project a request accepting HTML", function() {
 	} );
 
 	test( "misses POSTing /view", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view" )
+		return hitchy.onStarted.then( () => Test.post( "/view" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -63,7 +72,7 @@ suite( "Serving empty project a request accepting HTML", function() {
 	} );
 
 	test( "misses GETting /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/read" )
+		return hitchy.onStarted.then( () => Test.get( "/view/read" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -72,7 +81,7 @@ suite( "Serving empty project a request accepting HTML", function() {
 	} );
 
 	test( "misses POSTing /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/read" )
+		return hitchy.onStarted.then( () => Test.post( "/view/read" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -83,11 +92,14 @@ suite( "Serving empty project a request accepting HTML", function() {
 
 
 suite( "Serving empty project a request accepting text", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "misses GETting /", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "text/plain" } )
+		return hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "text/plain" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.have.contentType( "text/plain" );
@@ -96,7 +108,7 @@ suite( "Serving empty project a request accepting text", function() {
 	} );
 
 	test( "misses POSTing /", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/", undefined, { accept: "text/plain" } )
+		return hitchy.onStarted.then( () => Test.post( "/", undefined, { accept: "text/plain" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.have.contentType( "text/plain" );
@@ -105,7 +117,7 @@ suite( "Serving empty project a request accepting text", function() {
 	} );
 
 	test( "misses GETting /view", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view", undefined, { accept: "text/plain" } )
+		return hitchy.onStarted.then( () => Test.get( "/view", undefined, { accept: "text/plain" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.have.contentType( "text/plain" );
@@ -114,7 +126,7 @@ suite( "Serving empty project a request accepting text", function() {
 	} );
 
 	test( "misses POSTing /view", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view", undefined, { accept: "text/plain" } )
+		return hitchy.onStarted.then( () => Test.post( "/view", undefined, { accept: "text/plain" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.have.contentType( "text/plain" );
@@ -123,7 +135,7 @@ suite( "Serving empty project a request accepting text", function() {
 	} );
 
 	test( "misses GETting /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/read", undefined, { accept: "text/plain" } )
+		return hitchy.onStarted.then( () => Test.get( "/view/read", undefined, { accept: "text/plain" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.have.contentType( "text/plain" );
@@ -132,7 +144,7 @@ suite( "Serving empty project a request accepting text", function() {
 	} );
 
 	test( "misses POSTing /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/read", undefined, { accept: "text/plain" } )
+		return hitchy.onStarted.then( () => Test.post( "/view/read", undefined, { accept: "text/plain" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.have.contentType( "text/plain" );
@@ -142,11 +154,14 @@ suite( "Serving empty project a request accepting text", function() {
 } );
 
 suite( "Serving empty project a request accepting JSON", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "misses GETting /", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "application/json" } )
+		return hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "application/json" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.json();
@@ -158,7 +173,7 @@ suite( "Serving empty project a request accepting JSON", function() {
 	} );
 
 	test( "misses POSTing /", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/", undefined, { accept: "application/json" } )
+		return hitchy.onStarted.then( () => Test.post( "/", undefined, { accept: "application/json" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.json();
@@ -170,7 +185,7 @@ suite( "Serving empty project a request accepting JSON", function() {
 	} );
 
 	test( "misses GETting /view", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view", undefined, { accept: "application/json" } )
+		return hitchy.onStarted.then( () => Test.get( "/view", undefined, { accept: "application/json" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.json();
@@ -182,7 +197,7 @@ suite( "Serving empty project a request accepting JSON", function() {
 	} );
 
 	test( "misses POSTing /view", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view", undefined, { accept: "application/json" } )
+		return hitchy.onStarted.then( () => Test.post( "/view", undefined, { accept: "application/json" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.json();
@@ -194,7 +209,7 @@ suite( "Serving empty project a request accepting JSON", function() {
 	} );
 
 	test( "misses GETting /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/read", undefined, { accept: "application/json" } )
+		return hitchy.onStarted.then( () => Test.get( "/view/read", undefined, { accept: "application/json" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.json();
@@ -206,7 +221,7 @@ suite( "Serving empty project a request accepting JSON", function() {
 	} );
 
 	test( "misses POSTing /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/read", undefined, { accept: "application/json" } )
+		return hitchy.onStarted.then( () => Test.post( "/view/read", undefined, { accept: "application/json" } )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.json();

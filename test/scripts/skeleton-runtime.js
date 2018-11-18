@@ -34,7 +34,10 @@ let options = {
 };
 
 const Test = require( "../../tools" ).test;
-const Hitchy = require( "../../injector" )[process.env.HITCHY_MODE || "node"]( options );
+const Hitchy = require( "../../injector" )[process.env.HITCHY_MODE || "node"];
+
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
@@ -43,11 +46,14 @@ const Should = require( "should" );
 // ----------------------------------------------------------------------------
 
 suite( "Testing runtime", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "is assessing request", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/" )
+		return hitchy.onStarted.then( () => Test.get( "/" )
 			.then( function( response ) {
 				/*
 				response.should.have.status( 200 );

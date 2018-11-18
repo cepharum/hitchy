@@ -36,7 +36,8 @@ const ApiMockUp = require( "../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
-const Should = require( "should" );
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 

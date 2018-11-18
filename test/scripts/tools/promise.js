@@ -1,8 +1,9 @@
 "use strict";
 
-const Should = require( "should" );
-
 const PromiseTool = require( "../../../tools" ).promise;
+
+const Should = require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 

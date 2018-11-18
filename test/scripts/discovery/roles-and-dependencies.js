@@ -6,17 +6,24 @@ let options = {
 };
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"]( options );
+const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"];
+
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Serving project w/ empty components", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "detects all components enabled by default", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/", undefined, { accept: "text/json" } )
-			.then( function( response ) {
+		return hitchy.onStarted
+			.then( () => Test.get( "/", undefined, { accept: "text/json" } ) )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 
@@ -32,6 +39,6 @@ suite( "Serving project w/ empty components", function() {
 				response.data["final-c"].index.should.be.above( response.data["b"].index );
 				response.data["final-c"].index.should.be.above( response.data["important"].index );
 				response.data["b"].index.should.be.above( response.data["important"].index );
-			} ) );
+			} );
 	} );
 } );

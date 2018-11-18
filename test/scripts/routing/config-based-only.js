@@ -5,20 +5,23 @@ let options = {
 	//debug: true,
 };
 
-const Should = require( "should" );
-const ShouldHttp = require( "should-http" );
-
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" ).node( options );
+const Hitchy = require( "../../../injector" ).node;
+
+const Should = require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Serving core-only project w/ simple controllers and policies", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "GETs /", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/" )
+		return hitchy.onStarted.then( () => Test.get( "/" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.html();
@@ -27,7 +30,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "misses POSTing /", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/" )
+		return hitchy.onStarted.then( () => Test.post( "/" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -36,7 +39,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "misses GETting /view", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view" )
+		return hitchy.onStarted.then( () => Test.get( "/view" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -45,7 +48,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "misses POSTing /view", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view" )
+		return hitchy.onStarted.then( () => Test.post( "/view" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 404 );
 				response.should.be.html();
@@ -54,7 +57,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "GETs /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/read" )
+		return hitchy.onStarted.then( () => Test.get( "/view/read" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -64,7 +67,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "POSTs /view/read", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/read" )
+		return hitchy.onStarted.then( () => Test.post( "/view/read" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -74,7 +77,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "GETs /view/read/1234", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/read/1234" )
+		return hitchy.onStarted.then( () => Test.get( "/view/read/1234" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -84,7 +87,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "POSTs /view/read/1234", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/read/1234" )
+		return hitchy.onStarted.then( () => Test.post( "/view/read/1234" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -94,7 +97,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "GETs /view/create", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/create" )
+		return hitchy.onStarted.then( () => Test.get( "/view/create" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -105,7 +108,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "GETs /view/create/someId", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/view/create/someId" )
+		return hitchy.onStarted.then( () => Test.get( "/view/create/someId" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -116,7 +119,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "POSTs /view/create/someSimpleName?extra=1", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/create/someSimpleName?extra=1" )
+		return hitchy.onStarted.then( () => Test.post( "/view/create/someSimpleName?extra=1" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
@@ -128,7 +131,7 @@ suite( "Serving core-only project w/ simple controllers and policies", function(
 	} );
 
 	test( "POSTs /view/create/some/complex/name?extra[]=foo&extra[]=bar", function() {
-		return Hitchy.onStarted.then( () => Test.post( "/view/create/some/complex/name?extra[]=foo&extra[]=bar" )
+		return hitchy.onStarted.then( () => Test.post( "/view/create/some/complex/name?extra[]=foo&extra[]=bar" )
 			.then( function( response ) {
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();

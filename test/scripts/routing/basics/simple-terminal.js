@@ -6,20 +6,23 @@ let options = {
 	//debug: true,
 };
 
+const Test = require( "../../../../tools/index" ).test;
+const Hitchy = require( "../../../../injector" ).node;
+
 require( "should" );
 require( "should-http" );
-
-const Test = require( "../../../../tools/index" ).test;
-const Hitchy = require( "../../../../injector/index" ).node( options );
 
 // ----------------------------------------------------------------------------
 
 suite( "Serving project in basic-routing-core w/ most simple terminal route", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "GETs /instant", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/instant" )
+		return hitchy.onStarted.then( () => Test.get( "/instant" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -32,7 +35,7 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 	} );
 
 	test( "GETs /partial/deferred", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/partial/deferred" )
+		return hitchy.onStarted.then( () => Test.get( "/partial/deferred" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();
@@ -45,7 +48,7 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 	} );
 
 	test( "GETs /full/deferred", function() {
-		return Hitchy.onStarted.then( () => Test.get( "/full/deferred" )
+		return hitchy.onStarted.then( () => Test.get( "/full/deferred" )
 			.then( function( response ) {
 				response.should.have.status( 200 );
 				response.should.be.json();

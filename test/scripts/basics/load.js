@@ -7,7 +7,7 @@ let options = {
 
 const Test = require( "../../../tools" ).test;
 const Promises = require( "../../../tools" ).promise;
-const Hitchy = require( "../../../injector" ).node( options );
+const Hitchy = require( "../../../injector" ).node;
 
 require( "should" );
 require( "should-http" );
@@ -15,15 +15,17 @@ require( "should-http" );
 // ----------------------------------------------------------------------------
 
 suite( "Serving core-only project load simulation (250k requests split into 500 chunks)", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
-
 	this.timeout( 60000 );
 
 	const Chunks = 500;
 	const RequestsPerChunk = 500;
 	const DelayPerChunk = 10;
 
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "misses GETting /missing", function() {
 		if ( process.env.SKIP_LOAD_TESTS ) {
@@ -41,7 +43,7 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 				} );
 		}
 
-		return Hitchy.onStarted.then( () => Promises.each( new Array( Chunks ), () => {
+		return hitchy.onStarted.then( () => Promises.each( new Array( Chunks ), () => {
 			return Promise.all( requests )
 				.then( () => Promises.delay( DelayPerChunk ) );
 		} ) );
@@ -64,7 +66,7 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 				} );
 		}
 
-		return Hitchy.onStarted.then( () => Promises.each( new Array( Chunks ), () => {
+		return hitchy.onStarted.then( () => Promises.each( new Array( Chunks ), () => {
 			return Promise.all( requests )
 				.then( () => Promises.delay( DelayPerChunk ) );
 		} ) );

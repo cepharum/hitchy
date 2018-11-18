@@ -31,6 +31,7 @@
 const Normalizer = require( "../../../../../lib/router/normalize/definition" );
 
 const Should = require( "should" );
+require( "should-http" );
 
 
 suite( "Route definition normalizer", function() {

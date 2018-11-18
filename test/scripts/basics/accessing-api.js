@@ -6,17 +6,23 @@ let options = {
 };
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" ).node( options );
+const Hitchy = require( "../../../injector" ).node;
+
+require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Starting service for testing purposes", function() {
-	suiteSetup( () => Test.startServer( Hitchy ) );
-	suiteTeardown( () => Hitchy.stop() );
+	const node = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( node ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
 
 	test( "provides access on hitchy API", function() {
-		Hitchy.hitchy.should.be.ok();
-		Hitchy.hitchy.should.have.ownProperty( "runtime" );
-		Hitchy.hitchy.runtime.should.be.ok();
+		node.hitchy.should.be.ok();
+		node.hitchy.should.have.ownProperty( "runtime" );
+		node.hitchy.runtime.should.be.ok();
 	} );
 } );

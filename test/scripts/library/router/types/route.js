@@ -51,8 +51,10 @@ const modules = {
 
 const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, modules } );
 
-const Should = require( "should" );
 const PathToRegExp = require( "path-to-regexp" );
+
+const Should = require( "should" );
+require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
