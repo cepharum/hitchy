@@ -69,15 +69,20 @@ module.exports = function( options ) {
 		/**
 		 * Shuts down hitchy node.
 		 *
+		 * @note Shutting down hitchy node doesn't actually shut down any socket
+		 *       this node was bound to before. Thus shutting down Hitchy node
+		 *       w/o first shutting down all sockets it was listening on should
+		 *       be prevented.
+		 *
 		 * @name HitchyNodeInstance#stop
 		 * @property {function():Promise}
 		 */
 		stop: {
 			value: () => starter.catch( () => {} ).then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
 		},
-	} );
 
-	middleware.injector = "node";
+		injector: { value: "node" },
+	} );
 
 	return middleware;
 
@@ -112,19 +117,16 @@ module.exports = function( options ) {
 				} )
 				.then( context => {
 					if ( !context.consumed.byTerminal && !res.finished ) {
-						let error = new Error( "Page not found!" );
-						error.status = 404;
-
 						options.handleErrors = true;
 
-						Common.errorHandler.call( context, options, error );
+						Common.errorHandler.call( context, options, Object.assign( new Error( "Page not found!" ), { status: 404 } ) );
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			console.error( "got request during startup resulting in error", error );
+			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
-			console.error( "got request during startup, sending splash" );
+			hitchy.log( "hitchy:debug" )( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	}

@@ -33,7 +33,7 @@
 "use strict";
 
 const Http = require( "http" );
-const Url  = require( "url" );
+const Url = require( "url" );
 
 
 let recentlyStartedServers = [];
@@ -47,17 +47,16 @@ module.exports = {
 	 * @param {object} options
 	 * @returns {Promise<Server>}
 	 */
-	startServer: function( hitchy, options = {} ) {
+	startServer( hitchy, options = {} ) {
 		switch ( hitchy.injector || process.env.HITCHY_MODE || "node" ) {
 			case "node" :
 				return _createHTTP( hitchy );
 
 			case "connect" :
 			case "express" :
-				return new Promise( function _installAndLoadExpress( resolve, reject ) {
+				return new Promise( ( resolve, reject ) => {
 					try {
-						let Express = require( "express" );
-						return resolve( Express );
+						return resolve( require( "express" ) );
 					} catch ( error ) {
 						if ( error.code !== "MODULE_NOT_FOUND" ) {
 							reject( error );
@@ -70,15 +69,14 @@ module.exports = {
 							reject( error );
 						} else {
 							try {
-								let Express = require( "express" );
-								return resolve( Express );
+								return resolve( require( "express" ) );
 							} catch ( error ) {
 								reject( error );
 							}
 						}
 					} );
 				} )
-					.then( function _createSimpleExpressApp( Express ) {
+					.then( Express => {
 						let app = Express();
 
 						let notFound = new Error( "Page not found." );
@@ -93,20 +91,20 @@ module.exports = {
 						return _createHTTP( app );
 
 
-						function _fakeError( err, req, res, next ) {
+						function _fakeError( err, req, res, next ) { // eslint-disable-line no-unused-vars
 							res
 								.status( err.statusCode || err.code || 500 )
 								.format( {
-									html: function() {
+									html() {
 										res.send( `<html><body><p>${err.message}</p></body></html>` );
 									},
-									json: function() {
+									json() {
 										res.send( {
 											error: err.message,
-											code:  err.statusCode || err.code || 404,
+											code: err.statusCode || err.code || 404,
 										} )
 									},
-									text: function() {
+									text() {
 										res.send( err.message );
 									}
 								} );
@@ -114,7 +112,7 @@ module.exports = {
 					} );
 
 			default :
-				throw new Error( "this injection mode of hitchy is not fully supported yet" );
+				throw new Error( "invalid Hitchy injection mode" );
 		}
 
 		function _createHTTP( listener ) {
@@ -130,7 +128,7 @@ module.exports = {
 					} );
 
 
-				recentlyStartedServers.unshift( server );
+					recentlyStartedServers.unshift( server );
 
 					server.once( "error", reject );
 					server.once( "close", () => {
