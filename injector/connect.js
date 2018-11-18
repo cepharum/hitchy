@@ -43,10 +43,10 @@ module.exports = function( options ) {
 	/** @type Error */
 	let error = null;
 
-	let starter = require( "../lib" )( options )
-		.then( function( api ) {
+	const starter = require( "../lib" )( options )
+		.then( api => {
 			middleware.hitchy = Object.seal( hitchy = api );
-		}, function( cause ) {
+		}, cause => {
 			error = cause;
 
 			require( "debug" )( "bootstrap" )( "ERROR: starting hitchy failed", cause );
@@ -56,41 +56,24 @@ module.exports = function( options ) {
 		} );
 
 
-	let consumingStarter = false;
-
-	starter.catch( cause => {
-		if ( consumingStarter ) {
-			throw cause;
-		}
-	} );
-
 	Object.defineProperties( middleware, {
 		/** @name HitchyConnectInstance#onStarted */
-		onStarted: {
-			get: function() {
-				consumingStarter = true;
-				return starter;
-			}
-		},
+		onStarted: { value: starter },
+
 		stop: {
 			/** @name HitchyConnectInstance#stop */
-			value: function() {
-				return starter
-					.then( function() {
-						return hitchy ? hitchy.bootstrap.shutdown() : undefined;
-					} );
-			}
-		}
-	} );
+			value: () => starter.catch( () => {} ).then( () => hitchy ? hitchy.bootstrap.shutdown() : undefined )
+		},
 
-	middleware.injector = "connect";
+		injector: { value: "connect" },
+	} );
 
 	return middleware;
 
 
 	function middleware( req, res, next ) {
 		/** @type HitchyRequestContext */
-		let context = {
+		const context = {
 			request: req,
 			response: res,
 			done: next,
@@ -117,7 +100,7 @@ module.exports = function( options ) {
 					}
 				}, Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
-			hitchy.log( "hitchy:debug" )( "got request during startup resulting in error", error );
+			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up", error );
 			Common.errorHandler.call( context, options, error );
 		} else {
 			hitchy.log( "hitchy:debug" )( "got request during startup, sending splash" );
