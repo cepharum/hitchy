@@ -31,8 +31,7 @@
 const Common = require( "./common" );
 
 /**
- * Provides API for injecting hitchy into expressjs/connectjs-based application
- * as middleware.
+ * Provides API for injecting Hitchy into native HTTP service of NodeJS.
  *
  * @param {HitchyOptions=} options
  * @returns {HitchyNodeInstance}
@@ -43,9 +42,8 @@ module.exports = function( options ) {
 
 	/** @type Error */
 	let error = null;
-	let consumingStarter = false;
 
-	let starter = require( "../lib" )( options )
+	const starter = require( "../lib" )( options )
 		.then( api => {
 			middleware.hitchy = Object.seal( hitchy = api );
 		}, cause => {
@@ -55,13 +53,6 @@ module.exports = function( options ) {
 
 			// keep rejecting promise
 			throw cause;
-		} )
-		.catch( cause => {
-			if ( consumingStarter ) {
-				throw cause;
-			} else {
-				console.error( "Unhandled Hitchy error:", cause );
-			}
 		} );
 
 
@@ -73,12 +64,7 @@ module.exports = function( options ) {
 		 * @property {Promise}
 		 * @readonly
 		 */
-		onStarted: {
-			get: () => {
-				consumingStarter = true;
-				return starter;
-			},
-		},
+		onStarted: { value: starter },
 
 		/**
 		 * Shuts down hitchy node.
