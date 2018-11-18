@@ -73,8 +73,8 @@ module.exports = function( options ) {
 		 * @property {function():Promise}
 		 */
 		stop: {
-			value: () => starter.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
-		}
+			value: () => starter.catch( () => {} ).then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
+		},
 	} );
 
 	middleware.injector = "node";
