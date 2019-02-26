@@ -491,14 +491,6 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			Route.parseTarget.bind( Route, true, API ).should.throw();
 			Route.parseTarget.bind( Route, 1.0, API ).should.throw();
 			Route.parseTarget.bind( Route, -0.0, API ).should.throw();
-			Route.parseTarget.bind( Route, [], API ).should.throw();
-			Route.parseTarget.bind( Route, [function() {}], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Custom::myHandler"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Custom.myHandler"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Custom", "myHandler"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Filter::myImplementation"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Filter.myImplementation"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Filter", "myImplementation"], API ).should.throw();
 			Route.parseTarget.bind( Route, {}, API ).should.throw();
 			Route.parseTarget.bind( Route, {controller:"Custom", method:"myHandler"}, API ).should.throw();
 			Route.parseTarget.bind( Route, {controller:"Filter", method:"myImplementation"}, API ).should.throw();
@@ -522,6 +514,32 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			Should.exist( target );
 			target.handler.should.be.Function();
 			Should( target.warning ).not.be.ok();
+		} );
+	} );
+
+	test( "rejects multiple policy target definitions provided as array (even though supporting lists of targets per policy route)", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
+			PolicyRoute.parseTarget.bind( PolicyRoute, [], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, [function() {}], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, ["Custom::myHandler"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, ["Custom.myHandler"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, ["Custom", "myHandler"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, ["Filter::myImplementation"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, ["Filter.myImplementation"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, ["Filter", "myImplementation"], API ).should.throw();
+		} );
+	} );
+
+	test( "rejects multiple route target definitions provided as array", function() {
+		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
+			Route.parseTarget.bind( Route, [], API ).should.throw();
+			Route.parseTarget.bind( Route, [function() {}], API ).should.throw();
+			Route.parseTarget.bind( Route, ["Custom::myHandler"], API ).should.throw();
+			Route.parseTarget.bind( Route, ["Custom.myHandler"], API ).should.throw();
+			Route.parseTarget.bind( Route, ["Custom", "myHandler"], API ).should.throw();
+			Route.parseTarget.bind( Route, ["Filter::myImplementation"], API ).should.throw();
+			Route.parseTarget.bind( Route, ["Filter.myImplementation"], API ).should.throw();
+			Route.parseTarget.bind( Route, ["Filter", "myImplementation"], API ).should.throw();
 		} );
 	} );
 

@@ -1,0 +1,34 @@
+"use strict";
+
+let options = {
+	projectFolder: "test/projects/routing-basics",
+	scenario: "list-of-policies",
+	//debug: true,
+};
+
+const Test = require( "../../../../tools/index" ).test;
+const Hitchy = require( "../../../../injector" ).node;
+
+require( "should" );
+require( "should-http" );
+
+// ----------------------------------------------------------------------------
+
+suite( "Serving project in basic-routing-core w/ list of policies", function() {
+	const hitchy = Hitchy( options );
+	let server = null;
+
+	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
+	suiteTeardown( () => server && server.stop() );
+
+	test( "succeeds test in controller after passing all listed policies", function() {
+		return hitchy.onStarted.then( () => Test.get( "/listOfPolicies" )
+			.then( function( response ) {
+				response.should.have.status( 200 );
+				response.should.be.json();
+			} ) );
+	} );
+} );
+
+// NOTE Can't add another suite this time for using scenarios for dynamically
+//      switching configuration to suit different testing goals in a single project.

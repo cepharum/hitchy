@@ -1,9 +1,9 @@
 /**
- * (c) 2017 cepharum GmbH, Berlin, http://cepharum.de
+ * (c) 2019 cepharum GmbH, Berlin, http://cepharum.de
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2017 cepharum GmbH
+ * Copyright (c) 2019 cepharum GmbH
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,58 +26,11 @@
  * @author: cepharum
  */
 
-"use strict";
-
-module.exports = function( options ) {
-	switch ( options.scenario ) {
-		case "empty" :
-			return {};
-
-		case "simple-terminal" :
-			return {
-				routes: {
-					"/instant": "terminal.mirror",
-					"/partial/deferred": "terminal.deferredMirror",
-					"/full/deferred": "terminal.fullyDeferredMirror",
-				},
-			};
-
-		case "list-of-policies" :
-			return {
-				policies: {
-					"/": [
-						"listOfPolicies.one",
-						"listOfPolicies.two",
-						"listOfPolicies.three",
-						"listOfPolicies.four",
-					]
-				},
-				routes: {
-					"/listOfPolicies": "listOfPolicies.check",
-				},
-			};
-
-		case "blueprint" :
-			return {
-				routes: {
-					before: {
-						"GET /blueprint/catched": "terminal.mirror",
-					},
-					after: {
-						"/blueprint/missed": "terminal.mirror",
-					}
-				},
-			};
-
-		default :
-			return {
-				policies: {
-					"ALL /": "filter.inject",
-					"GET /": "filter.early",
-				},
-				routes: {
-					"/": "terminal.mirror",
-				},
-			};
+exports.check = ( req, res ) => {
+	if ( req.custom[0] === 1 && req.custom[1] === 2 &&
+	     req.custom[2] === 3 && req.custom[3] === 4 ) {
+		res.status( 200 ).json( { success: true } );
+	} else {
+		res.status( 500 ).json( { failed: true } );
 	}
 };
