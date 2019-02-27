@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "debug": "^2.6.0",
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.11",
     "minimist": "^1.2.0",
     "path-to-regexp": "^1.7.0"
   },
