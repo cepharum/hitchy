@@ -57,6 +57,48 @@ module.exports = function( options ) {
 				},
 			};
 
+		case "early-policies-sorting-generic-first" :
+			return {
+				policies: {
+					"/": [
+						"listOfPolicies.one",
+						"listOfPolicies.two",
+					],
+					"/prefix": [
+						"listOfPolicies.three",
+						"listOfPolicies.four",
+					],
+					"/prefix/check": [
+						"listOfPolicies.three",
+						"listOfPolicies.four",
+					],
+				},
+				routes: {
+					"/prefix/check": "sortingOfPolicies.check",
+				},
+			};
+
+		case "early-policies-sorting-specific-first" :
+			return {
+				policies: {
+					"/prefix/check": [
+						"listOfPolicies.three",
+						"listOfPolicies.four",
+					],
+					"/prefix": [
+						"listOfPolicies.three",
+						"listOfPolicies.four",
+					],
+					"/": [
+						"listOfPolicies.one",
+						"listOfPolicies.two",
+					],
+				},
+				routes: {
+					"/prefix/check": "sortingOfPolicies.check",
+				},
+			};
+
 		case "blueprint" :
 			return {
 				routes: {

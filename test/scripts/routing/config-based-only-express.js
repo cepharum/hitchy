@@ -110,6 +110,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 	test( "GETs /view/create/someId", function() {
 		return hitchy.onStarted.then( () => Test.get( "/view/create/someId" )
 			.then( function( response ) {
+				console.log( response.data );
 				response.should.have.value( "statusCode", 200 );
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
