@@ -8,7 +8,7 @@
   "main": "injector",
   "scripts": {
     "start": "node scripts/server.js",
-    "test": "mocha --ui tdd test/scripts/**/*.js"
+    "test": "mocha --ui tdd --recursive test/scripts/**/*.js"
   },
   "bin": {
     "hitchy": "./hitchy-ctl.sh"
