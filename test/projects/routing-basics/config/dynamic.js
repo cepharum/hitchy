@@ -99,6 +99,52 @@ module.exports = function( options ) {
 				},
 			};
 
+		case "late-policies-sorting-generic-first" :
+			return {
+				policies: {
+					after: {
+						"/": [
+							"listOfPolicies.plusOne",
+							"listOfPolicies.double",
+						],
+						"/prefix": [
+							"listOfPolicies.plusTwo",
+							"listOfPolicies.triple",
+						],
+						"/prefix/check": [
+							"listOfPolicies.plusThree",
+							"listOfPolicies.quadruple",
+						],
+					},
+				},
+				routes: {
+					"/prefix/check": "sortingOfPolicies.checkLate",
+				},
+			};
+
+		case "late-policies-sorting-specific-first" :
+			return {
+				policies: {
+					after: {
+						"/prefix/check": [
+							"listOfPolicies.plusThree",
+							"listOfPolicies.quadruple",
+						],
+						"/prefix": [
+							"listOfPolicies.plusTwo",
+							"listOfPolicies.triple",
+						],
+						"/": [
+							"listOfPolicies.plusOne",
+							"listOfPolicies.double",
+						],
+					},
+				},
+				routes: {
+					"/prefix/check": "sortingOfPolicies.checkLate",
+				},
+			};
+
 		case "blueprint" :
 			return {
 				routes: {

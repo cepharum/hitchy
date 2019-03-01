@@ -35,3 +35,11 @@ exports.check = ( req, res ) => {
 		res.status( 500 ).json( { failed: true } );
 	}
 };
+
+exports.checkLate = ( req, res ) => {
+	const currentValue = global.mySpecialTestCalculationVariable;
+
+	global.mySpecialTestCalculationVariable = parseInt( req.headers["x-start"] );
+
+	res.status( 200 ).json( { success: true, previousResult: currentValue } );
+};

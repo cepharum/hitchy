@@ -2,7 +2,7 @@
 
 let options = {
 	projectFolder: "test/projects/routing-basics",
-	scenario: "early-policies-sorting-generic-first",
+	scenario: "late-policies-sorting-generic-first",
 	//debug: true,
 };
 
@@ -21,12 +21,27 @@ suite( "Serving project in basic-routing-core w/ declaring lists of policies wit
 	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
 	suiteTeardown( () => server && server.stop() );
 
-	test( "passes early policies in proper order from generic policies to specific ones", function() {
-		return hitchy.onStarted.then( () => Test.get( "/prefix/check" )
-			.then( function( response ) {
+	test( "passes late policies in proper order from specific policies to generic ones", function() {
+		// request once to trigger some processing in late policies
+		return hitchy.onStarted.then( () => Test.get( "/prefix/check", null, {
+			"x-start": 10,
+		} ) )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
-			} ) );
+				response.data.success.should.be.true();
+
+				// request again to get the result of late policies processing previous request
+				return Test.get( "/prefix/check", null, {
+					"x-start": 10,
+				} );
+			} )
+			.then( response => {
+				response.should.have.status( 200 );
+				response.should.be.json();
+				response.data.success.should.be.true();
+				response.data.previousResult.should.be.Number().which.is.equal( 326 );
+			} );
 	} );
 } );
 

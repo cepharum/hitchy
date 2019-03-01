@@ -50,3 +50,38 @@ exports.four = ( req, res, next ) => {
 	next();
 };
 
+exports.plusOne = ( req, res, next ) => {
+	global.mySpecialTestCalculationVariable += 1;
+
+	next();
+};
+
+exports.plusTwo = ( req, res, next ) => {
+	global.mySpecialTestCalculationVariable += 2;
+
+	next();
+};
+
+exports.plusThree = ( req, res, next ) => {
+	global.mySpecialTestCalculationVariable += 3;
+
+	next();
+};
+
+exports.double = ( req, res, next ) => {
+	global.mySpecialTestCalculationVariable *= 2;
+
+	next();
+};
+
+exports.triple = ( req, res, next ) => {
+	global.mySpecialTestCalculationVariable *= 3;
+
+	next();
+};
+
+exports.quadruple = ( req, res, next ) => {
+	global.mySpecialTestCalculationVariable *= 4;
+
+	next();
+};
