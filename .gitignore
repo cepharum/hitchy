@@ -1,4 +1,4 @@
 .idea
 node_modules
-!test/projects/*/node_modules
+!test/projects/**/node_modules
 npm-debug.log
