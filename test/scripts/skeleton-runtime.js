@@ -41,10 +41,6 @@ require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
-const Should = require( "should" );
-
-// ----------------------------------------------------------------------------
-
 suite( "Testing runtime", function() {
 	const hitchy = Hitchy( options );
 	let server = null;
