@@ -33,6 +33,11 @@ module.exports = {
 	/** @borrows _toolObjectDeepSeal as deepSeal */
 	deepSeal: _toolObjectDeepSeal,
 
+	/** @borrows _toolObjectDeepFreeze as deepFreeze */
+	deepFreeze: _toolObjectDeepFreeze,
+
+	/** @borrows _toolObjectDeepMerge as deepMerge */
+	deepMerge: _toolObjectDeepMerge,
 };
 
 /**
@@ -43,13 +48,161 @@ module.exports = {
  */
 function _toolObjectDeepSeal( object ) {
 	if ( object && typeof object === "object" ) {
-		Object.keys( object || {} )
-			.forEach( function( name ) {
-				_toolObjectDeepSeal( object[name] );
-			} );
+		const props = Object.keys( object );
+		const numProps = props.length;
+
+		for ( let i = 0; i < numProps; i++ ) {
+			const prop = object[props[i]];
+
+			if ( prop && typeof prop === "object" ) {
+				_toolObjectDeepSeal( prop );
+			}
+		}
 
 		Object.seal( object );
 	}
 
 	return object;
+}
+
+/**
+ * Deeply freezes a given object w/o copying it.
+ *
+ * @param {object} object object to be frozen deeply
+ * @returns {object} reference on provided object, now deeply frozen
+ */
+function _toolObjectDeepFreeze( object ) {
+	if ( object && typeof object === "object" ) {
+		const props = Object.keys( object );
+		const numProps = props.length;
+
+		for ( let i = 0; i < numProps; i++ ) {
+			const prop = object[props[i]];
+
+			if ( prop && typeof prop === "object" ) {
+				_toolObjectDeepFreeze( prop );
+			}
+		}
+
+		Object.freeze( object );
+	}
+
+	return object;
+}
+
+/**
+ * Deeply merges properties of one or more objects into a given target object.
+ *
+ * @param {object} target object properties of provided sources are merged into
+ * @param {object[]} sources list of objects properties are read from
+ * @returns {object} reference on provided target object with properties of sources merged
+ */
+function _toolObjectDeepMerge( target, ...sources ) {
+	const _target = target && typeof target === "object" ? target : {};
+	let numSources = sources.length;
+	let strategyFn;
+
+	if ( typeof sources[numSources - 1] === "function" ) {
+		strategyFn = sources[--numSources]
+	} else {
+		strategyFn = null;
+	}
+
+	for ( let s = 0; s < numSources; s++ ) {
+		merge( _target, sources[s], strategyFn, null );
+	}
+
+	return _target;
+
+	/**
+	 *
+	 * @param {object} to target properties of `from` are transferred to
+	 * @param {*} from value to be merged,
+	 * @param {?function:string} fn optional callback invoked to select strategy for transferring either property
+	 * @param {string} pathname pathname of super-ordinated properties passed to access current value in `from`
+	 * @return {object|*} object provided in `to` with properties of object in `from` or non-object value provided in `from`
+	 */
+	function merge( to, from, fn, pathname ) {
+		if ( from && typeof from === "object" ) {
+			const names = Array.isArray( from ) ? Array.from( Array( from.length ).keys() ) : Object.keys( from );
+			const numNames = names.length;
+
+			for ( let i = 0; i < numNames; i++ ) {
+				const name = names[i];
+
+				if ( name === "__proto__" ) {
+					continue;
+				}
+
+				let sValue = from[name];
+				let dValue = to[name];
+				const subName = pathname == null ? name : pathname + "|" + name;
+				let strategy;
+
+				if ( sValue === undefined ) {
+					strategy = "keep";
+				} else if ( dValue && typeof dValue === "object" && !Array.isArray( dValue ) ) {
+					strategy = "merge";
+				} else {
+					strategy = "replace";
+				}
+
+				if ( fn ) {
+					strategy = fn( subName, strategy, sValue, dValue );
+				}
+
+				switch ( strategy ) {
+					case "keep" :
+						break;
+
+					default :
+					case "replace" :
+						to[name] = dValue = null;
+
+						// falls through
+					case "concat" :
+						if ( strategy === "concat" && !Array.isArray( sValue ) ) {
+							sValue = sValue == null ? [] : [sValue];
+						}
+
+						// falls through
+					case "merge" :
+						if ( sValue && typeof sValue === "object" ) {
+							if ( Array.isArray( sValue ) ) {
+								const concat = strategy === "concat";
+								const numSources = sValue.length;
+
+								if ( dValue == null || typeof dValue !== "object" ) {
+									to[name] = dValue = [];
+								} else if ( concat && !Array.isArray( dValue ) ) {
+									to[name] = dValue = [dValue];
+								}
+
+								for ( let j = 0; j < numSources; j++ ) {
+									let item = sValue[j];
+
+									if ( item && typeof item === "object" ) {
+										item = merge( {}, item, fn, subName + "[]" );
+									}
+
+									if ( concat || ( Array.isArray( dValue ) && j >= dValue.length ) ) {
+										dValue.push( item );
+									} else {
+										dValue[j] = item;
+									}
+								}
+							} else {
+								to[name] = merge( dValue || {}, sValue, fn, subName );
+							}
+						} else {
+							to[name] = sValue;
+						}
+				}
+			}
+
+			return to;
+		}
+
+		return from;
+	}
 }
