@@ -166,7 +166,12 @@ module.exports = {
 	get: request.bind( undefined, "GET" ),
 	post: request.bind( undefined, "POST" ),
 	put: request.bind( undefined, "PUT" ),
+	patch: request.bind( undefined, "PATCH" ),
 	delete: request.bind( undefined, "DELETE" ),
+	head: request.bind( undefined, "HEAD" ),
+	options: request.bind( undefined, "OPTIONS" ),
+	trace: request.bind( undefined, "TRACE" ),
+
 	/** @borrows request as request */
 	request: request,
 };
