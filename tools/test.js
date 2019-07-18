@@ -232,7 +232,11 @@ function request( method, url, data = null, headers = {} ) {
 				let type = response.headers["content-type"] || "";
 
 				if ( type.match( /^(text|application)\/json\b/ ) ) {
-					response.data = JSON.parse( response.body.toString( "utf8" ) );
+					try {
+						response.data = JSON.parse( response.body.toString( "utf8" ) );
+					} catch ( e ) {
+						reject( e );
+					}
 				} else if ( type.match( /^text\// ) ) {
 					response.text = response.body.toString( "utf8" );
 				}
