@@ -8,7 +8,9 @@
   "main": "injector",
   "scripts": {
     "start": "node scripts/server.js",
-    "test": "mocha --ui tdd --recursive test/scripts"
+    "test": "mocha --ui tdd --recursive test/scripts",
+    "doc:serve": "vuepress dev docs-source",
+    "doc:build": "vuepress build docs-source"
   },
   "bin": {
     "hitchy": "./hitchy-ctl.sh"
@@ -26,6 +28,7 @@
   "devDependencies": {
     "mocha": "^5.2.0",
     "should": "^11.2.0",
-    "should-http": "^0.1.0"
+    "should-http": "^0.1.0",
+    "vuepress": "^1.0.2"
   }
 }
