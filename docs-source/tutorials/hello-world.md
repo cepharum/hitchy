@@ -31,4 +31,4 @@ When in project folder enter
 hitchy start
 ``` 
 
-for running the project. This will display some URL to be opened in a web browser, like http://127.0.0.1:3000. Click on the URL or copy-n-paste it into your browser to get the desired output.
+for running the project. This will display some URL to be opened in a web browser, like [http://127.0.0.1:3000](http://127.0.0.1:3000). Click on the URL or copy-n-paste it into your browser to get the desired output.
