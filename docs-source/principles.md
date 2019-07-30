@@ -60,6 +60,17 @@ This principle looks contrary to others listed here for sure. However, due to la
   ```javascript
   // BAD
   hugeArrayOfIntegers.filter( i => i > 0 ).map( i => `prefix-${i}` );
+  
+  // BETTER
+  const numOfItems = hugeArrayOfIntegers.length;
+  const result = [];
+
+  for ( let i = 0; i < numOfItems; i++ ) {  
+    const item = hugeArrayOfIntegers[i];
+    if ( item > 0 ) {
+      result.push( `prefix-${item}` );
+    }
+  }
   ```
 
 * Always work asynchronously when starting some action that might block even for a moment.

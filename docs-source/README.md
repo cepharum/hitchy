@@ -1,3 +1,7 @@
+---
+sidebar: false
+---
+
 # Welcome!
 
 This is the manual for the Hitchy server-side application framework. 
