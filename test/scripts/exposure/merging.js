@@ -2,7 +2,7 @@
 
 let options = {
 	projectFolder: "test/projects/exposure",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../../tools" ).test;
@@ -28,79 +28,79 @@ suite( "Serving project with complex exposure", function() {
 		node.hitchy.runtime.should.have.ownProperty( "policies" );
 	} );
 
-	test( "exposes model 'static'", function() {
-		node.hitchy.runtime.models.should.have.ownProperty( "static" );
+	test( "exposes model 'Static'", function() {
+		node.hitchy.runtime.models.should.have.ownProperty( "Static" );
 
-		Should( node.hitchy.runtime.models.static.beforeSimpleFoundModel ).not.be.true();
-		Should( node.hitchy.runtime.models.static.beforeCMFPFoundModel ).be.true();
-		Should( node.hitchy.runtime.models.static.afterSimpleFoundModel ).be.true();
-		Should( node.hitchy.runtime.models.static.afterCMFPFoundModel ).be.true();
+		node.hitchy.runtime.models.Static.beforeSimpleFoundModel.should.not.be.true();
+		node.hitchy.runtime.models.Static.beforeCMFPFoundModel.should.be.true();
+		node.hitchy.runtime.models.Static.afterSimpleFoundModel.should.be.true();
+		node.hitchy.runtime.models.Static.afterCMFPFoundModel.should.be.true();
 
-		node.hitchy.runtime.models.static.toKeepModel.should.equal( "before-simple" );
-		node.hitchy.runtime.models.static.toKeepModelToo.should.equal( "before-cmfp" );
-		node.hitchy.runtime.models.static.toKeepModelLately.should.equal( "after-simple" );
-		node.hitchy.runtime.models.static.toReplaceModel.should.not.equal( "before-simple" );
-		node.hitchy.runtime.models.static.toReplaceModel.should.equal( "after-cmfp" );
+		node.hitchy.runtime.models.Static.toKeepModel.should.equal( "before-simple" );
+		node.hitchy.runtime.models.Static.toKeepModelToo.should.equal( "before-cmfp" );
+		node.hitchy.runtime.models.Static.toKeepModelLately.should.equal( "after-simple" );
+		node.hitchy.runtime.models.Static.toReplaceModel.should.not.equal( "before-simple" );
+		node.hitchy.runtime.models.Static.toReplaceModel.should.equal( "after-cmfp" );
 
-		node.hitchy.runtime.models.static.staticProperty.should.equal( "original static model property" );
-		node.hitchy.runtime.models.static.staticMethod.should.be.Function();
-		node.hitchy.runtime.models.static.staticMethod().should.equal( "original static model method" );
+		node.hitchy.runtime.models.Static.staticProperty.should.equal( "original static model property" );
+		node.hitchy.runtime.models.Static.staticMethod.should.be.Function();
+		node.hitchy.runtime.models.Static.staticMethod().should.equal( "original static model method" );
 	} );
 
-	test( "exposes controller 'static'", function() {
-		node.hitchy.runtime.controllers.should.have.ownProperty( "static" );
+	test( "exposes controller 'Static'", function() {
+		node.hitchy.runtime.controllers.should.have.ownProperty( "Static" );
 
-		Should( node.hitchy.runtime.controllers.static.beforeSimpleFoundController ).not.be.true();
-		Should( node.hitchy.runtime.controllers.static.beforeCMFPFoundController ).be.true();
-		Should( node.hitchy.runtime.controllers.static.afterSimpleFoundController ).be.true();
-		Should( node.hitchy.runtime.controllers.static.afterCMFPFoundController ).be.true();
+		Should( node.hitchy.runtime.controllers.Static.beforeSimpleFoundController ).not.be.true();
+		Should( node.hitchy.runtime.controllers.Static.beforeCMFPFoundController ).be.true();
+		Should( node.hitchy.runtime.controllers.Static.afterSimpleFoundController ).be.true();
+		Should( node.hitchy.runtime.controllers.Static.afterCMFPFoundController ).be.true();
 
-		node.hitchy.runtime.controllers.static.toKeepController.should.equal( "before-simple" );
-		node.hitchy.runtime.controllers.static.toKeepControllerToo.should.equal( "before-cmfp" );
-		node.hitchy.runtime.controllers.static.toKeepControllerLately.should.equal( "after-simple" );
-		node.hitchy.runtime.controllers.static.toReplaceController.should.not.equal( "before-simple" );
-		node.hitchy.runtime.controllers.static.toReplaceController.should.equal( "after-cmfp" );
+		node.hitchy.runtime.controllers.Static.toKeepController.should.equal( "before-simple" );
+		node.hitchy.runtime.controllers.Static.toKeepControllerToo.should.equal( "before-cmfp" );
+		node.hitchy.runtime.controllers.Static.toKeepControllerLately.should.equal( "after-simple" );
+		node.hitchy.runtime.controllers.Static.toReplaceController.should.not.equal( "before-simple" );
+		node.hitchy.runtime.controllers.Static.toReplaceController.should.equal( "after-cmfp" );
 
-		node.hitchy.runtime.controllers.static.staticProperty.should.equal( "original static controller property" );
-		node.hitchy.runtime.controllers.static.staticMethod.should.be.Function();
-		node.hitchy.runtime.controllers.static.staticMethod().should.equal( "original static controller method" );
+		node.hitchy.runtime.controllers.Static.staticProperty.should.equal( "original static controller property" );
+		node.hitchy.runtime.controllers.Static.staticMethod.should.be.Function();
+		node.hitchy.runtime.controllers.Static.staticMethod().should.equal( "original static controller method" );
 	} );
 
-	test( "exposes service 'static'", function() {
-		node.hitchy.runtime.services.should.have.ownProperty( "static" );
+	test( "exposes service 'Static'", function() {
+		node.hitchy.runtime.services.should.have.ownProperty( "Static" );
 
-		Should( node.hitchy.runtime.services.static.beforeSimpleFoundService ).not.be.true();
-		Should( node.hitchy.runtime.services.static.beforeCMFPFoundService ).be.true();
-		Should( node.hitchy.runtime.services.static.afterSimpleFoundService ).be.true();
-		Should( node.hitchy.runtime.services.static.afterCMFPFoundService ).be.true();
+		Should( node.hitchy.runtime.services.Static.beforeSimpleFoundService ).not.be.true();
+		Should( node.hitchy.runtime.services.Static.beforeCMFPFoundService ).be.true();
+		Should( node.hitchy.runtime.services.Static.afterSimpleFoundService ).be.true();
+		Should( node.hitchy.runtime.services.Static.afterCMFPFoundService ).be.true();
 
-		node.hitchy.runtime.services.static.toKeepService.should.equal( "before-simple" );
-		node.hitchy.runtime.services.static.toKeepServiceToo.should.equal( "before-cmfp" );
-		node.hitchy.runtime.services.static.toKeepServiceLately.should.equal( "after-simple" );
-		node.hitchy.runtime.services.static.toReplaceService.should.not.equal( "before-simple" );
-		node.hitchy.runtime.services.static.toReplaceService.should.equal( "after-cmfp" );
+		node.hitchy.runtime.services.Static.toKeepService.should.equal( "before-simple" );
+		node.hitchy.runtime.services.Static.toKeepServiceToo.should.equal( "before-cmfp" );
+		node.hitchy.runtime.services.Static.toKeepServiceLately.should.equal( "after-simple" );
+		node.hitchy.runtime.services.Static.toReplaceService.should.not.equal( "before-simple" );
+		node.hitchy.runtime.services.Static.toReplaceService.should.equal( "after-cmfp" );
 
-		node.hitchy.runtime.services.static.staticProperty.should.equal( "original static service property" );
-		node.hitchy.runtime.services.static.staticMethod.should.be.Function();
-		node.hitchy.runtime.services.static.staticMethod().should.equal( "original static service method" );
+		node.hitchy.runtime.services.Static.staticProperty.should.equal( "original static service property" );
+		node.hitchy.runtime.services.Static.staticMethod.should.be.Function();
+		node.hitchy.runtime.services.Static.staticMethod().should.equal( "original static service method" );
 	} );
 
-	test( "exposes policy 'static'", function() {
-		node.hitchy.runtime.policies.should.have.ownProperty( "static" );
+	test( "exposes policy 'Static'", function() {
+		node.hitchy.runtime.policies.should.have.ownProperty( "Static" );
 
-		Should( node.hitchy.runtime.policies.static.beforeSimpleFoundPolicy ).not.be.true();
-		Should( node.hitchy.runtime.policies.static.beforeCMFPFoundPolicy ).be.true();
-		Should( node.hitchy.runtime.policies.static.afterSimpleFoundPolicy ).be.true();
-		Should( node.hitchy.runtime.policies.static.afterCMFPFoundPolicy ).be.true();
+		Should( node.hitchy.runtime.policies.Static.beforeSimpleFoundPolicy ).not.be.true();
+		Should( node.hitchy.runtime.policies.Static.beforeCMFPFoundPolicy ).be.true();
+		Should( node.hitchy.runtime.policies.Static.afterSimpleFoundPolicy ).be.true();
+		Should( node.hitchy.runtime.policies.Static.afterCMFPFoundPolicy ).be.true();
 
-		node.hitchy.runtime.policies.static.toKeepPolicy.should.equal( "before-simple" );
-		node.hitchy.runtime.policies.static.toKeepPolicyToo.should.equal( "before-cmfp" );
-		node.hitchy.runtime.policies.static.toKeepPolicyLately.should.equal( "after-simple" );
-		node.hitchy.runtime.policies.static.toReplacePolicy.should.not.equal( "before-simple" );
-		node.hitchy.runtime.policies.static.toReplacePolicy.should.equal( "after-cmfp" );
+		node.hitchy.runtime.policies.Static.toKeepPolicy.should.equal( "before-simple" );
+		node.hitchy.runtime.policies.Static.toKeepPolicyToo.should.equal( "before-cmfp" );
+		node.hitchy.runtime.policies.Static.toKeepPolicyLately.should.equal( "after-simple" );
+		node.hitchy.runtime.policies.Static.toReplacePolicy.should.not.equal( "before-simple" );
+		node.hitchy.runtime.policies.Static.toReplacePolicy.should.equal( "after-cmfp" );
 
-		node.hitchy.runtime.policies.static.staticProperty.should.equal( "original static policy property" );
-		node.hitchy.runtime.policies.static.staticMethod.should.be.Function();
-		node.hitchy.runtime.policies.static.staticMethod().should.equal( "original static policy method" );
+		node.hitchy.runtime.policies.Static.staticProperty.should.equal( "original static policy property" );
+		node.hitchy.runtime.policies.Static.staticMethod.should.be.Function();
+		node.hitchy.runtime.policies.Static.staticMethod().should.equal( "original static policy method" );
 	} );
 } );

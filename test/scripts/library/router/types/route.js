@@ -31,12 +31,12 @@
 const apiOverlay = {
 	runtime: {
 		controllers: {
-			custom: class CustomController {
+			Custom: class CustomController {
 				static myHandler( req, res ) {}
 			}
 		},
 		policies: {
-			filter: class FilterPolicy {
+			Filter: class FilterPolicy {
 				static myImplementation( req, res, next ) {}
 			}
 		},
