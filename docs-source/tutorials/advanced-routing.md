@@ -1,6 +1,12 @@
+---
+prev: hello-world.md
+---
+
 # Tutorial: Advanced Routing
 
+:::tip
 This tutorial continues the project started in [Hello World](./hello-world.md)-example.
+:::
 
 
 ## Trying Changes
@@ -19,7 +25,7 @@ and try URLs defined in either case.
 Instead of putting handlers for routes into the router configuration you should start working with _controllers_. 
 
 :::tip
-Controllers are [components](../internals/components.md) of a Hitchy-based application. Understanding components is essential to comprehend this tutorial.
+Controllers are [components](../internals/components.md) of a Hitchy-based application.
 :::
 
 Create new file **api/controllers/hello.js** with the following content:
@@ -32,18 +38,16 @@ module.exports = {
 };
 ```
 
-Open file **config/routes.js** created before and replace its content with the following one:
+Open file **config/routes.js** created as part of previous tutorial and replace its content with the following one:
 
 ```javascript
 exports.routes = {
     "/": ( req, res ) => res.send( "Hello World!" ),
     "/colon": "hello::world",
     "/period": "hello.world",
-    "/array": [ "hello", "world" ],
     "/object": { controller: "hello", method: "world" },
     "/colon/decorated": "HelloController::world",
     "/period/decorated": "HelloController.world",
-    "/array/decorated": [ "HelloController", "world" ],
     "/object/decorated": { controller: "HelloController", method: "world" },
 };
 ```
@@ -67,16 +71,18 @@ exports.routes = {
     "/": ( req, res ) => res.send( "Hello World!" ),
     "GET /colon": "hello::world",
     "POST /period": "hello.world",
-    "PUT /array": [ "hello", "world" ],
     "DELETE /object": { controller: "hello", method: "world" },
     "PATCH /colon/decorated": "HelloController::world",
-    "SEARCH /period/decorated": "HelloController.world",
-    "ALL /array/decorated": [ "HelloController", "world" ],
+    "ALL /period/decorated": "HelloController.world",
     "* /object/decorated": { controller: "HelloController", method: "world" },
 };
 ```
 
 The last two cases show special case of using method `ALL` or `*`. This defines to apply this routing without regards to a request's method.
+
+:::tip Try it!
+In opposition to the previous case some of the routes can't be tested in browser that simply, anymore. Testing those routes bound to method POST, DELETE or PATCH result in different result showing _Page not found_ error.
+:::
 
 
 ## What about Policies?
@@ -89,6 +95,7 @@ Create a file **api/policies/filter.js** with the following content:
 module.exports = {
     failOnDemand( req, res, next ) {
         if ( req.query.fail ) {
+            this.api.log( "hitchy:request" )( "responding on failure" );
             res.status( 400 ).send( "Failed!" );
         } else {
             next();
@@ -97,12 +104,16 @@ module.exports = {
 };
 ```
 
+:::tip
+A special Hitchy API is exposed as `this.api` in request handlers. This API includes a logging service which is used here.
+:::
+
 Next create a file **config/policies.js** with the following content:
 
 ```javascript
 exports.policies = {
     "/period": "filter.failOnDemand",
-    "/colon/decorated": "FilterPolicy::failOnDemand",
+    "/object/decorated": "FilterPolicy::failOnDemand",
 };
 ```
 
@@ -115,7 +126,7 @@ Major differences with regards to configuration as shown here are:
 * As described in [routing basics](../internals/routing-basics.md) policies apply to all requests matching prefix of request path name.
 
 :::tip Try It!
-Restart project and open [http://127.0.0.1:3000/period/decorated?fail=1](http://127.0.0.1:3000/period/decorated?fail=1) in your browser now.
+Restart project and open [http://127.0.0.1:3000/object/decorated?fail=1](http://127.0.0.1:3000/object/decorated?fail=1) in your browser now. It will show `Failed!` instead of `Hello World!`. By removing the `?fail=1` the greeting returns. In addition there is an output in console used to run Hitchy.
 :::
 
 
@@ -128,7 +139,7 @@ In file **config/routes.js** or **config/policies.js** you can replace configura
 ```javascript
 exports.policies = {
     "/period": "filter.failOnDemand",
-    "/colon/decorated": "FilterPolicy::failOnDemand",
+    "/object/decorated": "FilterPolicy::failOnDemand",
 };
 ```
 
@@ -140,9 +151,36 @@ exports.policies = {
         "/period": "filter.failOnDemand",
     },
     late: {
-        "/colon/decorated": "FilterPolicy::failOnDemand",
+        "/object/decorated": "FilterPolicy::failOnDemand",
     },
 };
 ```
 
-This would apply the previously declared policy routings into separate slots of separate routing stages. For applying the latter policy to the late slot using URL [http://127.0.0.1:3000/colon/decorated?fail=1](http://127.0.0.1:3000/colon/decorated?fail=1) wouldn't cause result on failure as it did before as this policy is passed after matching route has sent back response.
+This would apply the previously declared policy routings into separate slots of separate routing stages.
+
+:::tip Try it!
+By applying the latter policy to the _late_ slot the URL [http://127.0.0.1:3000/object/decorated?fail=1](http://127.0.0.1:3000/object/decorated?fail=1) wouldn't result in displaying `Failed!` this time. However, the policy is used nonetheless, as you can see by the log message in Hitchy's output.
+:::
+
+
+## Routing Parameters
+
+Hitchy integrates popular [path-to-regexp](https://www.npmjs.com/search?q=path%2Dto%2Dregexp) to support highly flexible definition of request paths. This includes definition of named parameters to be exposed in context of request handlers.
+
+Append the following route definition in **config/routes.js**. This time you should know how to achieve that.
+
+```javascript
+"/greet/:clientName": "Hello::world"
+```
+
+In **api/controllers/hello.js** replace existing method world with this one:
+
+```javascript
+world( req, res ) {
+    res.send( `Hello ${req.params.clientName || "world"}!` );
+}
+```
+
+:::tip Try it!
+After restarting the response gets personal when requesting URL like [http://127.0.0.1:3000/greet/John](http://127.0.0.1:3000/greet/John) in your browser.
+:::

@@ -30,7 +30,7 @@ Using _natively supported_ promises is highly beneficial over using callbacks wi
 
 This principle looks contrary to others listed here for sure. However, due to lack of transpilers properly helping with bridging this gap, Hitchy keeps an eye on performance.
 
-* Work synchronous as long as possible.
+* Work synchronously as long as possible.
 * Take a local copy of some expensively accessible information.
 
   ```javascript
@@ -74,8 +74,8 @@ This principle looks contrary to others listed here for sure. However, due to la
   ```
 
 * Always work asynchronously when starting some action that might block even for a moment.
-* Embrace streams.
+* Embrace streams to limit consumption of memory.
 * Keep an eye on what might happen under the hood of Javascript engine.
 * Check out [popular tests at JSPerf](https://jsperf.com/popular) or [try it yourself](https://jsperf.com/).
 
-That's why Hitchy prefers good old for-loop over using iterating functions relying on callbacks when processing arrays. That's why arrays are filtered and mapped in a single pass using pre-dimensioned arrays to be spliced afterwards instead of using `[].map()` or `[].filter()`.
+Because of these principles the code of Hitchy is sometimes hard to read as it focuses on performance instead of readability.
