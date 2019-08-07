@@ -7,6 +7,8 @@ module.exports = {
 		displayAllHeaders: true,
 		nav: [
 			{ text: "Home", link: "/" },
+			{ text: "Tutorials", link: "/tutorials/" },
+			{ text: "Internals", link: "/internals/" },
 		],
 	},
 };
