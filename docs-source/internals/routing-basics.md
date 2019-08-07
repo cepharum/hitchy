@@ -1,6 +1,6 @@
 # Routing Basics
 
-Hitchy's core essentially features to jobs:
+Hitchy's core essentially features two jobs:
 
 * discovering extensions and
 * routing requests to its designated handler

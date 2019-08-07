@@ -5,25 +5,26 @@ Hitchy is meant to comply with many common paradigms such as [DRY](https://de.wi
 
 ## Convention over Configuration
 
-In Hitchy there are many conventions simplifying day to day software development when obeyed. And many features aren't meant to depend on some configuration. So, don't try to bend Hitchy e.g. for matching a naming scheme or project hierarchy you prefer but accept conventions laid out by Hitchy and you'll be happily coding.
+In Hitchy there are many conventions simplifying day to day software development when obeyed. And many features aren't meant to depend on some configuration. So, don't try to bend Hitchy e.g. for matching a naming scheme or project hierarchy you prefer but accept conventions laid out by Hitchy and coding will be fun for sure.
 
 
 ## Keep It Lean!
 
-npm offers a huge amount of ready-to-use packages and most of them tend to rely on this offer by depending on more packages. This quite often results in tons of packages fetched from npm for running your application which might keep it rather simple. 
+npm offers a huge amount of ready-to-use packages and most of them tend to rely on this offer by depending on more packages. This quite often results in tons of packages fetched from npm for running your application even when it is kept rather simple.
 
-We fight this discrepancy by preventing use of dependencies for getting some feature that might take just 10-20 lines of code. Omit dependencies unless they make sufficient sense and offer substantial benefits. 
+We fight this discrepancy by preventing use of dependencies for getting some feature that might take just 10-20 lines of code. Omit dependencies unless they make sufficient sense and offer substantial benefits. There are some rules for guiding:
 
-* Always have look into either used dependency. 
+* Always have a look into either used dependency. 
 * Assess the code yourself.
+* Try relying on popular and well-established dependencies, only.
 * Always check the dependencies of either dependency as well.
 * Avoid stale dependencies.
-* Decide if it's worth adding tens, hundreds or even thousands of new files just to get some feature that requires just some tens of lines of code.
+* Decide if it's worth adding tens, hundreds or even thousands of new files just to get some feature that requires some tens of lines of code.
 
 
 ## Speak Promises! 
 
-Using _natively supported_ promises is highly beneficial over using callbacks with regards to handling asynchronous processing and related error handling. Hitchy doesn't try to support different ways of handling asynchronous processing but sticks with promises by convention to keep the code as simple as possible as well.
+Using _natively supported_ promises is highly beneficial over using callbacks with regards to handling asynchronous processing and related error handling. Hitchy doesn't try to support different ways of handling asynchronous processing but sticks with promises by convention to keep the code as simple as possible.
 
 
 ## Performance over Code Simplicity
