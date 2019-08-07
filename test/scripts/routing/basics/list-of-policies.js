@@ -3,7 +3,7 @@
 let options = {
 	projectFolder: "test/projects/routing-basics",
 	scenario: "list-of-policies",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../../../tools/index" ).test;
