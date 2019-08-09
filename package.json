@@ -8,6 +8,7 @@
   "main": "injector",
   "scripts": {
     "start": "node scripts/server.js",
+    "lint": "eslint .",
     "test": "mocha --ui tdd --recursive test/scripts",
     "doc:serve": "vuepress dev docs-source",
     "doc:build": "vuepress build docs-source"
@@ -26,6 +27,9 @@
     "path-to-regexp": "^1.7.0"
   },
   "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-cepharum": "^1.0.9",
+    "eslint-plugin-promise": "^4.2.1",
     "mocha": "^5.2.0",
     "should": "^11.2.0",
     "should-http": "^0.1.0",
