@@ -50,9 +50,9 @@ const Log = require( "debug" )( "bootstrap" );
  * 2. folder closest to current main script and containing sub "node_modules"
  * 3. folder farthest to current instance of hitchy containing sub "node_modules"
  *
- * @param {HitchyOptions} options
- * @param {string=} currentWorkingDirectory
- * @returns {Promise<HitchyOptions>}
+ * @param {HitchyOptions} options global options provided on starting hitchy
+ * @param {string=} currentWorkingDirectory pathname of current working directory
+ * @returns {Promise<HitchyOptions>} promises proper discovery of basic options' fallback values
  */
 module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 	// always choose current hitchy framework instance to do the job
@@ -66,10 +66,10 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 			File.stat( options.projectFolder, function( error, stat ) {
 				if ( error ) {
 					reject( error );
-				} else if ( !stat.isDirectory() ) {
-					reject( new Error( "selected project folder does not exist" ) );
-				} else {
+				} else if ( stat.isDirectory() ) {
 					resolve( options );
+				} else {
+					reject( new Error( "selected project folder does not exist" ) );
 				}
 			} );
 		} );
@@ -99,37 +99,37 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 	/**
 	 * Tests if given pathname contains selected sub directory or not.
 	 *
-	 * If directory is found but `step` is provided additionally pathname is
-	 * resolved to addressing different directory using relative pathname in
-	 * `step` for repeating this test. This iteration stops when test fails.
+	 * If test fails on provided pathname but there is a pathname in `step` then
+	 * test is repeated once in folder selected by combining current pathname
+	 * and step pathname.
 	 *
-	 * @param {string} pathname
-	 * @param {string} subDirectory
-	 * @param {string} step
+	 * @param {string} pathname pathname of folder probably containing subfolder
+	 * @param {string} subDirectory relative pathname of subfolder to test
+	 * @param {string} step relative pathname
 	 * @param {boolean=} keepIteratingIfFailing set true to keep iterating
 	 *        until test is successful (instead of stopping on test failing)
-	 * @returns {Promise<string>}
+	 * @returns {Promise<string>} promises pathname of preferred match
 	 */
 	function _findDirectory( pathname, subDirectory, step, keepIteratingIfFailing ) {
 		return new Promise( function( resolve, reject ) {
 			let latestMatch = null;
 
-			testPath( pathname );
-
-			function testPath( path ) {
+			const testPath = path => {
 				const modulesPath = Path.resolve( path, subDirectory );
 
-				File.stat( modulesPath, function( err, stat ) {
+				File.stat( modulesPath, ( err, stat ) => {
 					if ( err ) {
 						switch ( err.code ) {
 							case "EACCES" :
 							case "ENOENT" :
 								if ( latestMatch ) {
-									return resolve( latestMatch );
+									resolve( latestMatch );
+									return;
 								}
 						}
 
-						return reject( err );
+						reject( err );
+						return;
 					}
 
 					const isMatch = stat.isDirectory();
@@ -148,7 +148,9 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 						resolve( latestMatch );
 					}
 				} );
-			}
+			};
+
+			testPath( pathname );
 		} );
 	}
 };

@@ -43,7 +43,7 @@ const LibTools = require( "./library" );
  * @param {HitchyOptions=} options runtime options customizing Hitchy instance
  * @param {HitchyAPI=} apiOverlay custom API parts to mock instead of actual ones
  * @param {object<string,object>} modules selects modules to instantly load
- * @returns {Promise<(HitchyMockedModuleLoader|LoadedModules)>}
+ * @returns {Promise<(HitchyMockedModuleLoader|LoadedModules)>} promises prepared mockup of Hitchy API
  */
 module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), options = {}, apiOverlay = {}, modules = {} } = {} ) {
 
@@ -64,10 +64,12 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 	/**
 	 * Supports loading module of hitchy project providing fake options and API.
 	 *
+	 * @param {string} name relative pathname of hitchy module to load
+	 * @param {array} moduleArguments arguments to pass in case module is support CMP pattern
 	 * @returns {object} API of module
 	 */
 	function _apiMockUpLoader( name, moduleArguments = [] ) {
-		const options = {
+		const _options = {
 			// always choose current hitchy framework instance to do the job
 			hitchyFolder: LocalHitchyFolder,
 
@@ -76,9 +78,9 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 			projectFolder,
 		};
 
-		const api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
+		const api = require( Path.relative( __dirname, Path.resolve( _options.hitchyFolder, name ) ) );
 		if ( typeof api === "function" ) {
-			return api.apply( Api, [options].concat( moduleArguments ) );
+			return api.apply( Api, [_options].concat( moduleArguments ) );
 		}
 
 		return api;

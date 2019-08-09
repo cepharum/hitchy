@@ -115,11 +115,13 @@ function _toolObjectDeepMerge( target, ...sources ) {
 	return _target;
 
 	/**
+	 * Recursive merges given source information with some destination using
+	 * strategy optionally selected by some callback.
 	 *
 	 * @param {object} to target properties of `from` are transferred to
 	 * @param {*} from value to be merged,
-	 * @param {?function:string} fn optional callback invoked to select strategy for transferring either property
-	 * @param {string} pathname pathname of super-ordinated properties passed to access current value in `from`
+	 * @param {?function(string, string, *, object):string} fn optional callback invoked to select strategy for transferring either property
+	 * @param {?string} pathname pathname of super-ordinated properties passed to access current value in `from`
 	 * @return {object|*} object provided in `to` with properties of object in `from` or non-object value provided in `from`
 	 */
 	function merge( to, from, fn, pathname ) {
@@ -170,7 +172,7 @@ function _toolObjectDeepMerge( target, ...sources ) {
 						if ( sValue && typeof sValue === "object" ) {
 							if ( Array.isArray( sValue ) ) {
 								const concat = strategy === "concat";
-								const numSources = sValue.length;
+								const _numSources = sValue.length;
 
 								if ( dValue == null || typeof dValue !== "object" ) {
 									to[name] = dValue = [];
@@ -178,7 +180,7 @@ function _toolObjectDeepMerge( target, ...sources ) {
 									to[name] = dValue = [dValue];
 								}
 
-								for ( let j = 0; j < numSources; j++ ) {
+								for ( let j = 0; j < _numSources; j++ ) {
 									let item = sValue[j];
 
 									if ( item && typeof item === "object" ) {

@@ -26,18 +26,19 @@
  * @author: cepharum
  */
 
-const _ = require( "lodash" );
+"use strict";
 
 module.exports = {
 	/**
 	 * Renders error response or passes error back into expressjs context.
 	 *
 	 * @this HitchyRequestContext
-	 * @param {HitchyOptions} options
-	 * @param {Error=} error
+	 * @param {HitchyOptions} options global options customizing Hitchy
+	 * @param {Error=} error error to be handled
+	 * @returns {void}
 	 * @private
 	 */
-	errorHandler: function( options, error ) {
+	errorHandler( options, error ) {
 		if ( !error ) {
 			_splash.call( this, options );
 		} else if ( options.handleErrors ) {
@@ -52,7 +53,8 @@ module.exports = {
  * Renders splash screen while hitchy framework is booting.
  *
  * @this HitchyRequestContext
- * @param {HitchyOptions} options
+ * @param {HitchyOptions} options global options customizing Hitchy
+ * @returns {void}
  * @private
  */
 function _splash( options ) {
@@ -63,9 +65,9 @@ function _splash( options ) {
 	status( 423 );
 
 	format( {
-		html: function() {
+		html() {
 			send( `<!doctype html>
-<html>
+<html lang="en">
 <head>
 <title>Service is starting ...</title>
 </head>
@@ -75,12 +77,12 @@ function _splash( options ) {
 </body>
 </html>` );
 		},
-		json: function() {
+		json() {
 			send( {
 				softError: "Welcome! This service isn't available, yet."
 			} );
 		},
-		default: function() {
+		default() {
 			send( "Welcome! This service isn't available, yet." );
 		}
 	} );
@@ -90,8 +92,9 @@ function _splash( options ) {
  * Renders simple view describing captured error.
  *
  * @this HitchyRequestContext
- * @param {HitchyOptions} options
- * @param {Error} error
+ * @param {HitchyOptions} options global options customizing Hitchy
+ * @param {Error} error error to be shown
+ * @returns {void}
  * @private
  */
 function _showError( options, error ) {
@@ -101,36 +104,40 @@ function _showError( options, error ) {
 
 	this.api.log( "hitchy:debug" )( "rendering error internally", error );
 
-	_.defaults( error, {
+	const _error = Object.assign( {
 		status: parseInt( error.code ) || 500,
 		message: "unknown error"
+	}, {
+		status: error.status,
+		message: error.message,
 	} );
 
-	status( error.status );
+	status( _error.status );
+
 	format( {
-		html: function() {
+		html() {
 			send( `<!doctype html>
-<html>
+<html lang="en">
 <head>
 <title>Error</title>
 </head>
 <body>
 <h1>An error occurred!</h1>
-<body>${error.message}</body>
+<body>${_error.message}</body>
 </body>
 </html>` );
 		},
-		json: function() {
+		json() {
 			send( {
-				error: error.message,
-				code: error.status,
+				error: _error.message,
+				code: _error.status,
 			} );
 		},
-		text: function() {
-			send( "Error: " + ( error.message || "unknown error" ) );
+		text() {
+			send( "Error: " + ( _error.message || "unknown error" ) );
 		},
-		default: function() {
-			send( "Error: " + ( error.message || "unknown error" ) );
+		default() {
+			send( "Error: " + ( _error.message || "unknown error" ) );
 		}
 	} );
 }

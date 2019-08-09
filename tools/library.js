@@ -54,7 +54,8 @@ module.exports = {
 /**
  * Creates initial skeleton API instance.
  *
- * @returns {HitchyLibrary}
+ * @param {object} options global options customizing Hitchy
+ * @returns {HitchyLibrary} library exposed as Hitchy's  API
  * @private
  */
 function _toolLibraryCreateAPI( options = {} ) {
@@ -77,8 +78,12 @@ function _toolLibraryCreateAPI( options = {} ) {
 	return api;
 }
 
-/** Doesn't do anything. */
-function _nop() {}
+/**
+ * Doesn't do anything.
+ *
+ * @returns {void}
+ */
+function _nop() {} // eslint-disable-line no-empty-function
 
 /**
  * Loads library contained in given folder.
@@ -134,15 +139,48 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 	}
 }
 
+/**
+ * Conveniently loads module supporting _common module pattern_ paradigm of
+ * Hitchy.
+ *
+ * This paradigm invokes function returned by loaded module passing Hitchy's API
+ * and globally provided options and waiting for any promise e.g. returned by
+ * that function to provide the API of selected module eventually.
+ *
+ * @param {HitchyAPI} api compiled API exposing library and runtime configuration
+ * @param {HitchyOptions} options global options customizing Hitchy
+ * @param {string} modulePathname pathname of module to load (is forwarded to `require()`)
+ * @param {Array} moduleArguments list of arguments passed into module additionally
+ * @returns {Promise<object>} promises API of loaded module
+ * @private
+ */
 function _toolLibraryCMP( api, options = {}, modulePathname, moduleArguments = [] ) {
-	const module = require( modulePathname );
-
-	if ( module instanceof Promise ) {
-
+	let module = require( modulePathname );
+	if ( typeof module === "function" ) {
+		module = module.call( api, options, ...moduleArguments );
 	}
+
+	return module instanceof Promise ? module : Promise.resolve( module );
 }
 
-function _toolLibraryCMFP( api, options = {}, fn, moduleArguments = [] ) {
+/**
+ * Conveniently invokes function supporting _common module function pattern_
+ * paradigm of Hitchy.
+ *
+ * This paradigm invokes function in context of Hitchy's API and always passes
+ * globally provided options in first argument followed by any custom argument
+ * provided here. It waits for any promise e.g. returned by that function to
+ * provide the API of selected module eventually.
+ *
+ * @param {HitchyAPI} api compiled API exposing library and runtime configuration
+ * @param {HitchyOptions} options global options customizing Hitchy
+ * @param {function} fn function to invoke
+ * @param {Array} fnArguments additional arguments passed on invoking provided function
+ * @returns {*} result of invoked function
+ * @private
+ */
+function _toolLibraryCMFP( api, options = {}, fn, fnArguments = [] ) {
+	return fn.call( api, options, ...fnArguments );
 }
 
 

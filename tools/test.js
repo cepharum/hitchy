@@ -43,9 +43,9 @@ module.exports = {
 	/**
 	 * Starts hitchy service using node's http server.
 	 *
-	 * @param {HitchyNodeInstance} hitchy
-	 * @param {object} options
-	 * @returns {Promise<Server>}
+	 * @param {HitchyNodeInstance} hitchy instance of hitchy
+	 * @param {object} options global options
+	 * @returns {Promise<Server>} promises running server exposing hitchy instance
 	 */
 	startServer( hitchy, options = {} ) {
 		switch ( hitchy.injector || process.env.HITCHY_MODE || "node" ) {
@@ -56,7 +56,8 @@ module.exports = {
 			case "express" :
 				return new Promise( ( resolve, reject ) => {
 					try {
-						return resolve( require( "express" ) );
+						resolve( require( "express" ) );
+						return;
 					} catch ( error ) {
 						if ( error.code !== "MODULE_NOT_FOUND" ) {
 							reject( error );
@@ -69,9 +70,9 @@ module.exports = {
 							reject( error );
 						} else {
 							try {
-								return resolve( require( "express" ) );
-							} catch ( error ) {
-								reject( error );
+								resolve( require( "express" ) );
+							} catch ( _error ) {
+								reject( _error );
 							}
 						}
 					} );
@@ -91,12 +92,22 @@ module.exports = {
 						return _createHTTP( app );
 
 
+						/**
+						 * Implements fallback error handler.
+						 *
+						 * @param {Error} err error to describe
+						 * @param {IncomingMessage} req request descriptor
+						 * @param {ServerResponse} res response manager
+						 * @param {function} next callback to invoke when done
+						 * @returns {void}
+						 * @private
+						 */
 						function _fakeError( err, req, res, next ) { // eslint-disable-line no-unused-vars
 							res
 								.status( err.statusCode || err.code || 500 )
 								.format( {
 									html() {
-										res.send( `<html><body><p>${err.message}</p></body></html>` );
+										res.send( `<html lang="en"><body><p>${err.message}</p></body></html>` );
 									},
 									json() {
 										res.send( {
@@ -115,6 +126,13 @@ module.exports = {
 				throw new Error( "invalid Hitchy injection mode" );
 		}
 
+		/**
+		 * Creates HTTP server instance.
+		 *
+		 * @param {function} listener function invoked per incoming request
+		 * @returns {Promise<Server>} promises running and listening HTTP server instance
+		 * @private
+		 */
 		function _createHTTP( listener ) {
 			return hitchy.onStarted
 				.then( () => new Promise( ( resolve, reject ) => {
@@ -184,7 +202,7 @@ module.exports = {
  * @param {string} url requested URL
  * @param {(Buffer|string|object)=} data data to be sent with request
  * @param {object<string,string>} headers custom headers to include on request
- * @returns {Promise}
+ * @returns {Promise} promises response
  */
 function request( method, url, data = null, headers = {} ) {
 	return new Promise( function( resolve, reject ) {
@@ -193,36 +211,33 @@ function request( method, url, data = null, headers = {} ) {
 			throw new Error( "server not started yet" );
 		}
 
-		const request = Url.parse( url );
+		const req = Url.parse( url );
 
-		request.method = method;
+		req.method = method;
 
-		if ( !request.hostname ) {
-			request.hostname = "127.0.0.1";
-			request.port = server.address().port;
+		if ( !req.hostname ) {
+			req.hostname = "127.0.0.1";
+			req.port = server.address().port;
 		}
 
-		request.headers = {
+		req.headers = {
 			accept: "text/html",
 		};
 
-		if ( typeof data !== "string" && !Buffer.isBuffer( data ) ) {
-			if ( data != null ) {
-				data = JSON.stringify( data );
-				headers["content-type"] = "application/json";
-			} else {
-				data = null;
-			}
+		let body = data;
+		if ( typeof body !== "string" && !Buffer.isBuffer( body ) && body != null ) {
+			body = JSON.stringify( body );
+			headers["content-type"] = "application/json";
 		}
 
 		Object.keys( headers || {} )
 			.forEach( function( name ) {
-				request.headers[name] = headers[name];
+				req.headers[name] = headers[name];
 			} );
 
-		request.agent = false;
+		req.agent = false;
 
-		const handle = Http.request( request, function( response ) {
+		const handle = Http.request( req, function( response ) {
 			const buffers = [];
 
 			response.on( "data", chunk => buffers.push( chunk ) );
@@ -247,8 +262,8 @@ function request( method, url, data = null, headers = {} ) {
 
 		handle.on( "error", reject );
 
-		if ( data != null ) {
-			handle.write( data, "utf8" );
+		if ( body != null ) {
+			handle.write( body, "utf8" );
 		}
 
 		handle.end();

@@ -60,31 +60,33 @@ module.exports = {
  * @note This method is capable of handling array-like collections, too.
  *
  * @param {Array} items array of items to be traversed
- * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn callback per item
  * @returns {Promise<Array>} promises completely traversed array of items
  */
 function _toolPromiseEach( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		step( items, 0, items.length );
-
-		function step( items, index, length ) {
+		const step = ( _items, index, length ) => {
 			if ( index < length ) {
-				let item = items[index], promise;
+				const item = _items[index];
+				let promise;
 
 				if ( item && item instanceof Promise ) {
-					promise = item.then( item => fn( item, index, items ) );
+					promise = item.then( _item => fn( _item, index, _items ) );
 				} else {
-					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
+					promise = new Promise( _resolve => _resolve( fn( item, index, _items ) ) );
 				}
 
 				promise
-					.then( function() {
-						step( items, index + 1, length );
-					}, reject );
+					.then( () => {
+						step( _items, index + 1, length );
+					} )
+					.catch( reject );
 			} else {
-				resolve( items );
+				resolve( _items );
 			}
-		}
+		};
+
+		step( items, 0, items.length );
 	} );
 }
 
@@ -96,39 +98,43 @@ function _toolPromiseEach( items, fn ) {
  * @note This method is capable of handling array-like collections, too.
  *
  * @param {Array} items array of items to filter
- * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn callback invoked per item
  * @returns {Promise<Array>} promised array of filtered items
  */
 function _toolPromiseFilter( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		const length = items.length;
-
-		step( items, 0, length, new Array( length ), 0 );
-
-		function step( items, index, length, target, writeIndex ) {
+		const step = ( _items, index, length, target, writeIndex ) => {
 			if ( index < length ) {
-				let item = items[index], promise;
+				const item = _items[index];
+				let promise;
 
 				if ( item instanceof Promise ) {
-					promise = item.then( item => fn( item, index, items ) );
+					promise = item.then( _item => fn( _item, index, _items ) );
 				} else {
-					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
+					promise = new Promise( _resolve => _resolve( fn( item, index, _items ) ) );
 				}
 
 				promise
-					.then( function( result ) {
+					.then( result => {
+						let _writeIndex = writeIndex;
+
 						if ( result ) {
-							target[writeIndex++] = items[index];
+							target[_writeIndex++] = _items[index];
 						}
 
-						step( items, index + 1, length, target, writeIndex );
-					}, reject );
+						step( _items, index + 1, length, target, _writeIndex );
+					} )
+					.catch( reject );
 			} else {
 				target.splice( writeIndex, length - writeIndex );
 
 				resolve( target );
 			}
-		}
+		};
+
+		const length = items.length;
+
+		step( items, 0, length, new Array( length ), 0 );
 	} );
 }
 
@@ -139,35 +145,37 @@ function _toolPromiseFilter( items, fn ) {
  * @note This method is capable of handling array-like collections, too.
  *
  * @param {Array} items array of items to filter
- * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn callback invoked per item
  * @returns {Promise<Array>} promised array of mapped items
  */
 function _toolPromiseMap( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		const length = items.length;
-
-		step( items, 0, length, new Array( length ) );
-
-		function step( items, index, length, target ) {
+		const step = ( _items, index, length, target ) => {
 			if ( index < length ) {
-				let item = items[index], promise;
+				const item = _items[index];
+				let promise;
 
 				if ( item instanceof Promise ) {
-					promise = item.then( item => fn( item, index, items ) );
+					promise = item.then( _item => fn( _item, index, _items ) );
 				} else {
-					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
+					promise = new Promise( _resolve => _resolve( fn( item, index, _items ) ) );
 				}
 
 				promise
 					.then( function( result ) {
 						target[index] = result;
 
-						step( items, index + 1, length, target );
-					}, reject );
+						step( _items, index + 1, length, target );
+					} )
+					.catch( reject );
 			} else {
 				resolve( target );
 			}
-		}
+		};
+
+		const length = items.length;
+
+		step( items, 0, length, new Array( length ) );
 	} );
 }
 
@@ -181,7 +189,7 @@ function _toolPromiseMap( items, fn ) {
  * @note This method is capable of handling array-like collections, too.
  *
  * @param {Array} items array of items to filter
- * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn callback invoked per item
  * @returns {Promise<Array>} promised array of mapped items
  */
 function _toolPromiseMultiMap( items, fn ) {
@@ -192,7 +200,7 @@ function _toolPromiseMultiMap( items, fn ) {
 		const item = items[index];
 
 		if ( item instanceof Promise ) {
-			result[index] = item.then( item => fn( item, index, items ) );
+			result[index] = item.then( _item => fn( _item, index, items ) );
 		} else {
 			result[index] = new Promise( resolve => resolve( fn( item, index, items ) ) );
 		}
@@ -208,25 +216,24 @@ function _toolPromiseMultiMap( items, fn ) {
  * @note This method is capable of handling array-like collections, too.
  *
  * @param {Array} items array of items to filter
- * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn callback invoked per item
  * @param {boolean} getLast set true to get last match instead of first one
  * @returns {Promise<*>} promises first element callback returned truthy on or
  *          null if no item satisfies this
  */
 function _toolPromiseFind( items, fn, getLast = false ) {
 	return new Promise( function( resolve, reject ) {
-		const length = items.length;
-
-		step( items, getLast ? length - 1 : 0, getLast ? -1 : items.length, getLast ? -1 : +1 );
-
-		function step( items, index, stopAt, advanceBy ) {
-			if ( index !== stopAt ) {
-				let item = items[index], promise;
+		const step = ( _items, index, stopAt, advanceBy ) => {
+			if ( index === stopAt ) {
+				resolve( null );
+			} else {
+				const item = _items[index];
+				let promise;
 
 				if ( item instanceof Promise ) {
-					promise = item.then( item => fn( item, index, items ) );
+					promise = item.then( _item => fn( _item, index, _items ) );
 				} else {
-					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
+					promise = new Promise( _resolve => _resolve( fn( item, index, _items ) ) );
 				}
 
 				promise
@@ -234,13 +241,16 @@ function _toolPromiseFind( items, fn, getLast = false ) {
 						if ( result ) {
 							resolve( item );
 						} else {
-							step( items, index + advanceBy, stopAt, advanceBy );
+							step( _items, index + advanceBy, stopAt, advanceBy );
 						}
-					}, reject );
-			} else {
-				resolve( null );
+					} )
+					.catch( reject );
 			}
-		}
+		};
+
+		const length = items.length;
+
+		step( items, getLast ? length - 1 : 0, getLast ? -1 : items.length, getLast ? -1 : +1 );
 	} );
 }
 
@@ -251,25 +261,24 @@ function _toolPromiseFind( items, fn, getLast = false ) {
  * @note This method is capable of handling array-like collections, too.
  *
  * @param {Array} items array of items to filter
- * @param {function(current:*, index:number, items:Array):(Promise|*)} fn
+ * @param {function(current:*, index:number, items:Array):(Promise|*)} fn callback invoked per item
  * @param {boolean} getLast set true to get index of last match instead of first one
  * @returns {Promise<number>} promises index of first element callback returned
  *          truthy on or -1 if no item satisfies this
  */
 function _toolPromiseIndexOf( items, fn, getLast = false ) {
 	return new Promise( function( resolve, reject ) {
-		const length = items.length;
-
-		step( items, getLast ? length - 1 : 0, getLast ? -1 : length, getLast ? -1 : +1 );
-
-		function step( items, index, stopAt, advanceBy ) {
-			if ( index !== stopAt ) {
-				let item = items[index], promise;
+		const step = ( _items, index, stopAt, advanceBy ) => {
+			if ( index === stopAt ) {
+				resolve( -1 );
+			} else {
+				const item = _items[index];
+				let promise;
 
 				if ( item instanceof Promise ) {
-					promise = item.then( item => fn( item, index, items ) );
+					promise = item.then( _item => fn( _item, index, _items ) );
 				} else {
-					promise = new Promise( resolve => resolve( fn( item, index, items ) ) );
+					promise = new Promise( _resolve => _resolve( fn( item, index, _items ) ) );
 				}
 
 				promise
@@ -277,13 +286,16 @@ function _toolPromiseIndexOf( items, fn, getLast = false ) {
 						if ( result ) {
 							resolve( index );
 						} else {
-							step( items, index + advanceBy, stopAt, advanceBy );
+							step( _items, index + advanceBy, stopAt, advanceBy );
 						}
-					}, reject );
-			} else {
-				resolve( -1 );
+					} )
+					.catch( reject );
 			}
-		}
+		};
+
+		const length = items.length;
+
+		step( items, getLast ? length - 1 : 0, getLast ? -1 : length, getLast ? -1 : +1 );
 	} );
 }
 

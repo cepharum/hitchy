@@ -36,7 +36,7 @@ const Debug = require( "debug" )( "hitchy:debug" );
 
 /**
  *
- * @param {HitchyOptions} options
+ * @param {HitchyOptions} options global options customizing Hitchy
  * @param {HitchyCLIArguments} args
  */
 module.exports = function( options, args ) {
