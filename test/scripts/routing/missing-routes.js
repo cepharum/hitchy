@@ -1,8 +1,8 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/invalid-responder-routes",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../../tools/index" ).test;

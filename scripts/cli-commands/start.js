@@ -49,7 +49,7 @@ module.exports = function( options, args ) {
 	 * app.js or main.js and invoke this instead of trying to run some own
 	 * simple server internally.
 	 */
-	let files = ["server.js", "app.js", "main.js"]
+	const files = [ "server.js", "app.js", "main.js" ]
 		.map( name => Path.resolve( options.projectFolder, name ) );
 
 	return Tools.promise.find( files, function( filename ) {
@@ -66,7 +66,7 @@ module.exports = function( options, args ) {
 				}
 
 				resolve( stat.isFile() );
-			} )
+			} );
 		} );
 	} )
 		.then( start, cause => {
@@ -87,7 +87,7 @@ module.exports = function( options, args ) {
 			return new Promise( ( resolve, reject ) => {
 				Log( `invoking custom start script ${scriptname} ...` );
 
-				let child = require( "child_process" ).fork( scriptname, {
+				const child = require( "child_process" ).fork( scriptname, {
 					cwd: options.projectFolder,
 					env: process.env,
 				} );
@@ -360,7 +360,7 @@ module.exports = function( options, args ) {
 		}
 
 		if ( options.debug ) {
-			Debug( `new connection from ${socket.remoteAddress}:${socket.remotePort}` )
+			Debug( `new connection from ${socket.remoteAddress}:${socket.remotePort}` );
 		}
 
 		server.$trackedSockets.push( socket );
@@ -368,7 +368,7 @@ module.exports = function( options, args ) {
 		// keep track of closing connection established now
 		socket.once( "close", () => {
 			if ( options.debug ) {
-				Debug( `closed connection from ${socket.remoteAddress}:${socket.remotePort}` )
+				Debug( `closed connection from ${socket.remoteAddress}:${socket.remotePort}` );
 			}
 
 			let s = server.$trackedSockets,

@@ -76,9 +76,9 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 			projectFolder,
 		};
 
-		let api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
+		const api = require( Path.relative( __dirname, Path.resolve( options.hitchyFolder, name ) ) );
 		if ( typeof api === "function" ) {
-			return api.apply( Api, [ options ].concat( moduleArguments ) );
+			return api.apply( Api, [options].concat( moduleArguments ) );
 		}
 
 		return api;
@@ -96,11 +96,11 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 			_.merge( Api, apiOverlay );
 
 			// test if caller provided description of modules to load implicitly
-			let targetNames = Object.keys( modules );
-			let nameCount = targetNames.length;
+			const targetNames = Object.keys( modules );
+			const nameCount = targetNames.length;
 			if ( nameCount > 0 ) {
 				// got some list of modules to load -> load now
-				let collector = {
+				const collector = {
 					// provide reference on mocked-up API
 					API: Api,
 					// provide loader
@@ -109,8 +109,8 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 
 				// load every listed module and collect in that object using provided name
 				for ( let i = 0; i < nameCount; i++ ) {
-					let targetName = targetNames[i];
-					let moduleName = modules[targetName];
+					const targetName = targetNames[i];
+					const moduleName = modules[targetName];
 
 					collector[targetName] = _apiMockUpLoader( moduleName );
 				}

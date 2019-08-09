@@ -28,9 +28,9 @@
 
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/core-only",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../tools" ).test;

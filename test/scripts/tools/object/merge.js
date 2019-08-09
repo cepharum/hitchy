@@ -167,7 +167,7 @@ describe( "Utility method for deeply merging objects", () => {
 						merged.should.have.property( i ).which.is.equal( array[i] );
 					}
 				} );
-		} );
+			} );
 	} );
 
 	// TODO improve basic test coverage

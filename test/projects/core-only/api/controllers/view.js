@@ -1,6 +1,6 @@
 module.exports = {
 	index: function( req, res ) {
-		res.type( "html" ).send( "<h1>Welcome!</h1><p>This is the homepage provided for testing purposes, only.</p>")
+		res.type( "html" ).send( "<h1>Welcome!</h1><p>This is the homepage provided for testing purposes, only.</p>" );
 	},
 	read: function( req, res ) {
 		res.send( {

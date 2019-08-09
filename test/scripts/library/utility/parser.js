@@ -43,7 +43,7 @@ const Should = require( "should" );
 suite( "Library.Utility.Parser", function() {
 	test( "is processing empty URL query", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "" );
+			const result = Parser.query( "" );
 
 			result.should.be.Object();
 			result.should.have.size( 0 );
@@ -52,7 +52,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "is processing single name w/o value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar" );
+			const result = Parser.query( "myvar" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -63,7 +63,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "is processing multiple different names each w/o value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar&anothervar" );
+			const result = Parser.query( "myvar&anothervar" );
 
 			result.should.be.Object();
 			result.should.have.size( 2 );
@@ -76,7 +76,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "is processing multiple occurrences of same names w/o value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar&anothervar&myvar" );
+			const result = Parser.query( "myvar&anothervar&myvar" );
 
 			result.should.be.Object();
 			result.should.have.size( 2 );
@@ -89,7 +89,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports single name w/ non-empty string value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar=test" );
+			const result = Parser.query( "myvar=test" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -100,7 +100,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports multiple occurrence of same name w/ non-empty string value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar=foo&myvar=bar" );
+			const result = Parser.query( "myvar=foo&myvar=bar" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -133,7 +133,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports assigning null explicitly", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar=test&anothervar&myvar=" );
+			const result = Parser.query( "myvar=test&anothervar&myvar=" );
 
 			result.should.be.Object();
 			result.should.have.size( 2 );
@@ -146,21 +146,21 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports constructing array from names using empty brackets", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[]=test&anothervar&myvar[]=&myvar[]" );
+			const result = Parser.query( "myvar[]=test&anothervar&myvar[]=&myvar[]" );
 
 			result.should.be.Object();
 			result.should.have.size( 2 );
 			result.should.have.ownProperty( "myvar" );
 			result.should.have.ownProperty( "anothervar" );
 			result.myvar.should.be.Array().and.have.length( 3 );
-			result.myvar.should.be.eql( ["test", null, true] );
+			result.myvar.should.be.eql( [ "test", null, true ] );
 			result.anothervar.should.be.true();
 		} );
 	} );
 
 	test( "supports constructing object on using non-empty element names in brackets", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[foo]=oof&myvar[bar]=&myvar[baz]" );
+			const result = Parser.query( "myvar[foo]=oof&myvar[bar]=&myvar[baz]" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -174,7 +174,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "feeds array like object when oddly mixing empty brackets with non-empty ones", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[]=foo&myvar[bar]=&myvar[baz]" );
+			const result = Parser.query( "myvar[]=foo&myvar[bar]=&myvar[baz]" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -189,7 +189,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "chooses numeric property names when oddly mixing non-empty brackets with empty ones", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[baz]=foo&myvar[bar]=&myvar[]" );
+			const result = Parser.query( "myvar[baz]=foo&myvar[bar]=&myvar[]" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -203,7 +203,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "obeys last of multiple occurrences addressing same element", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[baz]=foo&myvar[bar]=&myvar[]&myvar[bar]=3" );
+			const result = Parser.query( "myvar[baz]=foo&myvar[bar]=&myvar[]&myvar[bar]=3" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -217,7 +217,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports URL-encoded names", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar%5Bbaz%5D=foo&m%79%76ar[bar]=&myvar[]&myvar[%66%3D%6F%6F]=3" );
+			const result = Parser.query( "myvar%5Bbaz%5D=foo&m%79%76ar[bar]=&myvar[]&myvar[%66%3D%6F%6F]=3" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -232,7 +232,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports URL-encoded values", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[baz]=%66%3D%26%6F%6F&myvar[bar]=&myvar[]&myvar[foo]=%33" );
+			const result = Parser.query( "myvar[baz]=%66%3D%26%6F%6F&myvar[bar]=&myvar[]&myvar[foo]=%33" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );
@@ -247,7 +247,7 @@ suite( "Library.Utility.Parser", function() {
 
 	test( "supports URL- and UTF8-encoded names and values", function() {
 		return ApiMockUp.then( function( { Parser } ) {
-			let result = Parser.query( "myvar[%F0%9F%91%BA]=%c3%a4%c3%a9%e2%90%a0%e5%bc%88" );
+			const result = Parser.query( "myvar[%F0%9F%91%BA]=%c3%a4%c3%a9%e2%90%a0%e5%bc%88" );
 
 			result.should.be.Object();
 			result.should.have.size( 1 );

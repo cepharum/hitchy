@@ -56,14 +56,14 @@ module.exports = {
  * @private
  */
 function _splash( options ) {
-	let format = require( "../lib/responder/normalize/format" ).bind( this );
-	let status = require( "../lib/responder/normalize/status" ).bind( this );
-	let send   = require( "../lib/responder/normalize/send" ).bind( this );
+	const format = require( "../lib/responder/normalize/format" ).bind( this );
+	const status = require( "../lib/responder/normalize/status" ).bind( this );
+	const send = require( "../lib/responder/normalize/send" ).bind( this );
 
 	status( 423 );
 
 	format( {
-		html:    function() {
+		html: function() {
 			send( `<!doctype html>
 <html>
 <head>
@@ -75,7 +75,7 @@ function _splash( options ) {
 </body>
 </html>` );
 		},
-		json:    function() {
+		json: function() {
 			send( {
 				softError: "Welcome! This service isn't available, yet."
 			} );
@@ -95,20 +95,20 @@ function _splash( options ) {
  * @private
  */
 function _showError( options, error ) {
-	let format = require( "../lib/responder/normalize/format" ).bind( this );
-	let status = require( "../lib/responder/normalize/status" ).bind( this );
-	let send   = require( "../lib/responder/normalize/send" ).bind( this );
+	const format = require( "../lib/responder/normalize/format" ).bind( this );
+	const status = require( "../lib/responder/normalize/status" ).bind( this );
+	const send = require( "../lib/responder/normalize/send" ).bind( this );
 
 	this.api.log( "hitchy:debug" )( "rendering error internally", error );
 
 	_.defaults( error, {
-		status:  parseInt( error.code ) || 500,
+		status: parseInt( error.code ) || 500,
 		message: "unknown error"
 	} );
 
 	status( error.status );
 	format( {
-		html:    function() {
+		html: function() {
 			send( `<!doctype html>
 <html>
 <head>
@@ -120,10 +120,10 @@ function _showError( options, error ) {
 </body>
 </html>` );
 		},
-		json:    function() {
+		json: function() {
 			send( {
 				error: error.message,
-				code:  error.status,
+				code: error.status,
 			} );
 		},
 		text: function() {

@@ -19,7 +19,7 @@ suite( "Tools.Promise", function() {
 	} );
 
 	test( "supports sequential, probably delayed iteration using each()", function() {
-		let output = [];
+		const output = [];
 
 		return PromiseTool
 			.each( input, function( value, index, items ) {
@@ -137,7 +137,7 @@ suite( "Tools.Promise", function() {
 		return Promise.all( [
 			PromiseTool.map( input, fastMapper ).then( () => rank++ ),
 			PromiseTool.multiMap( input, slowMapper ).then( () => rank++ )
-			] )
+		] )
 			.then( function( [ mapped, multiMapped ] ) {
 				Should( mapped ).be.exactly( 2 );
 				Should( multiMapped ).be.exactly( 1 );
@@ -369,11 +369,11 @@ suite( "Tools.Promise", function() {
 	} );
 
 	test( "creates promise to conveniently delay processing", function() {
-		let start = Date.now();
+		const start = Date.now();
 
 		return PromiseTool.delay( 100 )
 			.then( function() {
-				let stop = Date.now();
+				const stop = Date.now();
 
 				// find() is providing found value
 				Should( stop - start ).be.approximately( 100, 30 );

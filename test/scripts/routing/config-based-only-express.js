@@ -1,6 +1,6 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/core-only",
 	// debug: true,
 };
@@ -125,7 +125,7 @@ suite( "Serving core-only project via expressjs w/ simple controllers and polici
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				Should( response.data.id ).be.undefined();
-				response.data.name.should.be.Array().and.eql( [ "someSimpleName" ] );
+				response.data.name.should.be.Array().and.eql( ["someSimpleName"] );
 				response.data.extra.should.be.String().and.equal( "1" );
 			} ) );
 	} );
@@ -255,7 +255,7 @@ suite( "Serving core-only project via expressjs w/ prefix w/ simple controllers 
 				response.should.be.json();
 				response.data.session.should.be.String().and.equal( "promised session!" );
 				Should( response.data.id ).be.undefined();
-				response.data.name.should.be.Array().and.eql( [ "someSimpleName" ] );
+				response.data.name.should.be.Array().and.eql( ["someSimpleName"] );
 				response.data.extra.should.be.String().and.equal( "1" );
 			} ) );
 	} );

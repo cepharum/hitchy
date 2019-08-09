@@ -1,6 +1,6 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/core-only",
 	// debug: true,
 };
@@ -32,7 +32,7 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 			this.skip();
 		}
 
-		let requests = new Array( RequestsPerChunk );
+		const requests = new Array( RequestsPerChunk );
 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
 			requests[i] = Test.get( "/missing" )
@@ -54,10 +54,10 @@ suite( "Serving core-only project load simulation (250k requests split into 500 
 			this.skip();
 		}
 
-		let requests = new Array( RequestsPerChunk );
+		const requests = new Array( RequestsPerChunk );
 
 		for ( let i = 0, length = requests.length; i < length; i++ ) {
-			let value = String( Math.ceil( 1000 * Math.random() ) );
+			const value = String( Math.ceil( 1000 * Math.random() ) );
 			requests[i] = Test.get( "/view/read/" + value )
 				.then( function( response ) {
 					response.should.have.value( "statusCode", 200 );

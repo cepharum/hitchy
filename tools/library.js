@@ -32,7 +32,7 @@ const Path = require( "path" );
 
 const Promises = require( "./promise" );
 
-const LibraryComponents = ["utility", "bootstrap", "responder", "router"];
+const LibraryComponents = [ "utility", "bootstrap", "responder", "router" ];
 
 module.exports = {
 
@@ -58,7 +58,7 @@ module.exports = {
  * @private
  */
 function _toolLibraryCreateAPI( options = {} ) {
-	let api =  {
+	const api = {
 		runtime: {
 			config: {},
 			models: {},
@@ -126,7 +126,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 			let moduleApi = require( Path.resolve( options.projectFolder, pathname ) );
 
 			if ( typeof moduleApi === "function" ) {
-				moduleApi = moduleApi.apply( api, [ options ].concat( moduleArguments ) );
+				moduleApi = moduleApi.apply( api, [options].concat( moduleArguments ) );
 			}
 
 			resolve( moduleApi );
@@ -135,7 +135,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 }
 
 function _toolLibraryCMP( api, options = {}, modulePathname, moduleArguments = [] ) {
-	let module = require( modulePathname );
+	const module = require( modulePathname );
 
 	if ( module instanceof Promise ) {
 

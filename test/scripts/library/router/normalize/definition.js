@@ -73,7 +73,7 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "provides object always covering either supported stage", function() {
-		let a = Normalizer.Module( {} );
+		const a = Normalizer.Module( {} );
 
 		Should.exist( a );
 		a.should.be.Object();
@@ -127,16 +127,16 @@ suite( "Normalizer for module-related route definitions", function() {
 		Normalizer.Module.bind( Normalizer, ["/"] ).should.not.throw();
 		Normalizer.Module.bind( Normalizer, ["/some value"] ).should.not.throw();
 		Normalizer.Module.bind( Normalizer, ["some /value"] ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, [["/some", "value"]] ).should.not.throw();
+		Normalizer.Module.bind( Normalizer, [[ "/some", "value" ]] ).should.not.throw();
 		Normalizer.Module.bind( Normalizer, [{ "/someValue": "some value" }] ).should.throw();
 	} );
 
 	test( "accepts set of routes explicitly bound to before-stage", function() {
-		let definition = {
+		const definition = {
 			before: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Module( definition );
+		const normalized = Normalizer.Module( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -147,11 +147,11 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "accepts set of routes explicitly bound to after-stage", function() {
-		let definition = {
+		const definition = {
 			after: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Module( definition );
+		const normalized = Normalizer.Module( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -162,12 +162,12 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "accepts combined provision of sets of routes explicitly bound to before- and after-stage", function() {
-		let definition = {
+		const definition = {
 			before: ["/ => something"],
 			after: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Module( definition );
+		const normalized = Normalizer.Module( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -295,7 +295,7 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "provides object always covering either supported stage", function() {
-		let a = Normalizer.Custom( {} );
+		const a = Normalizer.Custom( {} );
 
 		Should.exist( a );
 		a.should.be.Object();
@@ -349,16 +349,16 @@ suite( "Normalizer for application-related custom route definitions", function()
 		Normalizer.Custom.bind( Normalizer, ["/"] ).should.not.throw();
 		Normalizer.Custom.bind( Normalizer, ["/some value"] ).should.not.throw();
 		Normalizer.Custom.bind( Normalizer, ["some /value"] ).should.not.throw();
-		Normalizer.Custom.bind( Normalizer, [["/some", "value"]] ).should.not.throw();
+		Normalizer.Custom.bind( Normalizer, [[ "/some", "value" ]] ).should.not.throw();
 		Normalizer.Custom.bind( Normalizer, [{ "/someValue": "some value" }] ).should.throw();
 	} );
 
 	test( "accepts set of routes explicitly bound to early-stage", function() {
-		let definition = {
+		const definition = {
 			early: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Custom( definition );
+		const normalized = Normalizer.Custom( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -371,11 +371,11 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "accepts set of routes explicitly bound to before-stage", function() {
-		let definition = {
+		const definition = {
 			before: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Custom( definition );
+		const normalized = Normalizer.Custom( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -388,11 +388,11 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "accepts set of routes explicitly bound to after-stage", function() {
-		let definition = {
+		const definition = {
 			after: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Custom( definition );
+		const normalized = Normalizer.Custom( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -405,11 +405,11 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "accepts set of routes explicitly bound to late-stage", function() {
-		let definition = {
+		const definition = {
 			late: ["/ => anything"],
 		};
 
-		let normalized = Normalizer.Custom( definition );
+		const normalized = Normalizer.Custom( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -422,14 +422,14 @@ suite( "Normalizer for application-related custom route definitions", function()
 	} );
 
 	test( "accepts combined provision of sets of routes explicitly bound to early-, before-, after- and late-stage", function() {
-		let definition = {
+		const definition = {
 			early: ["/ => everything"],
 			before: ["/ => something"],
 			after: ["/ => anything"],
 			late: ["/ => nothing"],
 		};
 
-		let normalized = Normalizer.Custom( definition );
+		const normalized = Normalizer.Custom( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -572,7 +572,7 @@ suite( "Normalizer for blueprint route definitions", function() {
 	} );
 
 	test( "does not provide wrapping object always covering either supported stage", function() {
-		let a = Normalizer.Blueprint( {} );
+		const a = Normalizer.Blueprint( {} );
 
 		Should.exist( a );
 		a.should.be.instanceof( Map );
@@ -626,12 +626,12 @@ suite( "Normalizer for blueprint route definitions", function() {
 		Normalizer.Blueprint.bind( Normalizer, ["/"] ).should.not.throw();
 		Normalizer.Blueprint.bind( Normalizer, ["/some value"] ).should.not.throw();
 		Normalizer.Blueprint.bind( Normalizer, ["some /value"] ).should.not.throw();
-		Normalizer.Blueprint.bind( Normalizer, [["/some", "value"]] ).should.not.throw();
+		Normalizer.Blueprint.bind( Normalizer, [[ "/some", "value" ]] ).should.not.throw();
 		Normalizer.Blueprint.bind( Normalizer, [{ "/someValue": "some value" }] ).should.throw();
 	} );
 
 	test( "rejects set of routes explicitly bound to early-stage due to not supporting any staging", function() {
-		let definition = {
+		const definition = {
 			early: ["/ => anything"],
 		};
 
@@ -639,7 +639,7 @@ suite( "Normalizer for blueprint route definitions", function() {
 	} );
 
 	test( "rejects set of routes explicitly bound to before-stage due to not supporting any staging", function() {
-		let definition = {
+		const definition = {
 			before: ["/ => anything"],
 		};
 
@@ -647,7 +647,7 @@ suite( "Normalizer for blueprint route definitions", function() {
 	} );
 
 	test( "rejects set of routes explicitly bound to after-stage due to not supporting any staging", function() {
-		let definition = {
+		const definition = {
 			after: ["/ => anything"],
 		};
 
@@ -655,7 +655,7 @@ suite( "Normalizer for blueprint route definitions", function() {
 	} );
 
 	test( "rejects set of routes explicitly bound to late-stage due to not supporting any staging", function() {
-		let definition = {
+		const definition = {
 			late: ["/ => anything"],
 		};
 
@@ -663,7 +663,7 @@ suite( "Normalizer for blueprint route definitions", function() {
 	} );
 
 	test( "rejects combined provision of sets of routes explicitly bound to early-, before-, after- and late-stage due to not supporting any staging", function() {
-		let definition = {
+		const definition = {
 			early: ["/ => everything"],
 			before: ["/ => something"],
 			after: ["/ => anything"],

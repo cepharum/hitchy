@@ -1,9 +1,9 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/routing-basics",
 	scenario: "early-policies-sorting-generic-first",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../../../tools/index" ).test;

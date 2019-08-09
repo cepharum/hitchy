@@ -30,7 +30,7 @@
 
 const File = require( "fs" );
 const Path = require( "path" );
-const Log  = require( "debug" )( "bootstrap" );
+const Log = require( "debug" )( "bootstrap" );
 
 /**
  * Qualifies options to properly select packages involved in running current
@@ -81,7 +81,7 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 	return _findDirectory( currentWorkingDirectory || Path.dirname( require.main.filename ), "node_modules", "..", true )
 		.catch( function() {
 			// 2. check context current instance of hitchy is running in
-			return _findDirectory( Path.resolve( __dirname, "../../.." ), "node_modules", "../.." )
+			return _findDirectory( Path.resolve( __dirname, "../../.." ), "node_modules", "../.." );
 		} )
 		.then( function( pathname ) {
 			if ( !pathname ) {
@@ -117,7 +117,7 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 			testPath( pathname );
 
 			function testPath( path ) {
-				let modulesPath = Path.resolve( path, subDirectory );
+				const modulesPath = Path.resolve( path, subDirectory );
 
 				File.stat( modulesPath, function( err, stat ) {
 					if ( err ) {
@@ -132,8 +132,8 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 						return reject( err );
 					}
 
-					let isMatch       = stat.isDirectory();
-					let stopTraversal = keepIteratingIfFailing ? isMatch : !isMatch;
+					const isMatch = stat.isDirectory();
+					const stopTraversal = keepIteratingIfFailing ? isMatch : !isMatch;
 
 					if ( isMatch ) {
 						latestMatch = path;
@@ -141,13 +141,11 @@ module.exports = function _toolTriangulate( options, currentWorkingDirectory ) {
 
 					if ( stopTraversal ) {
 						resolve( latestMatch );
+					} else if ( step ) {
+						// check if current package is in use by another one
+						testPath( Path.resolve( path, step ) );
 					} else {
-						if ( step ) {
-							// check if current package is in use by another one
-							testPath( Path.resolve( path, step ) );
-						} else {
-							resolve( latestMatch );
-						}
+						resolve( latestMatch );
 					}
 				} );
 			}

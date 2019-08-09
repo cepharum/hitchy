@@ -50,11 +50,11 @@ suite( "Library.Utility.Introduce", function() {
 
 	test( "is qualifying request context provided as `this` in controllers and policies", function() {
 		return ApiMockUp.then( function( { Introduce } ) {
-			let request = {};
+			const request = {};
 
-			let before = Date.now();
-			let qualified = Introduce( request );
-			let after = Date.now();
+			const before = Date.now();
+			const qualified = Introduce( request );
+			const after = Date.now();
 
 			qualified.should.be.exactly( request );
 

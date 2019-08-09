@@ -2,12 +2,12 @@
 
 module.exports = {
 	index: function( req, res ) {
-		let components = this.api.components,
+		const components = this.api.components,
 			infos = {};
 
 		Object.keys( components )
 			.map( function( name ) {
-				let component = components[name];
+				const component = components[name];
 
 				infos[name] = {
 					meta: component.$meta,

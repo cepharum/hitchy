@@ -87,7 +87,7 @@ suite( "Library.Router.Types.Route#Route", function() {
 
 	test( "can be instantiated", function() {
 		return ApiMockUp.then( function( { API, RouteModule } ) {
-			( () => { new RouteModule.Route( "/", () => {}, API ) } ).should.not.throw();
+			( () => { new RouteModule.Route( "/", () => {}, API ); } ).should.not.throw();
 		} );
 	} );
 
@@ -130,13 +130,13 @@ suite( "Library.Router.Types.Route#Route", function() {
 suite( "Library.Router.Types.Route#PolicyRoute", function() {
 	test( "can be instantiated", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
-			( () => { new PolicyRoute( "/", () => {}, API ) } ).should.not.throw();
+			( () => { new PolicyRoute( "/", () => {}, API ); } ).should.not.throw();
 		} );
 	} );
 
 	test( "is class inheriting from Route", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute, Route } } ) {
-			let route = new PolicyRoute( "/", () => {}, API );
+			const route = new PolicyRoute( "/", () => {}, API );
 			route.should.be.instanceof( PolicyRoute );
 			route.should.be.instanceof( Route );
 		} );
@@ -176,13 +176,13 @@ suite( "Library.Router.Types.Route#PolicyRoute", function() {
 suite( "Library.Router.Types.Route#TerminalRoute", function() {
 	test( "can be instantiated", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
-			( () => { new TerminalRoute( "/", () => {}, API ) } ).should.not.throw();
+			( () => { new TerminalRoute( "/", () => {}, API ); } ).should.not.throw();
 		} );
 	} );
 
 	test( "is class inheriting from Route", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute, Route } } ) {
-			let route = new TerminalRoute( "/", () => {}, API );
+			const route = new TerminalRoute( "/", () => {}, API );
 			route.should.be.instanceof( TerminalRoute );
 			route.should.be.instanceof( Route );
 		} );
@@ -230,7 +230,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			Route.parseSource.bind( Route, 1.0 ).should.throw();
 			Route.parseSource.bind( Route, -0.0 ).should.throw();
 			Route.parseSource.bind( Route, [] ).should.throw();
-			Route.parseSource.bind( Route, ["GET", "/"] ).should.throw();
+			Route.parseSource.bind( Route, [ "GET", "/" ] ).should.throw();
 		} );
 	} );
 
@@ -246,11 +246,11 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 	test( "accepts objects containing certaing properties for defining source of routing", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource.bind( Route, {} ).should.throw();
-			Route.parseSource.bind( Route, {method: "GET", path: "/"} ).should.throw();
+			Route.parseSource.bind( Route, { method: "GET", path: "/" } ).should.throw();
 
-			Route.parseSource.bind( Route, {url: "/"} ).should.not.throw();
-			Route.parseSource.bind( Route, {type: "GET", url: "/"} ).should.not.throw();
-			Route.parseSource.bind( Route, {type: "GET", url: "/", module: "MyController", method: "listItems"} ).should.not.throw();
+			Route.parseSource.bind( Route, { url: "/" } ).should.not.throw();
+			Route.parseSource.bind( Route, { type: "GET", url: "/" } ).should.not.throw();
+			Route.parseSource.bind( Route, { type: "GET", url: "/", module: "MyController", method: "listItems" } ).should.not.throw();
 		} );
 	} );
 
@@ -285,7 +285,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			};
 
 			Object.keys( tests ).forEach( source => {
-				let route = Route.parseSource( source );
+				const route = Route.parseSource( source );
 				route.method.should.equal( tests[source] );
 			} );
 		} );
@@ -302,7 +302,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			};
 
 			Object.keys( tests ).forEach( source => {
-				let route = Route.parseSource( source );
+				const route = Route.parseSource( source );
 				route.method.should.equal( tests[source] );
 			} );
 		} );
@@ -310,7 +310,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 
 	test( "rejects definitions declaring invalid HTTP method", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
-			const tests = ["+", "-", ".", "1", "23", "A1", "ANY_TYPE", "-LESS"];
+			const tests = [ "+", "-", ".", "1", "23", "A1", "ANY_TYPE", "-LESS" ];
 
 			tests.forEach( method => {
 				Route.parseSource.bind( Route, method + " /" ).should.throw();
@@ -380,7 +380,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			parameters[0].repeat.should.be.false();
 			parameters[0].partial.should.be.false();
 			parameters[0].asterisk.should.be.false();
-			( () => { new RegExp( parameters[0].pattern ) } ).should.not.throw();
+			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 
 			parameters = Route.parseSource( "/test/:more/extra-:var" ).parameters;
 			parameters.should.have.length( 2 );
@@ -392,7 +392,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			parameters[0].repeat.should.be.false();
 			parameters[0].partial.should.be.false();
 			parameters[0].asterisk.should.be.false();
-			( () => { new RegExp( parameters[0].pattern ) } ).should.not.throw();
+			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 
 			parameters[1].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "partial", "asterisk", "pattern" );
 			parameters[1].name.should.equal( "var" );
@@ -402,7 +402,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			parameters[1].repeat.should.be.false();
 			parameters[1].partial.should.be.false();
 			parameters[1].asterisk.should.be.false();
-			( () => { new RegExp( parameters[1].pattern ) } ).should.not.throw();
+			( () => { new RegExp( parameters[1].pattern ); } ).should.not.throw();
 		} );
 	} );
 
@@ -418,7 +418,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			parameters[0].repeat.should.be.false();
 			parameters[0].partial.should.be.false();
 			parameters[0].asterisk.should.be.false();
-			( () => { new RegExp( parameters[0].pattern ) } ).should.not.throw();
+			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 			parameters[0].pattern.should.equal( "var" );    // for matching `var` as "value", only
 
 			parameters = Route.parseSource( "/test/(more)*/extra-(var|name)" ).parameters;
@@ -431,7 +431,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			parameters[0].repeat.should.be.true();
 			parameters[0].partial.should.be.false();
 			parameters[0].asterisk.should.be.false();
-			( () => { new RegExp( parameters[0].pattern ) } ).should.not.throw();
+			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 
 			parameters[1].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "partial", "asterisk", "pattern" );
 			parameters[1].name.should.equal( 1 );
@@ -441,7 +441,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 			parameters[1].repeat.should.be.false();
 			parameters[1].partial.should.be.false();
 			parameters[1].asterisk.should.be.false();
-			( () => { new RegExp( parameters[1].pattern ) } ).should.not.throw();
+			( () => { new RegExp( parameters[1].pattern ); } ).should.not.throw();
 			parameters[1].pattern.should.equal( "var|name" );
 		} );
 	} );
@@ -461,13 +461,13 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			Route.parseTarget.bind( Route, [function() {}] ).should.throw();
 			Route.parseTarget.bind( Route, ["Custom::myHandler"] ).should.throw();
 			Route.parseTarget.bind( Route, ["Custom.myHandler"] ).should.throw();
-			Route.parseTarget.bind( Route, ["Custom", "myHandler"] ).should.throw();
+			Route.parseTarget.bind( Route, [ "Custom", "myHandler" ] ).should.throw();
 			Route.parseTarget.bind( Route, ["Filter::myImplementation"] ).should.throw();
 			Route.parseTarget.bind( Route, ["Filter.myImplementation"] ).should.throw();
-			Route.parseTarget.bind( Route, ["Filter", "myImplementation"] ).should.throw();
+			Route.parseTarget.bind( Route, [ "Filter", "myImplementation" ] ).should.throw();
 			Route.parseTarget.bind( Route, {} ).should.throw();
-			Route.parseTarget.bind( Route, {controller:"Custom", method:"myHandler"} ).should.throw();
-			Route.parseTarget.bind( Route, {controller:"Filter", method:"myImplementation"} ).should.throw();
+			Route.parseTarget.bind( Route, { controller: "Custom", method: "myHandler" } ).should.throw();
+			Route.parseTarget.bind( Route, { controller: "Filter", method: "myImplementation" } ).should.throw();
 			Route.parseTarget.bind( Route, "" ).should.throw();
 
 			// using valid parameters with abstract base class `Route`
@@ -492,8 +492,8 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			Route.parseTarget.bind( Route, 1.0, API ).should.throw();
 			Route.parseTarget.bind( Route, -0.0, API ).should.throw();
 			Route.parseTarget.bind( Route, {}, API ).should.throw();
-			Route.parseTarget.bind( Route, {controller:"Custom", method:"myHandler"}, API ).should.throw();
-			Route.parseTarget.bind( Route, {controller:"Filter", method:"myImplementation"}, API ).should.throw();
+			Route.parseTarget.bind( Route, { controller: "Custom", method: "myHandler" }, API ).should.throw();
+			Route.parseTarget.bind( Route, { controller: "Filter", method: "myImplementation" }, API ).should.throw();
 			Route.parseTarget.bind( Route, "", API ).should.throw();
 		} );
 	} );
@@ -523,10 +523,10 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			PolicyRoute.parseTarget.bind( PolicyRoute, [function() {}], API ).should.throw();
 			PolicyRoute.parseTarget.bind( PolicyRoute, ["Custom::myHandler"], API ).should.throw();
 			PolicyRoute.parseTarget.bind( PolicyRoute, ["Custom.myHandler"], API ).should.throw();
-			PolicyRoute.parseTarget.bind( PolicyRoute, ["Custom", "myHandler"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, [ "Custom", "myHandler" ], API ).should.throw();
 			PolicyRoute.parseTarget.bind( PolicyRoute, ["Filter::myImplementation"], API ).should.throw();
 			PolicyRoute.parseTarget.bind( PolicyRoute, ["Filter.myImplementation"], API ).should.throw();
-			PolicyRoute.parseTarget.bind( PolicyRoute, ["Filter", "myImplementation"], API ).should.throw();
+			PolicyRoute.parseTarget.bind( PolicyRoute, [ "Filter", "myImplementation" ], API ).should.throw();
 		} );
 	} );
 
@@ -536,10 +536,10 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 			Route.parseTarget.bind( Route, [function() {}], API ).should.throw();
 			Route.parseTarget.bind( Route, ["Custom::myHandler"], API ).should.throw();
 			Route.parseTarget.bind( Route, ["Custom.myHandler"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Custom", "myHandler"], API ).should.throw();
+			Route.parseTarget.bind( Route, [ "Custom", "myHandler" ], API ).should.throw();
 			Route.parseTarget.bind( Route, ["Filter::myImplementation"], API ).should.throw();
 			Route.parseTarget.bind( Route, ["Filter.myImplementation"], API ).should.throw();
-			Route.parseTarget.bind( Route, ["Filter", "myImplementation"], API ).should.throw();
+			Route.parseTarget.bind( Route, [ "Filter", "myImplementation" ], API ).should.throw();
 		} );
 	} );
 
@@ -622,10 +622,10 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example on a route bound to path including single mandatory named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param/more-static";
+			const route = new Route( path, () => {}, API );
 
-			let examples = route.generateExamples();
+			const examples = route.generateExamples();
 
 			examples.should.be.Array().and.have.length( 1 );
 			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
@@ -636,10 +636,10 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example on a route bound to path including multiple mandatory named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param/:info/:id/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param/:info/:id/more-static";
+			const route = new Route( path, () => {}, API );
 
-			let examples = route.generateExamples();
+			const examples = route.generateExamples();
 
 			examples.should.be.Array().and.have.length( 1 );
 			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
@@ -650,10 +650,10 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates two examples on a route bound to path including single optional named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param?/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param?/more-static";
+			const route = new Route( path, () => {}, API );
 
-			let examples = route.generateExamples();
+			const examples = route.generateExamples();
 
 			examples.should.be.Array().and.have.length( 2 );
 			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
@@ -669,10 +669,10 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example on a route bound to path including single optional named parameter due to providing custom value", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param?/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param?/more-static";
+			const route = new Route( path, () => {}, API );
 
-			let examples = route.generateExamples( { param: "test" } );
+			const examples = route.generateExamples( { param: "test" } );
 
 			examples.should.be.Array().and.have.length( 1 );
 			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
@@ -683,8 +683,8 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "requires provision of custom value matching name of parameter explicitly", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param?/:item?/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param?/:item?/more-static";
+			const route = new Route( path, () => {}, API );
 
 			let examples = route.generateExamples( { param: "test", item: "rest" } );
 
@@ -702,10 +702,10 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates three examples with up to three elements per repeatable mandatory named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param+/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param+/more-static";
+			const route = new Route( path, () => {}, API );
 
-			let examples = route.generateExamples();
+			const examples = route.generateExamples();
 
 			examples.should.be.Array().and.have.length( 3 );
 			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
@@ -724,10 +724,10 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates four examples with up to three elements per repeatable optional named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param*/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param*/more-static";
+			const route = new Route( path, () => {}, API );
 
-			let examples = route.generateExamples();
+			const examples = route.generateExamples();
 
 			examples.should.be.Array().and.have.length( 4 );
 			examples[0].startsWith( "/myPrefix/" ).should.be.ok();
@@ -846,8 +846,8 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example on a route with all its parameters mandatorily bound to fixed value", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param/:test/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param/:test/more-static";
+			const route = new Route( path, () => {}, API );
 
 			let examples = route.generateExamples( { param: "first", test: "second" } );
 
@@ -863,8 +863,8 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example with minimum use of parameters ignoring usual number of probable use cases", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param?/:item?/:id?/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param?/:item?/:id?/more-static";
+			const route = new Route( path, () => {}, API );
 
 			let examples = route.generateExamples( {} );
 
@@ -880,8 +880,8 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example with maximum use of parameters ignoring usual number of probable use cases", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param?/:item?/:id?/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param?/:item?/:id?/more-static";
+			const route = new Route( path, () => {}, API );
 
 			let examples = route.generateExamples( {} );
 
@@ -897,15 +897,15 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example with provided set of data on a repeating parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param*/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param*/more-static";
+			const route = new Route( path, () => {}, API );
 
 			let examples = route.generateExamples( {} );
 
 			examples.should.be.Array();
 			examples.length.should.be.greaterThan( 1 );
 
-			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: ["*", "-", ".", "_"] } );
+			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: [ "*", "-", ".", "_" ] } );
 
 			examples.should.be.Array().and.have.length( 1 );
 			examples[0].should.equal( "/myPrefix/*/-/./_/more-static" );
@@ -914,8 +914,8 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 	test( "generates single example of maximum size with at most three random values on a repeating parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
-			let path = "/myPrefix/:param*/more-static";
-			let route = new Route( path, () => {}, API );
+			const path = "/myPrefix/:param*/more-static";
+			const route = new Route( path, () => {}, API );
 
 			let examples = route.generateExamples( {} );
 
@@ -927,7 +927,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 			examples.should.be.Array().and.have.length( 1 );
 			examples[0].split( "/" ).should.have.length( 6 );   // empty prefix to leading /, two static segments and three random values
 
-			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: ["*", "-", ".", "_"] } );
+			examples = route.generateExamples( {}, { maxLengthOnly: true, fixValue: [ "*", "-", ".", "_" ] } );
 
 			examples.should.be.Array().and.have.length( 1 );
 			examples[0].split( "/" ).should.have.length( 7 );   // same as above, but using all four provided values
@@ -951,13 +951,13 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 			route.selectProbablyCoveredPrefixes.bind( route, [function() {}] ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, [""] ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, {} ).should.throw();
-			route.selectProbablyCoveredPrefixes.bind( route, {prefix:"/test"} ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, { prefix: "/test" } ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, "" ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, "/test" ).should.throw();
 
 			route.selectProbablyCoveredPrefixes.bind( route, [] ).should.not.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, ["/test"] ).should.not.throw();
-			route.selectProbablyCoveredPrefixes.bind( route, ["/test", "/taste"] ).should.not.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, [ "/test", "/taste" ] ).should.not.throw();
 
 			route = new PolicyRoute( "/", () => {}, API );
 
@@ -971,13 +971,13 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 			route.selectProbablyCoveredPrefixes.bind( route, [function() {}] ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, [""] ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, {} ).should.throw();
-			route.selectProbablyCoveredPrefixes.bind( route, {prefix:"/test"} ).should.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, { prefix: "/test" } ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, "" ).should.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, "/test" ).should.throw();
 
 			route.selectProbablyCoveredPrefixes.bind( route, [] ).should.not.throw();
 			route.selectProbablyCoveredPrefixes.bind( route, ["/test"] ).should.not.throw();
-			route.selectProbablyCoveredPrefixes.bind( route, ["/test", "/taste"] ).should.not.throw();
+			route.selectProbablyCoveredPrefixes.bind( route, [ "/test", "/taste" ] ).should.not.throw();
 		} );
 	} );
 
@@ -993,7 +993,8 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 				{ generic: "/tes", specific: "/test/name/sub" },
 				{ generic: "/te", specific: "/test/name/sub" },
 				{ generic: "/t", specific: "/test/name/sub" },
-/* path-to-regexp is falsely considering ? and + literal characters here
+
+				/* path-to-regexp is falsely considering ? and + literal characters here
 				{ generic: "/test?", specific: "/test/name/sub" },
 				{ generic: "/test+", specific: "/test/name/sub" },
 */
@@ -1030,8 +1031,8 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 				{ generic: "/test/:minor+/sub", specific: "/test/name/sub" },
 			]
 				.forEach( ( { generic, specific, full = false } ) => {
-					let route = new TerminalRoute( generic, () => {}, API );
-					let covered = route.selectProbablyCoveredPrefixes( [ specific ] );
+					const route = new TerminalRoute( generic, () => {}, API );
+					const covered = route.selectProbablyCoveredPrefixes( [specific] );
 
 					// console.log( generic, "->", specific, "=", covered[specific] === Route.MATCH_FULL ? "full" : "partial" );
 
@@ -1064,8 +1065,8 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 				{ generic: "/:major+/neme", specific: "/test/name/sub" },
 			]
 				.forEach( ( { generic, specific } ) => {
-					let route = new TerminalRoute( generic, () => {}, API );
-					let covered = route.selectProbablyCoveredPrefixes( [ specific ] );
+					const route = new TerminalRoute( generic, () => {}, API );
+					const covered = route.selectProbablyCoveredPrefixes( [specific] );
 
 					// console.log( generic, "->", specific );
 

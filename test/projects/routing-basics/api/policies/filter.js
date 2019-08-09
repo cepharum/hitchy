@@ -28,7 +28,7 @@
 
 "use strict";
 
-let session = {
+const session = {
 	method: {
 		early: null,
 		late: null,
@@ -44,11 +44,11 @@ let session = {
 function filter( pattern, req, res, next ) {
 	session.method.late = req.method;
 
-	["params", "query"]
+	[ "params", "query" ]
 		.forEach( set => {
-			for ( let name in req[set] || {} ) {
+			for ( const name in req[set] || {} ) {
 				if ( req[set].hasOwnProperty( name ) ) {
-					let match = pattern.exec( name );
+					const match = pattern.exec( name );
 					if ( match ) {
 						session[set][match[1]] = req[set][name];
 					}
@@ -56,7 +56,7 @@ function filter( pattern, req, res, next ) {
 			}
 		} );
 
-	let args = [].slice( arguments, 3 );
+	const args = [].slice( arguments, 3 );
 	if ( args.length ) {
 		session.args.late = args;
 	}

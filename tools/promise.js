@@ -101,7 +101,7 @@ function _toolPromiseEach( items, fn ) {
  */
 function _toolPromiseFilter( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		let length = items.length;
+		const length = items.length;
 
 		step( items, 0, length, new Array( length ), 0 );
 
@@ -144,7 +144,7 @@ function _toolPromiseFilter( items, fn ) {
  */
 function _toolPromiseMap( items, fn ) {
 	return new Promise( function( resolve, reject ) {
-		let length = items.length;
+		const length = items.length;
 
 		step( items, 0, length, new Array( length ) );
 
@@ -185,11 +185,11 @@ function _toolPromiseMap( items, fn ) {
  * @returns {Promise<Array>} promised array of mapped items
  */
 function _toolPromiseMultiMap( items, fn ) {
-	let length = items.length;
-	let result = new Array( length );
+	const length = items.length;
+	const result = new Array( length );
 
 	for ( let index = 0; index < length; index++ ) {
-		let item = items[index];
+		const item = items[index];
 
 		if ( item instanceof Promise ) {
 			result[index] = item.then( item => fn( item, index, items ) );
@@ -215,7 +215,7 @@ function _toolPromiseMultiMap( items, fn ) {
  */
 function _toolPromiseFind( items, fn, getLast = false ) {
 	return new Promise( function( resolve, reject ) {
-		let length = items.length;
+		const length = items.length;
 
 		step( items, getLast ? length - 1 : 0, getLast ? -1 : items.length, getLast ? -1 : +1 );
 
@@ -258,7 +258,7 @@ function _toolPromiseFind( items, fn, getLast = false ) {
  */
 function _toolPromiseIndexOf( items, fn, getLast = false ) {
 	return new Promise( function( resolve, reject ) {
-		let length = items.length;
+		const length = items.length;
 
 		step( items, getLast ? length - 1 : 0, getLast ? -1 : length, getLast ? -1 : +1 );
 

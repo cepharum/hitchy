@@ -103,7 +103,7 @@ function _toolObjectDeepMerge( target, ...sources ) {
 	let strategyFn;
 
 	if ( typeof sources[numSources - 1] === "function" ) {
-		strategyFn = sources[--numSources]
+		strategyFn = sources[--numSources];
 	} else {
 		strategyFn = null;
 	}

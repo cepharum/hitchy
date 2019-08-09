@@ -36,7 +36,7 @@ const Http = require( "http" );
 const Url = require( "url" );
 
 
-let recentlyStartedServers = [];
+const recentlyStartedServers = [];
 
 module.exports = {
 
@@ -77,9 +77,9 @@ module.exports = {
 					} );
 				} )
 					.then( Express => {
-						let app = Express();
+						const app = Express();
 
-						let notFound = new Error( "Page not found." );
+						const notFound = new Error( "Page not found." );
 						notFound.code = 404;
 
 						if ( options.prefix ) {
@@ -102,7 +102,7 @@ module.exports = {
 										res.send( {
 											error: err.message,
 											code: err.statusCode || err.code || 404,
-										} )
+										} );
 									},
 									text() {
 										res.send( err.message );
@@ -118,7 +118,7 @@ module.exports = {
 		function _createHTTP( listener ) {
 			return hitchy.onStarted
 				.then( () => new Promise( ( resolve, reject ) => {
-					let server = Http.createServer( listener );
+					const server = Http.createServer( listener );
 					let stopResolve = null;
 					let stopReject = null;
 
@@ -188,12 +188,12 @@ module.exports = {
  */
 function request( method, url, data = null, headers = {} ) {
 	return new Promise( function( resolve, reject ) {
-		let server = recentlyStartedServers[0];
+		const server = recentlyStartedServers[0];
 		if ( !server ) {
 			throw new Error( "server not started yet" );
 		}
 
-		let request = Url.parse( url );
+		const request = Url.parse( url );
 
 		request.method = method;
 
@@ -203,7 +203,7 @@ function request( method, url, data = null, headers = {} ) {
 		}
 
 		request.headers = {
-			"accept": "text/html",
+			accept: "text/html",
 		};
 
 		if ( typeof data !== "string" && !Buffer.isBuffer( data ) ) {
@@ -222,14 +222,14 @@ function request( method, url, data = null, headers = {} ) {
 
 		request.agent = false;
 
-		let handle = Http.request( request, function( response ) {
-			let buffers = [];
+		const handle = Http.request( request, function( response ) {
+			const buffers = [];
 
 			response.on( "data", chunk => buffers.push( chunk ) );
 			response.on( "end", () => {
 				response.body = Buffer.concat( buffers );
 
-				let type = response.headers["content-type"] || "";
+				const type = response.headers["content-type"] || "";
 
 				if ( type.match( /^(text|application)\/json\b/ ) ) {
 					try {

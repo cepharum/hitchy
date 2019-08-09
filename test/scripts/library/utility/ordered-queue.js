@@ -36,31 +36,31 @@ const Should = require( "should" );
 suite( "OrderedQueue", function() {
 	test( "can be instantiated", function() {
 		Should.exist( OrderedQueue );
-		(function() { new OrderedQueue( 10 ) }).should.not.throw();
+		( function() { new OrderedQueue( 10 ); } ).should.not.throw();
 	} );
 
 	test( "requires positive number on modules to support on instantiating", function() {
 		Should.exist( OrderedQueue );
-		(function() { new OrderedQueue() }).should.throw();
-		(function() { new OrderedQueue( undefined ) }).should.throw();
-		(function() { new OrderedQueue( null ) }).should.throw();
-		(function() { new OrderedQueue( false ) }).should.throw();
-		(function() { new OrderedQueue( true ) }).should.throw();
-		(function() { new OrderedQueue( "" ) }).should.throw();
-		(function() { new OrderedQueue( "true" ) }).should.throw();
-		(function() { new OrderedQueue( {} ) }).should.throw();
-		(function() { new OrderedQueue( { prop: 1 } ) }).should.throw();
-		(function() { new OrderedQueue( [] ) }).should.throw();
-		(function() { new OrderedQueue( [ 1 ] ) }).should.throw();
-		(function() { new OrderedQueue( () => {} ) }).should.throw();
-		(function() { new OrderedQueue( () => 1 ) }).should.throw();
-		(function() { new OrderedQueue( -1 ) }).should.throw();
+		( function() { new OrderedQueue(); } ).should.throw();
+		( function() { new OrderedQueue( undefined ); } ).should.throw();
+		( function() { new OrderedQueue( null ); } ).should.throw();
+		( function() { new OrderedQueue( false ); } ).should.throw();
+		( function() { new OrderedQueue( true ); } ).should.throw();
+		( function() { new OrderedQueue( "" ); } ).should.throw();
+		( function() { new OrderedQueue( "true" ); } ).should.throw();
+		( function() { new OrderedQueue( {} ); } ).should.throw();
+		( function() { new OrderedQueue( { prop: 1 } ); } ).should.throw();
+		( function() { new OrderedQueue( [] ); } ).should.throw();
+		( function() { new OrderedQueue( [1] ); } ).should.throw();
+		( function() { new OrderedQueue( () => {} ); } ).should.throw();
+		( function() { new OrderedQueue( () => 1 ); } ).should.throw();
+		( function() { new OrderedQueue( -1 ); } ).should.throw();
 
-		(function() { new OrderedQueue( 2.5 ) }).should.not.throw();    // for obeying integer part, only (=2)
+		( function() { new OrderedQueue( 2.5 ); } ).should.not.throw();    // for obeying integer part, only (=2)
 
-		(function() { new OrderedQueue( 0 ) }).should.not.throw();
-		(function() { new OrderedQueue( 1 ) }).should.not.throw();
-		(function() { new OrderedQueue( "1" ) }).should.not.throw();
+		( function() { new OrderedQueue( 0 ); } ).should.not.throw();
+		( function() { new OrderedQueue( 1 ); } ).should.not.throw();
+		( function() { new OrderedQueue( "1" ); } ).should.not.throw();
 	} );
 } );
 
@@ -107,7 +107,7 @@ suite( "An instance of OrderedQueue", function() {
 	} );
 
 	test( "exposes method for compacting managed lists making them non-adjustable", function() {
-		var i = 0;
+		let i = 0;
 
 		queue.should.have.property( "compact" );
 		queue.compact.should.be.Function();
@@ -154,7 +154,7 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 		queue.getOnModule.bind( queue, [] ).should.throw();
 		queue.getOnModule.bind( queue, [1] ).should.throw();
 		queue.getOnModule.bind( queue, {} ).should.throw();
-		queue.getOnModule.bind( queue, {something: 1} ).should.throw();
+		queue.getOnModule.bind( queue, { something: 1 } ).should.throw();
 		queue.getOnModule.bind( queue, function() {} ).should.throw();
 		queue.getOnModule.bind( queue, () => 1 ).should.throw();
 
@@ -176,7 +176,7 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 		queue.setOnModule.bind( queue, [] ).should.throw();
 		queue.setOnModule.bind( queue, [1] ).should.throw();
 		queue.setOnModule.bind( queue, {} ).should.throw();
-		queue.setOnModule.bind( queue, {something: 1} ).should.throw();
+		queue.setOnModule.bind( queue, { something: 1 } ).should.throw();
 		queue.setOnModule.bind( queue, function() {} ).should.throw();
 		queue.setOnModule.bind( queue, () => 1 ).should.throw();
 
@@ -245,23 +245,23 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 	} );
 
 	test( "always provides same value on fetching same slot", function() {
-		let original = {};
-		let a = queue.getOnModule( 0, "before", original );
-		let b = queue.getOnModule( 0, "before" );
+		const original = {};
+		const a = queue.getOnModule( 0, "before", original );
+		const b = queue.getOnModule( 0, "before" );
 
 		a.should.equal( b );
 	} );
 
 	test( "provides different value on fetching same slot index from different stage", function() {
-		let original = {};
-		let a = queue.getOnModule( 0, "before", original );
-		let b = queue.getOnModule( 0, "after" );
+		const original = {};
+		const a = queue.getOnModule( 0, "before", original );
+		const b = queue.getOnModule( 0, "after" );
 
 		a.should.not.equal( b );
 	} );
 
 	test( "works with 'before' stage by default", function() {
-		let before = {}, after = {};
+		const before = {}, after = {};
 
 		queue.getOnModule( 0, "before", before );
 		queue.getOnModule( 0, "after", after );
@@ -428,23 +428,23 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 	} );
 
 	test( "always provides same value on fetching same slot", function() {
-		let original = {};
-		let a = queue.getCustomSlot( "before", original );
-		let b = queue.getCustomSlot( "before" );
+		const original = {};
+		const a = queue.getCustomSlot( "before", original );
+		const b = queue.getCustomSlot( "before" );
 
 		a.should.equal( b );
 	} );
 
 	test( "provides different value on fetching same slot index from different stage", function() {
-		let original = {};
-		let a = queue.getCustomSlot( "before", original );
-		let b = queue.getCustomSlot( "after" );
+		const original = {};
+		const a = queue.getCustomSlot( "before", original );
+		const b = queue.getCustomSlot( "after" );
 
 		a.should.not.equal( b );
 	} );
 
 	test( "works with 'before' stage by default", function() {
-		let before = {}, after = {};
+		const before = {}, after = {};
 
 		queue.getCustomSlot( "before", before );
 		queue.getCustomSlot( "after", after );
@@ -553,7 +553,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue.getInnerSlot.bind( queue, [] ).should.not.throw();
 		queue.getInnerSlot.bind( queue, [1] ).should.not.throw();
 		queue.getInnerSlot.bind( queue, {} ).should.not.throw();
-		queue.getInnerSlot.bind( queue, {something: 1} ).should.not.throw();
+		queue.getInnerSlot.bind( queue, { something: 1 } ).should.not.throw();
 		queue.getInnerSlot.bind( queue, function() {} ).should.not.throw();
 		queue.getInnerSlot.bind( queue, () => 1 ).should.not.throw();
 
@@ -575,7 +575,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue.setInnerSlot.bind( queue, [] ).should.not.throw();
 		queue.setInnerSlot.bind( queue, [1] ).should.not.throw();
 		queue.setInnerSlot.bind( queue, {} ).should.not.throw();
-		queue.setInnerSlot.bind( queue, {something: 1} ).should.not.throw();
+		queue.setInnerSlot.bind( queue, { something: 1 } ).should.not.throw();
 		queue.setInnerSlot.bind( queue, function() {} ).should.not.throw();
 		queue.setInnerSlot.bind( queue, () => 1 ).should.not.throw();
 
@@ -592,9 +592,9 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 	} );
 
 	test( "always provides same value on fetching slot", function() {
-		let original = {};
-		let a = queue.getInnerSlot( original );
-		let b = queue.getInnerSlot();
+		const original = {};
+		const a = queue.getInnerSlot( original );
+		const b = queue.getInnerSlot();
 
 		a.should.equal( b );
 	} );

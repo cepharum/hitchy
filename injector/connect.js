@@ -40,6 +40,7 @@ const Common = require( "./common" );
 module.exports = function( options ) {
 	/** @type HitchyAPI */
 	let hitchy = null;
+
 	/** @type Error */
 	let error = null;
 
@@ -62,7 +63,7 @@ module.exports = function( options ) {
 
 		stop: {
 			/** @name HitchyConnectInstance#stop */
-			value: () => starter.catch( () => {} ).then( () => hitchy ? hitchy.bootstrap.shutdown() : undefined )
+			value: () => starter.catch( () => {} ).then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) )
 		},
 
 		injector: { value: "connect" },

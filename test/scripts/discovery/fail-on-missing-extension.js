@@ -1,9 +1,9 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/empty-extensions",
-	dependencies: ["important", "supporting"],
-	//debug: true,
+	dependencies: [ "important", "supporting" ],
+	// debug: true,
 };
 
 const Test = require( "../../../tools" ).test;

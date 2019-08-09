@@ -1,8 +1,8 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/empty-extensions",
-	//debug: true,
+	// debug: true,
 };
 
 const Test = require( "../../../tools" ).test;

@@ -1,6 +1,6 @@
 "use strict";
 
-let options = {
+const options = {
 	projectFolder: "test/projects/policies",
 	// debug: true,
 };

@@ -36,13 +36,13 @@ const Args = require( "minimist" )( process.argv.slice( 2 ) );
 
 const Hitchy = require( "hitchy" );
 
-let options = {};
+const options = {};
 
 if ( Args.project ) {
 	options.projectFolder = Args.project;
 }
 
-let server = Http.createServer( Hitchy.node( options ) );
+const server = Http.createServer( Hitchy.node( options ) );
 
 server.listen(
 	process.env.PORT || Args.port || 3000,
