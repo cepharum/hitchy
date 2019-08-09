@@ -191,8 +191,12 @@ function _toolObjectDeepMerge( target, ...sources ) {
 										dValue[j] = item;
 									}
 								}
-							} else {
+							} else if ( sValue.constructor === Object ) {
+								// got some native object -> merge recursively
 								to[name] = merge( dValue || {}, sValue, fn, subName );
+							} else {
+								// got instance of some custom class -> replace
+								to[name] = sValue;
 							}
 						} else {
 							to[name] = sValue;
