@@ -34,8 +34,8 @@ const Common = require( "./common" );
  * Provides API for injecting hitchy into expressjs/connectjs-based application
  * as middleware.
  *
- * @param {HitchyOptions=} options
- * @returns {HitchyConnectInstance}
+ * @param {HitchyOptions=} options global options customizing Hitchy
+ * @returns {HitchyConnectInstance} middleware suitable for integrating with Express.js
  */
 module.exports = function( options ) {
 	/** @type HitchyAPI */
@@ -58,11 +58,24 @@ module.exports = function( options ) {
 
 
 	Object.defineProperties( middleware, {
-		/** @name HitchyConnectInstance#onStarted */
+		/**
+		 * Promises Hitchy application having started.
+		 *
+		 * @name HitchyConnectInstance#onStarted
+		 * @property {Promise}
+		 * @readonly
+		 */
 		onStarted: { value: starter },
 
+		/**
+		 * Gracefully shuts down Hitchy application.
+		 *
+		 * @name HitchyConnectInstance#stop
+		 * @property {function():Promise}
+		 * @readonly
+		 */
 		stop: {
-			/** @name HitchyConnectInstance#stop */
+			// eslint-disable-next-line no-empty-function
 			value: () => starter.catch( () => {} ).then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) )
 		},
 
@@ -72,6 +85,14 @@ module.exports = function( options ) {
 	return middleware;
 
 
+	/**
+	 * Handles request.
+	 *
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {function} next callback to invoke for passing request to next available handler
+	 * @returns {void}
+	 */
 	function middleware( req, res, next ) {
 		/** @type HitchyRequestContext */
 		const context = {
@@ -89,17 +110,18 @@ module.exports = function( options ) {
 			hitchy.utility.introduce( context );
 
 			hitchy.router.dispatch( context )
-				.then( context => {
-					const { byTerminal, byPolicy } = context.consumed;
+				.then( ctx => {
+					const { byTerminal, byPolicy } = ctx.consumed;
 
 					if ( !res.finished && !byTerminal ) {
 						if ( byPolicy ) {
-							Common.errorHandler.call( context, options );
+							Common.errorHandler.call( ctx, options );
 						} else {
 							next();
 						}
 					}
-				}, Common.errorHandler.bind( context, options ) );
+				} )
+				.catch( Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
 			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up", error );
 			Common.errorHandler.call( context, options, error );

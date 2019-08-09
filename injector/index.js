@@ -23,8 +23,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * @author: cepharum
+ * @author cepharum
  */
+
+"use strict";
 
 module.exports = {
 	connect: require( "./connect" ),

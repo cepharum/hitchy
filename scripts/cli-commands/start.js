@@ -26,6 +26,8 @@
  * @author: cepharum
  */
 
+"use strict";
+
 const File = require( "fs" );
 const Path = require( "path" );
 const Tools = require( "../../tools" );
@@ -35,9 +37,11 @@ const Debug = require( "debug" )( "hitchy:debug" );
 
 
 /**
+ * Implements CLI action for starting Hitchy application.
  *
  * @param {HitchyOptions} options global options customizing Hitchy
- * @param {HitchyCLIArguments} args
+ * @param {HitchyCLIArguments} args arguments passed for processing in context of start action
+ * @returns {Promise} promises action finished processing
  */
 module.exports = function( options, args ) {
 	if ( args.injector ) {
@@ -58,10 +62,12 @@ module.exports = function( options, args ) {
 				if ( error ) {
 					switch ( error.code ) {
 						case "ENOENT" :
-							return resolve( false );
+							resolve( false );
+							return;
 
 						default :
-							return reject( error );
+							reject( error );
+							return;
 					}
 				}
 
@@ -93,10 +99,10 @@ module.exports = function( options, args ) {
 				} );
 
 				child.on( "exit", ( status, signal ) => {
-					if ( status !== 0 ) {
-						reject( new Error( "application script exited on " + ( status || signal ) ) );
-					} else {
+					if ( status === 0 ) {
 						resolve();
+					} else {
+						reject( new Error( "application script exited on " + ( status || signal ) ) );
 					}
 				} );
 			} );
@@ -129,15 +135,22 @@ module.exports = function( options, args ) {
 					}
 				} );
 
-				hitchy.onStarted.then( () => {
-					server.on( "request", hitchy );
+				hitchy.onStarted
+					.then( () => {
+						server.on( "request", hitchy );
 
-					server.listen( port, addr, process.env.BACKLOG || 10240 );
+						server.listen( port, addr, process.env.BACKLOG || 10240 );
 
-					if ( !args.quiet ) {
-						console.error( `Hitchy is ready to serve requests, now.` );
-					}
-				} );
+						if ( !args.quiet ) {
+							console.error( `Hitchy is ready to serve requests, now.` );
+						}
+					} )
+					.catch( error => {
+						console.error( `Starting hitchy failed: ${error.message}` );
+
+						process.exitCode = 3;
+						_handleCancel.call( {}, server, hitchy );
+					} );
 
 
 				// handle request for shutting down service either by pressing
@@ -232,7 +245,7 @@ module.exports = function( options, args ) {
 		}
 
 		if ( sslKey || sslCert ) {
-			return Promise.reject( "incomplete SSL configuration: provide filenames of key AND cert" );
+			return Promise.reject( new Error( "incomplete SSL configuration: provide filenames of key AND cert" ) );
 		}
 
 		return Promise.resolve( Object.assign( require( "http" ).createServer(), { isHttps: false } ) );
@@ -275,9 +288,8 @@ module.exports = function( options, args ) {
 	 * @returns {string} URL of provided server
 	 */
 	function compileUrl( server ) {
-		let addr = server.address(),
-			port = addr.port,
-			scheme;
+		const addr = server.address();
+		let port = addr.port, scheme;
 
 		switch ( port ) {
 			case "80" :
@@ -333,14 +345,21 @@ module.exports = function( options, args ) {
 			} else {
 				stopHitchy();
 			}
+		}
 
-			function stopHitchy() {
-				if ( hitchy ) {
-					Log( "shutting down hitchy ..." );
-					hitchy.stop().then( () => process.exit() );
-				} else {
-					process.exit();
-				}
+		/**
+		 * Gracefully shuts down probably started hitchy instance.
+		 *
+		 * @returns {void}
+		 */
+		function stopHitchy() {
+			if ( hitchy ) {
+				Log( "shutting down hitchy ..." );
+				hitchy.stop()
+					.then( () => process.exit() )
+					.catch( () => process.exit() );
+			} else {
+				process.exit();
 			}
 		}
 	}
@@ -371,17 +390,14 @@ module.exports = function( options, args ) {
 				Debug( `closed connection from ${socket.remoteAddress}:${socket.remotePort}` );
 			}
 
-			let s = server.$trackedSockets,
-				i, l;
+			const sockets = server.$trackedSockets;
+			const numSockets = sockets.length;
 
-			for ( i = 0, l = s.length; i < l; i++ ) {
-				if ( s[i] === socket ) {
+			for ( let i = 0; i < numSockets; i++ ) {
+				if ( sockets[i] === socket ) {
+					sockets.splice( i, 1 );
 					break;
 				}
-			}
-
-			if ( i < l ) {
-				server.$trackedSockets.splice( i, 1 );
 			}
 		} );
 	}

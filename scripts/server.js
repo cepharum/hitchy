@@ -26,6 +26,8 @@
  * @author: cepharum
  */
 
+"use strict";
+
 /**
  * Implements simple server by attaching hitchy runtime to genuine HTTP server
  * available in Node JS.

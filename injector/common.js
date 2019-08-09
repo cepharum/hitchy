@@ -57,7 +57,7 @@ module.exports = {
  * @returns {void}
  * @private
  */
-function _splash( options ) {
+function _splash( options ) { // eslint-disable-line no-unused-vars
 	const format = require( "../lib/responder/normalize/format" ).bind( this );
 	const status = require( "../lib/responder/normalize/status" ).bind( this );
 	const send = require( "../lib/responder/normalize/send" ).bind( this );

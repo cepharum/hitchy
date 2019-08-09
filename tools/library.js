@@ -192,5 +192,6 @@ function _toolLibraryCMFP( api, options = {}, fn, fnArguments = [] ) {
  * @property {HitchyRouterAPI} router
  * @property {HitchyUtilityAPI} utility
  * @property {function(namespace:string):function} log alias for api.utility.logger.get
- * @property {function(name:string, moduleArguments:*[]):(object|function)} loader wraps require() to use on loading components from project folder (primarily to mock component loading for testing purposes)
+ * @property {function(name:string, moduleArguments:*[]):(object|function)} loader wraps require() to
+ *           use on loading components from project folder (primarily to mock component loading for testing purposes)
  */

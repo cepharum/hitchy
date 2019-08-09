@@ -33,8 +33,8 @@ const Common = require( "./common" );
 /**
  * Provides API for injecting Hitchy into native HTTP service of NodeJS.
  *
- * @param {HitchyOptions=} options
- * @returns {HitchyNodeInstance}
+ * @param {HitchyOptions=} options global options customizing hitchy
+ * @returns {HitchyNodeInstance} instance of Hitchy
  */
 module.exports = function( options ) {
 	/** @type HitchyAPI */
@@ -78,6 +78,7 @@ module.exports = function( options ) {
 		 * @property {function():Promise}
 		 */
 		stop: {
+			// eslint-disable-next-line no-empty-function
 			value: () => starter.catch( () => {} ).then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
 		},
 
@@ -87,14 +88,22 @@ module.exports = function( options ) {
 	return middleware;
 
 
+	/**
+	 * Implements request handler for integrating hitchy with a regular Node.js
+	 * HTTP server.
+	 *
+	 * @param {IncomingMessage} req description of request to be handled
+	 * @param {ServerResponse} res response manager
+	 * @returns {void}
+	 */
 	function middleware( req, res ) {
 		/** @type HitchyRequestContext */
 		const context = {
 			request: req,
 			response: res,
-			done: error => {
-				if ( error ) {
-					console.error( `got error on dispatching ${req.method} ${req.url}: ${error.message}` );
+			done: _error => {
+				if ( _error ) {
+					console.error( `got error on dispatching ${req.method} ${req.url}: ${_error.message}` );
 				}
 			},
 			local: {},
@@ -108,20 +117,21 @@ module.exports = function( options ) {
 			hitchy.utility.introduce( context );
 
 			hitchy.router.normalize( context )
-				.then( context => {
+				.then( ctx => {
 					// responder normalization works synchronously currently, so
 					// don't waste time on wrapping it in another promise
-					hitchy.responder.normalize( context );
+					hitchy.responder.normalize( ctx );
 
-					return hitchy.router.dispatch( context );
+					return hitchy.router.dispatch( ctx );
 				} )
-				.then( context => {
-					if ( !context.consumed.byTerminal && !res.finished ) {
+				.then( ctx => {
+					if ( !ctx.consumed.byTerminal && !res.finished ) {
 						options.handleErrors = true;
 
-						Common.errorHandler.call( context, options, Object.assign( new Error( "Page not found!" ), { status: 404 } ) );
+						Common.errorHandler.call( ctx, options, Object.assign( new Error( "Page not found!" ), { status: 404 } ) );
 					}
-				}, Common.errorHandler.bind( context, options ) );
+				} )
+				.catch( Common.errorHandler.bind( context, options ) );
 		} else if ( error ) {
 			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up", error );
 			Common.errorHandler.call( context, options, error );

@@ -26,46 +26,59 @@
  * @author: cepharum
  */
 
+"use strict";
+
 const Args = require( "minimist" )( process.argv.slice( 2 ) );
 
 const command = Args._.shift() || "start";
 
 if ( Args.help || Args.h ) {
-	return usage();
+	usage();
+} else {
+	if ( Args["log-level"] || !process.env.DEBUG ) {
+		process.env.DEBUG = Args["log-level"] || "hitchy:bootstrap,hitchy:request";
+	}
+
+	process.on( "unhandledRejection", _unhandledRejection );
+	process.on( "uncaughtException", _unhandledException );
+
+	/**
+	 * @alias HitchyOptions
+	 * @type {object}
+	 */
+	const options = {
+		debug: Boolean( Args.debug ),
+	};
+
+	if ( Args.project ) {
+		options.projectFolder = Args.project;
+	}
+
+	if ( Args.extensions ) {
+		options.extensionsFolder = Args.extensions;
+	}
+
+	require( "../tools/triangulate" )( options, process.cwd() )
+		.then( _options => {
+			switch ( command ) {
+				case "start" :
+					require( "./cli-commands/start" )( _options, Args );
+					break;
+
+				default :
+					usage();
+			}
+		} )
+		.catch( error => {
+			console.error( `discovering runtime context failed: ${error.message}` );
+		} );
 }
 
-if ( Args["log-level"] || !process.env.DEBUG ) {
-	process.env.DEBUG = Args["log-level"] || "hitchy:bootstrap,hitchy:request";
-}
-
-process.on( "unhandledRejection", _unhandledRejection );
-process.on( "uncaughtException", _unhandledException );
-
-let options = {
-	debug: !!Args.debug,
-};
-
-if ( Args.project ) {
-	options.projectFolder = Args.project;
-}
-
-if ( Args.extensions ) {
-	options.extensionsFolder = Args.extensions;
-}
-
-require( "../tools/triangulate" )( options, process.cwd() )
-	.then( function( options ) {
-		switch ( command ) {
-			case "start" :
-				require( "./cli-commands/start" )( options, Args );
-				break;
-
-			default :
-				usage();
-		}
-	} );
-
-
+/**
+ * Dumps help on stderr.
+ *
+ * @returns {void}
+ */
 function usage() {
 	console.error( `
 Usage: hitchy <action> [ options ]
@@ -102,10 +115,25 @@ Common options are:
 ` );
 }
 
+/**
+ * Dumps information on unhandled promise rejection on stderr.
+ *
+ * @param {Error} reason reason for rejecting promise
+ * @param {Promise} promise rejected but unhandled promise instance
+ * @returns {void}
+ * @private
+ */
 function _unhandledRejection( reason, promise ) {
 	console.error( "unhandled rejection of promise", reason, promise );
 }
 
+/**
+ * Dumps information on unhandled exception on stderr.
+ *
+ * @param {Error} error thrown error
+ * @returns {void}
+ * @private
+ */
 function _unhandledException( error ) {
 	console.error( "unhandled exception", error );
 }
