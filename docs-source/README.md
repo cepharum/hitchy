@@ -8,8 +8,8 @@ This is the manual for the Hitchy server-side application framework.
 
 This framework starts lean and relies on [plugins](plugins) to extend the very small but powerful set of features included with its core that's providing just this:
 
-* Discovering Extensions
-* [Request Routing](internals/routing-basics)
+* [discovering plugins](internals/architecture-basics.md#discovering-plugins)
+* [request routing](internals/routing-basics)
 
 Those features comply with our [basic design principles](principles).
 
