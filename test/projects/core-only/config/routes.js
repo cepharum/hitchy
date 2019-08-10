@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
 	routes: {
 		"GET /": "VIEWController",
@@ -8,5 +10,6 @@ module.exports = {
 		"GET /view/create/:name": "View.create",
 		"GET /view/create/:id?": "ViewController.create",
 		"POST /view/create/:name+": "ViewController.create",
+		"GET /mirror/api": "ViewController.mirrorAPI",
 	}
 };

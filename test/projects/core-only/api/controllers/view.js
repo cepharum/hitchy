@@ -1,3 +1,5 @@
+"use strict";
+
 module.exports = {
 	index: function( req, res ) {
 		res.type( "html" ).send( "<h1>Welcome!</h1><p>This is the homepage provided for testing purposes, only.</p>" );
@@ -10,7 +12,7 @@ module.exports = {
 		} );
 	},
 	bodyPosted: function( req, res ) {
-		req.fetchBody()
+		return req.fetchBody()
 			.then( body => res.send( body ) );
 	},
 	bodyNormal: function( req, res ) {
@@ -23,5 +25,12 @@ module.exports = {
 			name: req.params.name,
 			extra: req.query.extra,
 		} );
-	}
+	},
+	mirrorAPI( req, res ) {
+		res.json( {
+			this: Object.keys( this.api ),
+			req: Object.keys( req.hitchy ),
+			same: this.api === req.hitchy,
+		} );
+	},
 };
