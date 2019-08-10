@@ -2,18 +2,18 @@
 
 module.exports = {
 	index: function( req, res ) {
-		const components = this.api.components,
+		const plugins = this.api.plugins,
 			infos = {};
 
-		Object.keys( components )
+		Object.keys( plugins )
 			.map( function( name ) {
-				const component = components[name];
+				const plugin = plugins[name];
 
 				infos[name] = {
-					meta: component.$meta,
-					index: component.$index,
-					name: component.$name,
-					role: component.$role,
+					meta: plugin.$meta,
+					index: plugin.$index,
+					name: plugin.$name,
+					role: plugin.$role,
 				};
 			} );
 

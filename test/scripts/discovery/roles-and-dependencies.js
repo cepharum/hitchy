@@ -13,7 +13,7 @@ require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project w/ empty components", function() {
+suite( "Serving project w/ empty plugins", function() {
 	const hitchy = Hitchy( options );
 	let server = null;
 

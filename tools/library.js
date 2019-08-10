@@ -67,7 +67,7 @@ function _toolLibraryCreateAPI( options = {} ) {
 			services: {},
 			policies: {}
 		},
-		components: {},
+		plugins: {},
 		loader: _nop
 	};
 

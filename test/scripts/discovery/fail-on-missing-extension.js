@@ -14,8 +14,8 @@ require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project w/ empty components", function() {
-	test( "fails on missing component", function() {
+suite( "Serving project w/ empty plugins", function() {
+	test( "fails on missing plugin", function() {
 		const hitchy = Hitchy( options );
 
 		return Test.startServer( hitchy )
