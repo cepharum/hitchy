@@ -49,27 +49,7 @@ Every plugin as well as your application is meant to use four kinds of building 
 * models
 * services
 
-Those four kinds of blocks are commonly referred to as _components_ of a Hitchy-based application.
-
-#### Controllers
-
-A controller is a software module or class that is exposing methods for eventually handling requests and sending some response.
-
-#### Policies
-
-A policy is a software module or class just like a controller. However, it is meant to handle requests collaboratively with other policies and some final controller. Thus it might ignore requests or adjust request information without ever responding to any request. Multiple policies may be involved in processing a single request. That's why policies are capable of passing control to next available policy in chain of processing policies which isn't possible for a controller.
-
-Policies are always able to send a response nonetheless. That's useful for implementing filters next to controllers.
-
-A final difference between controllers and policies regards their application for processing a particular request. Policies are applied to requests by matching a prefix of URL path per request. A controller always has to fully match a request's URL path.
-
-#### Models
-
-Models are modules or classes describing data to be managed by your application. They are meant to be interface for accessing data in an attached data storage like a database. 
-
-#### Services
-
-Services are software modules or classes as well. They are meant to implement and provide features that are commonly required in controllers, policies and models. Whenever there is code to be used redundantly you should put it in a service.
+Those four kinds of blocks are commonly referred to as _components_ of a Hitchy-based application. There is [a separate chapter describing them in more detail](components.md).
 
 ### Modules
 

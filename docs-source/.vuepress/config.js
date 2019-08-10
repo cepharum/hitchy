@@ -8,6 +8,7 @@ module.exports = {
 		nav: [
 			{ text: "Home", link: "/" },
 			{ text: "Tutorials", link: "/tutorials/" },
+			{ text: "API", link: "/api/" },
 			{ text: "Internals", link: "/internals/" },
 		],
 	},
