@@ -143,7 +143,7 @@ module.exports = function( options ) {
 };
 
 /**
- * @typedef object HitchyInstance
+ * @typedef {object} HitchyInstance
  * @property {Promise} onStarted settled on starting hitchy instance succeeded or failed
  * @property {function:Promise} stop shuts down hitchy instance
  */

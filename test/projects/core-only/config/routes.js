@@ -11,5 +11,7 @@ module.exports = {
 		"GET /view/create/:id?": "ViewController.create",
 		"POST /view/create/:name+": "ViewController.create",
 		"GET /mirror/api": "ViewController.mirrorAPI",
+		"GET /forward": "ViewController.internalForward",
+		"GET /internal/dispatch": "ViewController.internallyDispatched",
 	}
 };

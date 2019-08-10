@@ -74,7 +74,6 @@ function _toolLibraryCreateAPI( options = {} ) {
 	api.cmp = _toolLibraryCMP.bind( api, api, options );
 	api.cmfp = _toolLibraryCMFP.bind( api, api, options );
 
-
 	return api;
 }
 
@@ -96,7 +95,7 @@ function _nop() {} // eslint-disable-line no-empty-function
 function _toolLibraryLoad( api, libFolder, options = {} ) {
 	api.loader = _toolLibraryCommonModulePatternLoader;
 
-	return Promises.each( LibraryComponents, function( moduleName ) {
+	return Promises.each( LibraryComponents, moduleName => {
 		return Promise.resolve( require( Path.join( libFolder, moduleName ) ).call( api, options ) )
 			.then( function( moduleApi ) {
 				Object.defineProperty( api, moduleName, {
@@ -104,12 +103,37 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 					enumerable: true,
 				} );
 
-				if ( moduleName === "utility" ) {
-					// provide shortcut for accessing logger factory
-					Object.defineProperty( api, "log", {
-						value: api.utility.logger.get,
-						enumerable: true,
-					} );
+				// additionally inject shortcut aliases per part of library
+				switch ( moduleName ) {
+					case "utility" :
+						// provide shortcut for accessing logger factory
+						Object.defineProperties( api, {
+							/**
+							 * @name HitchyLibrary.log
+							 * @property {function(prefix:string):function(message:string)}
+							 * @readonly
+							 */
+							log: {
+								value: api.utility.logger.get,
+								enumerable: true,
+							},
+						} );
+						break;
+
+					case "router" :
+						// provide shortcut for accessing router client
+						Object.defineProperties( api, {
+							/**
+							 * @name HitchyLibrary.Client
+							 * @property {class<HitchyClientRequest>}
+							 * @readonly
+							 */
+							Client: {
+								value: api.router.client,
+								enumerable: true,
+							},
+						} );
+						break;
 				}
 			} );
 	} )
