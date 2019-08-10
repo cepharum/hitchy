@@ -1,8 +1,6 @@
-# hitchy
+# hitchy [![Build Status](https://travis-ci.org/hitchyjs/core.svg?branch=master)](https://travis-ci.org/hitchyjs/core)
 
 web application framework
-
-[![Build Status](https://travis-ci.org/hitchyjs/core.svg?branch=master)](https://travis-ci.org/hitchyjs/core)
 
 ## License
 
