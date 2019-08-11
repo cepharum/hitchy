@@ -132,7 +132,7 @@ function _toolObjectDeepMerge( target, ...sources ) {
 			for ( let i = 0; i < numNames; i++ ) {
 				const name = names[i];
 
-				if ( name === "__proto__" ) {
+				if ( name === "__proto__" || name === "constructor" || name === "prototype" ) {
 					continue;
 				}
 
