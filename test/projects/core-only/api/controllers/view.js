@@ -36,6 +36,8 @@ module.exports = {
 	internalForward( req, res ) {
 		const client = new req.hitchy.Client( { url: "/internal/dispatch" } );
 
+		client.end();
+
 		return client.dispatch()
 			.then( _res => {
 				if ( _res.statusCode !== 200 ) {
