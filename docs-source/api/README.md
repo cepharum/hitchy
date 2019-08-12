@@ -52,6 +52,42 @@ module.exports = function( options ) {
 
 This is the counterpart of same module as before. But this time it is relying on the common module pattern mostly to gain access on Hitchy's API. During discovery of plugins and components any function exported from either module is invoked with Hitchy's API provided as `this` and global options describing runtime context and arguments passed on starting Hitchy in first argument.
 
+:::warning Related Issues
+On exporting an ES6 class in a module Hitchy might falsely consider this module to comply with common module pattern.
+
+```javascript
+class MyServiceComponent {
+    // TODO add methods here
+}
+
+module.exports = MyServiceComponent;
+```
+
+This results in error on Hitchy start regarding invoking your exposed class without operator `new`. As a fix you might need to wrap this class in a function to actually comply with common module pattern. 
+
+```javascript
+module.exports = function() {
+    class MyServiceComponent {
+        // TODO add methods here
+    }
+
+    return MyServiceComponent;
+};
+```
+
+Alternatively you might add static property `useCMP` set `false` to prevent Hitchy from assuming this module is complying with common module pattern.
+
+```javascript
+class MyServiceComponent {
+    // TODO add methods here
+    
+    static get useCMP() { return false; }
+}
+
+module.exports = MyServiceComponent;
+```
+:::
+
 
 ### In Request Handlers
 
