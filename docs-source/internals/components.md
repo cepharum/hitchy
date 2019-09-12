@@ -101,3 +101,19 @@ function someRequestHandler( req, res ) {
         .json( this.api.runtime.service.FileZipper.listFromArchive( "some/archive" ) );
 }
 ```
+
+In methods of controllers and policies Hitchy's API is exposed as property `hitchy` of provided request descriptor as well:
+
+```javascript
+function someRequestHandler( req, res ) {
+    res
+        .status( 200 )
+        .json( req.hitchy.runtime.service.FileZipper.listFromArchive( "some/archive" ) );
+}
+```
+
+In either example `req.hitchy` and `this.api` are referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
+
+:::warning
+Support for `req.hitchy` has been introduced in v0.2.0.
+:::

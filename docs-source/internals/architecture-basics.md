@@ -14,6 +14,23 @@ Hitchy consists of a very rudimentary core that's basically capable of these fea
 
 Currently there are two _injectors_: one is available for integrating a Hitchy-based application with an Express.js based service as a middleware. A second one is attaching a Hitchy-based application with a purely Node.js based HTTP service. 
 
+Integrating with ExpressJS application is as simple as this:
+
+```javascript
+const Hitchy = require( "hitchy" ).express;
+const MyApp = Hitchy( {
+    projectFolder: "path/name/of/hitchy/project",
+} );
+
+expressApp.use( "/some/prefix", MyApp );
+```
+
+In opposition to that, any Hitchy-based application can be invoked standalone using control script which is included with Hitchy:
+
+```bash
+hitchy start --project path/name/of/hitchy/project
+``` 
+
 ## Discovering Plugins
 
 Plugins are discovered when starting Hitchy. There is bootstrap code which is passing these stages:
