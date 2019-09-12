@@ -157,6 +157,21 @@ module.exports = function( options ) {
 				},
 			};
 
+		case "auto-limit-response" :
+			return {
+				routes: {
+					"ALL /limit/json": "AutoLimitResponse::json",
+					"ALL /limit/send": "AutoLimitResponse::send",
+					"ALL /limit/write": "AutoLimitResponse::write",
+					"ALL /limit/end": "AutoLimitResponse::end",
+					"ALL /limit/setHeader": "AutoLimitResponse::setHeader",
+					"ALL /limit/writeHead": "AutoLimitResponse::writeHead",
+					"ALL /limit/singleSet": "AutoLimitResponse::singleSet",
+					"ALL /limit/multiSet": "AutoLimitResponse::multiSet",
+					"ALL /limit/format": "AutoLimitResponse::format",
+				},
+			};
+
 		default :
 			return {
 				policies: {
