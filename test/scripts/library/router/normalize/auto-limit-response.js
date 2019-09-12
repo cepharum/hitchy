@@ -50,7 +50,7 @@ describe( "Serving project w/ controller using response API", () => {
 						res.should.have.status( 200 );
 						res.body.length.should.be.greaterThan( 0 );
 
-						if ( type != null ) {
+						if ( type != null && type !== "binary" ) {
 							res.headers.should.have.property( "content-type" );
 						}
 

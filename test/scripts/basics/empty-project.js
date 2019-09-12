@@ -5,11 +5,13 @@ const options = {
 	// debug: true,
 };
 
-const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" ).node;
+const { suite, test, suiteSetup, suiteTeardown } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
+
+const Test = require( "../../../tools" ).test;
+const Hitchy = require( "../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
@@ -89,7 +91,6 @@ suite( "Serving empty project a request accepting HTML", function() {
 			} ) );
 	} );
 } );
-
 
 suite( "Serving empty project a request accepting text", function() {
 	const hitchy = Hitchy( options );
