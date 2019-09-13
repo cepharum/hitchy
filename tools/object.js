@@ -44,10 +44,13 @@ module.exports = {
  * Deeply seals a given object w/o copying it.
  *
  * @param {object} object object to be sealed deeply
+ * @param {function(string[]):boolean} testFn callback invoked to decide whether some property should be sealed or not
+ * @param {string[]} _path breadcrumb of segments, used internally
  * @returns {object} reference on provided object, now deeply sealed
  */
-function _toolObjectDeepSeal( object ) {
+function _toolObjectDeepSeal( object, testFn = null, _path = [] ) {
 	if ( object && typeof object === "object" ) {
+		const fn = testFn && typeof testFn === "function" ? testFn : null;
 		const props = Object.keys( object );
 		const numProps = props.length;
 
@@ -55,11 +58,15 @@ function _toolObjectDeepSeal( object ) {
 			const prop = object[props[i]];
 
 			if ( prop && typeof prop === "object" ) {
-				_toolObjectDeepSeal( prop );
+				_path.push( prop );
+				_toolObjectDeepSeal( prop, fn, _path );
+				_path.pop();
 			}
 		}
 
-		Object.seal( object );
+		if ( !fn || fn( _path ) ) {
+			Object.seal( object );
+		}
 	}
 
 	return object;
@@ -69,10 +76,13 @@ function _toolObjectDeepSeal( object ) {
  * Deeply freezes a given object w/o copying it.
  *
  * @param {object} object object to be frozen deeply
+ * @param {function(string[]):boolean} testFn callback invoked to decide whether some property should be frozen or not
+ * @param {string[]} _path breadcrumb of segments, used internally
  * @returns {object} reference on provided object, now deeply frozen
  */
-function _toolObjectDeepFreeze( object ) {
+function _toolObjectDeepFreeze( object, testFn = null, _path = [] ) {
 	if ( object && typeof object === "object" ) {
+		const fn = testFn && typeof testFn === "function" ? testFn : null;
 		const props = Object.keys( object );
 		const numProps = props.length;
 
@@ -80,11 +90,15 @@ function _toolObjectDeepFreeze( object ) {
 			const prop = object[props[i]];
 
 			if ( prop && typeof prop === "object" ) {
-				_toolObjectDeepFreeze( prop );
+				_path.push( prop );
+				_toolObjectDeepFreeze( prop, fn, _path );
+				_path.pop();
 			}
 		}
 
-		Object.freeze( object );
+		if ( !fn || fn( _path ) ) {
+			Object.freeze( object );
+		}
 	}
 
 	return object;
