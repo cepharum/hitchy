@@ -26,6 +26,8 @@
  * @author cepharum
  */
 
+"use strict";
+
 exports.check = ( req, res ) => {
 	if ( req.custom[0] === 1 && req.custom[1] === 2 &&
 	     req.custom[2] === 3 && req.custom[3] === 4 ) {

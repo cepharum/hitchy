@@ -26,6 +26,8 @@
  * @author cepharum
  */
 
+"use strict";
+
 const { describe, it } = require( "mocha" );
 require( "should" );
 

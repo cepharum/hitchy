@@ -1,9 +1,10 @@
 "use strict";
 
-const PromiseTool = require( "../../../tools" ).promise;
-
+const { suite, test, setup } = require( "mocha" );
 const Should = require( "should" );
 require( "should-http" );
+
+const PromiseTool = require( "../../../tools" ).promise;
 
 // ----------------------------------------------------------------------------
 
@@ -134,6 +135,9 @@ suite( "Tools.Promise", function() {
 	test( "maps faster on using multiMap() than on using map()", function() {
 		let rank = 1;
 
+		const fastMapper = () => new Promise( resolve => setTimeout( resolve, 20 ) );
+		const slowMapper = () => new Promise( resolve => setTimeout( resolve, 40 ) );
+
 		return Promise.all( [
 			PromiseTool.map( input, fastMapper ).then( () => rank++ ),
 			PromiseTool.multiMap( input, slowMapper ).then( () => rank++ )
@@ -142,14 +146,6 @@ suite( "Tools.Promise", function() {
 				Should( mapped ).be.exactly( 2 );
 				Should( multiMapped ).be.exactly( 1 );
 			} );
-
-		function fastMapper( item ) {
-			return new Promise( resolve => setTimeout( resolve, 20 ) );
-		}
-
-		function slowMapper( item ) {
-			return new Promise( resolve => setTimeout( resolve, 40 ) );
-		}
 	} );
 
 	test( "supports sequential, probably delayed search for value", function() {

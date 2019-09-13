@@ -29,7 +29,7 @@
 "use strict";
 
 exports.policies = {
-	"ALL /prefix"( req, res, next ) {
+	"ALL /prefix"( req, res ) {
 		res.set( "x-policy", "responded" );
 		res.end();
 	},

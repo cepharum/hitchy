@@ -33,11 +33,13 @@ const options = {
 	// debug: true,
 };
 
-const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"];
+const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
+
+const Test = require( "../../../tools" ).test;
+const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"];
 
 // ----------------------------------------------------------------------------
 

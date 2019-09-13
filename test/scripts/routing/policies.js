@@ -5,12 +5,12 @@ const options = {
 	// debug: true,
 };
 
-const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector" ).express;
-
 const { describe, it, before, after } = require( "mocha" );
 require( "should" );
 require( "should-http" );
+
+const Test = require( "../../../tools/index" ).test;
+const Hitchy = require( "../../../injector" ).express;
 
 // ----------------------------------------------------------------------------
 

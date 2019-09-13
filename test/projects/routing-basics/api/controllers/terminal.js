@@ -30,9 +30,10 @@
 
 module.exports = {
 	/**
-	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 * @param {string} args
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {Array} args additional arguments tracked in session
+	 * @returns {void}
 	 */
 	mirror: function( req, res, ...args ) {
 		res.json( {
@@ -46,9 +47,10 @@ module.exports = {
 	},
 
 	/**
-	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 * @param {string} args
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {Array} args additional arguments tracked in session
+	 * @returns {void}
 	 */
 	deferredMirror: function( req, res, ...args ) {
 		const data = {
@@ -66,9 +68,10 @@ module.exports = {
 	},
 
 	/**
-	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 * @param {string} args
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {Array} args additional arguments tracked in session
+	 * @returns {void}
 	 */
 	fullyDeferredMirror: function( req, res, ...args ) {
 		setTimeout( () => {

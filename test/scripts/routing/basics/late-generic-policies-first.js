@@ -6,11 +6,13 @@ const options = {
 	// debug: true,
 };
 
-const Test = require( "../../../../tools/index" ).test;
-const Hitchy = require( "../../../../injector" ).node;
+const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
+
+const Test = require( "../../../../tools/index" ).test;
+const Hitchy = require( "../../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 

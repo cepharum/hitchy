@@ -1,10 +1,12 @@
 "use strict";
 
-const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" ).node;
+const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
+
+const Test = require( "../../../tools" ).test;
+const Hitchy = require( "../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 

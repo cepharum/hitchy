@@ -28,9 +28,10 @@
 
 "use strict";
 
-const OrderedQueue = require( "../../../../lib/utility/ordered-queue" );
-
+const { suite, test, setup } = require( "mocha" );
 const Should = require( "should" );
+
+const OrderedQueue = require( "../../../../lib/utility/ordered-queue" );
 
 
 suite( "OrderedQueue", function() {
@@ -56,7 +57,7 @@ suite( "OrderedQueue", function() {
 		( function() { new OrderedQueue( () => 1 ); } ).should.throw();
 		( function() { new OrderedQueue( -1 ); } ).should.throw();
 
-		( function() { new OrderedQueue( 2.5 ); } ).should.not.throw();    // for obeying integer part, only (=2)
+		( function() { new OrderedQueue( 2.5 ); } ).should.not.throw();
 
 		( function() { new OrderedQueue( 0 ); } ).should.not.throw();
 		( function() { new OrderedQueue( 1 ); } ).should.not.throw();
@@ -68,7 +69,7 @@ suite( "An instance of OrderedQueue", function() {
 	let queue;
 	const pluginNumber = 10;
 
-	beforeEach( function() {
+	setup( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
@@ -109,6 +110,8 @@ suite( "An instance of OrderedQueue", function() {
 	test( "exposes method for compacting managed lists making them non-adjustable", function() {
 		let i = 0;
 
+		const countThree = () => i++ < 3;
+
 		queue.should.have.property( "compact" );
 		queue.compact.should.be.Function();
 
@@ -117,10 +120,6 @@ suite( "An instance of OrderedQueue", function() {
 		queue.compact.bind( queue, countThree ).should.not.throw();
 		queue.before.length.should.be.equal( 3 );
 		queue.after.length.should.be.equal( 0 );
-
-		function countThree( item ) {
-			return i++ < 3;
-		}
 	} );
 
 	test( "initially consists of unset slots, only (to be removed on compacting)", function() {
@@ -134,7 +133,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 	let queue;
 	const pluginNumber = 10;
 
-	beforeEach( function() {
+	setup( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
@@ -346,7 +345,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 	let queue;
 	const pluginNumber = 10;
 
-	beforeEach( function() {
+	setup( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
@@ -530,7 +529,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 	let queue;
 	const pluginNumber = 10;
 
-	beforeEach( function() {
+	setup( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 

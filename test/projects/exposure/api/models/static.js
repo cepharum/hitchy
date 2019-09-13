@@ -30,7 +30,7 @@
 
 module.exports = {
 	staticProperty: "original static model property",
-	staticMethod: function( req, res ) {
+	staticMethod: function( req, res ) { // eslint-disable-line no-unused-vars
 		return "original static model method";
 	}
 };

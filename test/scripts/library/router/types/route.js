@@ -32,12 +32,12 @@ const apiOverlay = {
 	runtime: {
 		controllers: {
 			Custom: class CustomController {
-				static myHandler( req, res ) {}
+				static myHandler( req, res ) {} // eslint-disable-line no-unused-vars, require-jsdoc
 			}
 		},
 		policies: {
 			Filter: class FilterPolicy {
-				static myImplementation( req, res, next ) {}
+				static myImplementation( req, res, next ) {} // eslint-disable-line no-unused-vars, require-jsdoc
 			}
 		},
 	}
@@ -49,12 +49,12 @@ const modules = {
 	RouteModule: "lib/router/types/route",
 };
 
-const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, modules } );
-
-const PathToRegExp = require( "path-to-regexp" );
+const { suite, test } = require( "mocha" );
 
 const Should = require( "should" );
 require( "should-http" );
+
+const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, modules } );
 
 // ----------------------------------------------------------------------------
 
@@ -1044,7 +1044,7 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 	} );
 
 	test( "considers some generic but divergent route never covering some specific prefix", function() {
-		return ApiMockUp.then( function( { API, RouteModule: { Route, TerminalRoute } } ) {
+		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
 			[
 				{ generic: "/test/name/sub/item", specific: "/test/name/sub" },
 				{ generic: "/test/name/subs", specific: "/test/name/sub" },

@@ -36,17 +36,19 @@ const ApiMockUp = require( "../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
+const { suite, test } = require( "mocha" );
+
 require( "should" );
 require( "should-http" );
 
 // ----------------------------------------------------------------------------
 
 suite( "Testing", function() {
-	test( "is running test", function() {
-		return ApiMockUp.then( function( { API, loader, Utilities } ) {
+	test( "is running test", () => {
+		return ApiMockUp.then( ( { API, loader, Utilities } ) => { // eslint-disable-line no-unused-vars
 			// put your test code relying on API here
 			return Promise.resolve( true )
-				.then( function( result ) {
+				.then( result => {
 					result.should.be.true();
 				} );
 		} );

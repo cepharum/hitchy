@@ -41,7 +41,15 @@ const session = {
 	},
 };
 
-function filter( pattern, req, res, next ) {
+/**
+ * @param {RegExp} pattern controls current use case
+ * @param {IncomingMessage} req request descriptor
+ * @param {ServerResponse} res response manager
+ * @param {function(error:Error=)} next callback invoked for triggering next handler
+ * @param {Array} args additional arguments tracked in session
+ * @returns {void}
+ */
+function filter( pattern, req, res, next, ...args ) {
 	session.method.late = req.method;
 
 	[ "params", "query" ]
@@ -56,9 +64,8 @@ function filter( pattern, req, res, next ) {
 			}
 		} );
 
-	const args = [].slice( arguments, 3 );
 	if ( args.length ) {
-		session.args.late = args;
+		session.args.late = args.slice();
 	}
 
 	next();
@@ -67,9 +74,10 @@ function filter( pattern, req, res, next ) {
 
 module.exports = {
 	/**
-	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 * @param {function(error:Error=)} next
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {function(error:Error=)} next callback invoked for triggering next handler
+	 * @returns {void}
 	 */
 	inject: function( req, res, next ) {
 		req.session = session;
@@ -78,16 +86,18 @@ module.exports = {
 	},
 
 	/**
-	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 * @param {function(error:Error=)} next
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {function(error:Error=)} next callback invoked for triggering next handler
+	 * @returns {void}
 	 */
 	early: filter.bind( {}, /^early(\w+)$/ ),
 
 	/**
-	 * @param {IncomingMessage} req
-	 * @param {ServerResponse} res
-	 * @param {function(error:Error=)} next
+	 * @param {IncomingMessage} req request descriptor
+	 * @param {ServerResponse} res response manager
+	 * @param {function(error:Error=)} next callback invoked for triggering next handler
+	 * @returns {void}
 	 */
 	late: filter.bind( {}, /^late(\w+)$/ ),
 };

@@ -32,12 +32,12 @@ const apiOverlay = {
 	runtime: {
 		controllers: {
 			custom: class CustomController {
-				static myHandler( req, res ) {}
+				static myHandler( req, res ) {} // eslint-disable-line no-unused-vars, require-jsdoc
 			}
 		},
 		policies: {
 			filter: class FilterPolicy {
-				static myImplementation( req, res, next ) {}
+				static myImplementation( req, res, next ) {} // eslint-disable-line no-unused-vars, require-jsdoc
 			}
 		},
 	}
@@ -48,10 +48,12 @@ const modules = {
 	RouteModule: "lib/router/types/route",
 };
 
-const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, modules } );
+const { suite, test } = require( "mocha" );
 
 const Should = require( "should" );
 require( "should-http" );
+
+const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, modules } );
 
 // ----------------------------------------------------------------------------
 
@@ -60,7 +62,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			RoutesPerMethod.should.be.ok().and.should.be.Object();
 		} );
- 	} );
+	} );
 
 	test( "can be instantiated", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {

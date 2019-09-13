@@ -5,12 +5,14 @@ const options = {
 	// debug: true,
 };
 
-const Test = require( "../../../tools" ).test;
-const Promises = require( "../../../tools" ).promise;
-const Hitchy = require( "../../../injector" ).node;
+const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
+
+const Test = require( "../../../tools" ).test;
+const Promises = require( "../../../tools" ).promise;
+const Hitchy = require( "../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 

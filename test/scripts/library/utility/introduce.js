@@ -36,7 +36,9 @@ const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
-const Should = require( "should" );
+const { suite, test } = require( "mocha" );
+
+require( "should" );
 
 // ----------------------------------------------------------------------------
 

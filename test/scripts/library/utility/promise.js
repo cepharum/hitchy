@@ -38,7 +38,8 @@ const PromiseTool = Tools.promise;
 
 // ----------------------------------------------------------------------------
 
-const Should = require( "should" );
+const { suite, test } = require( "mocha" );
+require( "should" );
 
 // ----------------------------------------------------------------------------
 

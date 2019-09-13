@@ -28,10 +28,12 @@
 
 "use strict";
 
-const Normalizer = require( "../../../../../lib/router/normalize/definition" );
+const { suite, test } = require( "mocha" );
 
 const Should = require( "should" );
 require( "should-http" );
+
+const Normalizer = require( "../../../../../lib/router/normalize/definition" );
 
 
 suite( "Route definition normalizer", function() {

@@ -26,6 +26,8 @@
  * @author cepharum
  */
 
+"use strict";
+
 exports.one = ( req, res, next ) => {
 	req.custom = [1];
 
