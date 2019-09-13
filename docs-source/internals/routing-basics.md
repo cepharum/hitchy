@@ -88,7 +88,7 @@ To understand the following chapters on routing stages and slots it is important
 
 The configuration of policies and routes is always aggregated from different sources and merged according to some internal set of rules. Basically there are two kinds of sources capable of defining policies and/or routes:
 
-1. Plugins or _modules_ may define policies and/or routes in Hitchy's configuration phase during boot-up. They are _module-related_.
+1. [Plugins](../internals/architecture-basics.md#plugins) may define policies and/or routes in Hitchy's configuration phase during boot-up. They are _plugin-related_.
 
 2. The project relying on Hitchy as a framework - your application - may define policies and/or routes as well. These are called _custom_ policies and routes.
 

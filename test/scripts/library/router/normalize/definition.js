@@ -35,9 +35,9 @@ require( "should-http" );
 
 
 suite( "Route definition normalizer", function() {
-	test( "exposes function for normalizing route definitions of extensions/modules", function() {
-		Should.exist( Normalizer.Module );
-		Normalizer.Module.should.be.Function();
+	test( "exposes function for normalizing route definitions of plugins", function() {
+		Should.exist( Normalizer.Plugin );
+		Normalizer.Plugin.should.be.Function();
 	} );
 
 	test( "exposes function for normalizing custom route definitions of any current application", function() {
@@ -48,32 +48,32 @@ suite( "Route definition normalizer", function() {
 
 suite( "Normalizer for module-related route definitions", function() {
 	test( "does not throw on processing empty route definition", function() {
-		Normalizer.Module.should.not.throw();
-		Normalizer.Module.bind( Normalizer, null ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, undefined ).should.not.throw();
+		Normalizer.Plugin.should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, null ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, undefined ).should.not.throw();
 	} );
 
 	test( "throws on processing invalid route definition", function() {
-		Normalizer.Module.bind( Normalizer, false ).should.throw();
-		Normalizer.Module.bind( Normalizer, true ).should.throw();
-		Normalizer.Module.bind( Normalizer, 0 ).should.throw();
-		Normalizer.Module.bind( Normalizer, 1 ).should.throw();
-		Normalizer.Module.bind( Normalizer, -2 ).should.throw();
-		Normalizer.Module.bind( Normalizer, "" ).should.throw();
-		Normalizer.Module.bind( Normalizer, "0" ).should.throw();
-		Normalizer.Module.bind( Normalizer, "/route" ).should.throw();
-		Normalizer.Module.bind( Normalizer, function() {} ).should.throw();
-		Normalizer.Module.bind( Normalizer, () => {} ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, false ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, true ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, 0 ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, 1 ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, -2 ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, "" ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, "0" ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, "/route" ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, function() {} ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, () => {} ).should.throw();
 	} );
 
 	test( "does not throw on processing valid definition without any element", function() {
-		Normalizer.Module.bind( Normalizer, {} ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, [] ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, new Map() ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, {} ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, [] ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, new Map() ).should.not.throw();
 	} );
 
 	test( "provides object always covering either supported stage", function() {
-		const a = Normalizer.Module( {} );
+		const a = Normalizer.Plugin( {} );
 
 		Should.exist( a );
 		a.should.be.Object();
@@ -81,54 +81,54 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "basically cares for wellformedness of provided route definitions", function() {
-		Normalizer.Module.bind( Normalizer, { null: null } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { false: false } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { true: true } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { undefined: undefined } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { emptyString: "" } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { string: "some value" } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { emptyArray: [] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { array: ["some value"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { emptyObject: {} } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { object: { someValue: "some value" } } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { function: () => {} } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { null: null } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { false: false } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { true: true } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { undefined: undefined } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { emptyString: "" } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { string: "some value" } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { emptyArray: [] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { array: ["some value"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { emptyObject: {} } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { object: { someValue: "some value" } } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { function: () => {} } ).should.throw();
 
 		// test cases value due to least difference from cases tested above
 		// @note THIS DOES NOT MEAN THESE CASES ARE VALID AT LAST, but passing
 		//       simple tests included with normalization.
-		Normalizer.Module.bind( Normalizer, { "/null": null } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/false": false } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/true": true } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/undefined": undefined } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/emptyString": "" } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/string": "some value" } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/emptyArray": [] } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/array": ["some value"] } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/emptyObject": {} } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/object": { someValue: "some value" } } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { "/function": () => {} } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/null": null } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/false": false } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/true": true } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/undefined": undefined } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/emptyString": "" } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/string": "some value" } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/emptyArray": [] } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/array": ["some value"] } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/emptyObject": {} } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/object": { someValue: "some value" } } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { "/function": () => {} } ).should.not.throw();
 
 		// using array for collecting route definitions
-		Normalizer.Module.bind( Normalizer, [null] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [false] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [true] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [undefined] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [""] ).should.throw();
-		Normalizer.Module.bind( Normalizer, ["some value"] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [[]] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [["some value"]] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [{}] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [{ someValue: "some value" }] ).should.throw();
-		Normalizer.Module.bind( Normalizer, [() => {}] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [null] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [false] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [true] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [undefined] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [""] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, ["some value"] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [[]] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [["some value"]] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [{}] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [{ someValue: "some value" }] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, [() => {}] ).should.throw();
 
 		// test cases value due to least difference from cases tested above
 		// @note THIS DOES NOT MEAN THESE CASES ARE VALID AT LAST, but passing
 		//       simple tests included with normalization.
-		Normalizer.Module.bind( Normalizer, ["/"] ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, ["/some value"] ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, ["some /value"] ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, [[ "/some", "value" ]] ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, [{ "/someValue": "some value" }] ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, ["/"] ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, ["/some value"] ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, ["some /value"] ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, [[ "/some", "value" ]] ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, [{ "/someValue": "some value" }] ).should.throw();
 	} );
 
 	test( "accepts set of routes explicitly bound to before-stage", function() {
@@ -136,7 +136,7 @@ suite( "Normalizer for module-related route definitions", function() {
 			before: ["/ => anything"],
 		};
 
-		const normalized = Normalizer.Module( definition );
+		const normalized = Normalizer.Plugin( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -151,7 +151,7 @@ suite( "Normalizer for module-related route definitions", function() {
 			after: ["/ => anything"],
 		};
 
-		const normalized = Normalizer.Module( definition );
+		const normalized = Normalizer.Plugin( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -167,7 +167,7 @@ suite( "Normalizer for module-related route definitions", function() {
 			after: ["/ => anything"],
 		};
 
-		const normalized = Normalizer.Module( definition );
+		const normalized = Normalizer.Plugin( definition );
 
 		normalized.should.not.equal( definition );
 
@@ -179,7 +179,7 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "implicitly binds set of routes to before-stage", function() {
-		let normalized = Normalizer.Module( {
+		let normalized = Normalizer.Plugin( {
 			"/something": "something",
 		} );
 
@@ -188,7 +188,7 @@ suite( "Normalizer for module-related route definitions", function() {
 		normalized.before.values().next().value.should.equal( "something" );
 		normalized.after.should.be.instanceof( Map ).and.be.empty();
 
-		normalized = Normalizer.Module( [
+		normalized = Normalizer.Plugin( [
 			"/something => something",
 		] );
 
@@ -199,43 +199,43 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "rejects set of routes explicitly bound to unknown stage", function() {
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			foo: [],
 		} ).should.throw();
 
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			foo: ["/ => something"],
 		} ).should.throw();
 	} );
 
 	test( "rejects definition combining sets bound to known stage with sets bound to unknown stage", function() {
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			before: ["/ => something"],
 			foo: [],
 		} ).should.throw();
 
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			before: ["/ => something"],
 			foo: ["/ => something"],
 		} ).should.throw();
 
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			after: ["/ => something"],
 			foo: [],
 		} ).should.throw();
 
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			after: ["/ => something"],
 			foo: ["/ => something"],
 		} ).should.throw();
 
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			before: ["/ => something"],
 			after: ["/ => something"],
 			foo: [],
 		} ).should.throw();
 
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			before: ["/ => something"],
 			after: ["/ => something"],
 			foo: ["/ => something"],
@@ -243,7 +243,7 @@ suite( "Normalizer for module-related route definitions", function() {
 	} );
 
 	test( "rejects explicitly bound sets of routes mixed with implicitly bound routes", function() {
-		Normalizer.Module.bind( Normalizer, {
+		Normalizer.Plugin.bind( Normalizer, {
 			// explicit:
 			before: ["/ => anything"],
 			after: ["/ => nothing"],
@@ -252,19 +252,19 @@ suite( "Normalizer for module-related route definitions", function() {
 		} ).should.throw();
 	} );
 
-	test( "rejects definition including stages basically known, but not supported for modules", function() {
-		Normalizer.Module.bind( Normalizer, { before: ["/ => anything"] } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { after: ["/ => anything"] } ).should.not.throw();
-		Normalizer.Module.bind( Normalizer, { early: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { late: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { early: ["/ => something"], late: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { before: ["/ => something"], early: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { before: ["/ => something"], late: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { after: ["/ => something"], early: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { after: ["/ => something"], late: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { before: ["/ => everything"], after: ["/ => something"], early: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { before: ["/ => everything"], after: ["/ => something"], late: ["/ => anything"] } ).should.throw();
-		Normalizer.Module.bind( Normalizer, { before: ["/ => everything"], after: ["/ => something"], early: ["/ => anything"], late: ["/ => nothing"] } ).should.throw();
+	test( "rejects definition including stages basically known, but not supported for plugins", function() {
+		Normalizer.Plugin.bind( Normalizer, { before: ["/ => anything"] } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { after: ["/ => anything"] } ).should.not.throw();
+		Normalizer.Plugin.bind( Normalizer, { early: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { late: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { early: ["/ => something"], late: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { before: ["/ => something"], early: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { before: ["/ => something"], late: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { after: ["/ => something"], early: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { after: ["/ => something"], late: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { before: ["/ => everything"], after: ["/ => something"], early: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { before: ["/ => everything"], after: ["/ => something"], late: ["/ => anything"] } ).should.throw();
+		Normalizer.Plugin.bind( Normalizer, { before: ["/ => everything"], after: ["/ => something"], early: ["/ => anything"], late: ["/ => nothing"] } ).should.throw();
 	} );
 } );
 

@@ -6,7 +6,7 @@ next: advanced-routing.md
 
 ## Prerequisites
 
-Hitchy is implemented in Javascript and requires [Node.js](https://nodejs.org/) as a runtime. In addition it relies on a tool called [npm](https://www.npmjs.com/) which is used to access a vast amount of modules ready for use. Hitchy is just one of those. This tool is included with Node.js.
+Hitchy is implemented in Javascript and requires [Node.js](https://nodejs.org/) as a runtime. In addition it relies on a tool called [npm](https://www.npmjs.com/) which is used to access a vast amount of packages ready for use. Hitchy is just one of those. This tool is included with Node.js.
 
 ## Create Project
 

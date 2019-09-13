@@ -12,7 +12,7 @@ In a fully running application Hitchy's API is available
 
 ### Using Common Module Pattern
 
-Plugins and components discovered by Hitchy are just software modules that may export an API as usual:
+Plugins and components discovered by Hitchy are (consisting of) modules that may export an API as usual:
 
 ```javascript
 module.exports = {
@@ -29,8 +29,8 @@ This example shows a software module that's exposing two functions to be its API
 
 Hitchy's core supports so called _common module pattern_ when _discovering_ plugins and their components.
 
-:::warning Discovering Modules?
-In Hitchy _discovering_ a module is different from _requiring_ it. The term discovery refers to Hitchy's capability of [automatically loading a module during bootstrap](../internals/architecture-basics.md#discovering-plugins). In opposition to that any code of your application may still `require()` modules though **this is going to have some negative side effects for modules relying on _common module pattern_**. 
+:::warning Discovering Plugins?
+In Hitchy _discovering_ a plugin is different from _requiring_ it. The term discovery refers to Hitchy's capability of [automatically loading a plugin during bootstrap](../internals/architecture-basics.md#discovering-plugins). In opposition to that any code of your application may still `require()` modules the usual way though **this is going to have some negative side effects for modules relying on _common module pattern_**. 
 ::: 
 
 The common module pattern is a convention allowing any complying module to export a function instead of its API. This function is invoked by Hitchy's bootstrap code to retrieve the actual API of the module:

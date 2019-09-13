@@ -103,7 +103,7 @@ suite( "Library.Router.Types.Route#Route", function() {
 		} );
 	} );
 
-	test( "exposes pattern for matching and normalizing names of modules containing route targets", function() {
+	test( "exposes pattern for matching and normalizing names of components containing route targets", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.tailPattern.should.be.instanceof( RegExp );
 
@@ -149,7 +149,7 @@ suite( "Library.Router.Types.Route#PolicyRoute", function() {
 		} );
 	} );
 
-	test( "exposes pattern for matching and normalizing names of modules containing route targets", function() {
+	test( "exposes pattern for matching and normalizing names of components containing route targets", function() {
 		return ApiMockUp.then( function( { RouteModule: { PolicyRoute } } ) {
 			PolicyRoute.tailPattern.should.be.instanceof( RegExp );
 
@@ -195,7 +195,7 @@ suite( "Library.Router.Types.Route#TerminalRoute", function() {
 		} );
 	} );
 
-	test( "exposes pattern for matching and normalizing names of modules containing route targets", function() {
+	test( "exposes pattern for matching and normalizing names of components containing route targets", function() {
 		return ApiMockUp.then( function( { RouteModule: { TerminalRoute } } ) {
 			TerminalRoute.tailPattern.should.be.instanceof( RegExp );
 

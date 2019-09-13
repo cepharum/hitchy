@@ -70,4 +70,6 @@ Those four kinds of blocks are commonly referred to as _components_ of a Hitchy-
 
 ### Modules
 
-Starting with v0.2.0 of Hitchy its understandig of a _module_ isn't any different from Node.js anymore. A Javascript file exporting some API is a module that can be loaded.
+Starting with v0.2.0 of Hitchy its understandig of a _module_ isn't any different from Node.js anymore. A Javascript file exporting some API is a module that can be loaded e.g. by using `require()`. 
+
+In previous versions the term module was used for what is now called a [plugin](#plugins).

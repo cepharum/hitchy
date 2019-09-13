@@ -39,7 +39,7 @@ suite( "OrderedQueue", function() {
 		( function() { new OrderedQueue( 10 ); } ).should.not.throw();
 	} );
 
-	test( "requires positive number on modules to support on instantiating", function() {
+	test( "requires positive number of plugins to support on instantiating", function() {
 		Should.exist( OrderedQueue );
 		( function() { new OrderedQueue(); } ).should.throw();
 		( function() { new OrderedQueue( undefined ); } ).should.throw();
@@ -66,25 +66,25 @@ suite( "OrderedQueue", function() {
 
 suite( "An instance of OrderedQueue", function() {
 	let queue;
-	const moduleNumber = 10;
+	const pluginNumber = 10;
 
 	beforeEach( function() {
-		queue = new OrderedQueue( moduleNumber );
+		queue = new OrderedQueue( pluginNumber );
 	} );
 
-	test( "exposes number of supported modules as defined on instantiating queue", function() {
-		queue.should.have.property( "moduleSlotCount" );
-		queue.moduleSlotCount.should.be.greaterThanOrEqual( 0 );
+	test( "exposes number of supported plugins as defined on instantiating queue", function() {
+		queue.should.have.property( "pluginSlotCount" );
+		queue.pluginSlotCount.should.be.greaterThanOrEqual( 0 );
 	} );
 
 	test( "exposes two separate list of slots", function() {
 		queue.should.have.properties( "before", "after" );
 
 		queue.before.should.be.Array();
-		queue.before.length.should.be.greaterThanOrEqual( moduleNumber );
+		queue.before.length.should.be.greaterThanOrEqual( pluginNumber );
 
 		queue.after.should.be.Array();
-		queue.after.length.should.be.greaterThanOrEqual( moduleNumber );
+		queue.after.length.should.be.greaterThanOrEqual( pluginNumber );
 
 		queue.before.should.not.equal( queue.after );
 	} );
@@ -124,138 +124,138 @@ suite( "An instance of OrderedQueue", function() {
 	} );
 
 	test( "initially consists of unset slots, only (to be removed on compacting)", function() {
-		Should( queue.before.length + queue.after.length ).be.greaterThanOrEqual( 2 * moduleNumber );
+		Should( queue.before.length + queue.after.length ).be.greaterThanOrEqual( 2 * pluginNumber );
 		queue.compact();
 		Should( queue.before.length + queue.after.length ).be.equal( 0 );
 	} );
 } );
 
-suite( "On managing module-related slots using an instance of OrderedQueue", function() {
+suite( "On managing plugin-related slots using an instance of OrderedQueue", function() {
 	let queue;
-	const moduleNumber = 10;
+	const pluginNumber = 10;
 
 	beforeEach( function() {
-		queue = new OrderedQueue( moduleNumber );
+		queue = new OrderedQueue( pluginNumber );
 	} );
 
-	test( "exposes methods for getting/setting value of module-related slots", function() {
-		queue.getOnModule.should.be.Function();
-		queue.setOnModule.should.be.Function();
+	test( "exposes methods for getting/setting value of plugin-related slots", function() {
+		queue.getOnPlugin.should.be.Function();
+		queue.setOnPlugin.should.be.Function();
 	} );
 
-	test( "requires valid module index on addressing related slot for reading", function() {
-		queue.getOnModule.bind( queue ).should.throw();
-		queue.getOnModule.bind( queue, null ).should.throw();
-		queue.getOnModule.bind( queue, undefined ).should.throw();
-		queue.getOnModule.bind( queue, false ).should.throw();
-		queue.getOnModule.bind( queue, true ).should.throw();
-		queue.getOnModule.bind( queue, "" ).should.throw();
-		queue.getOnModule.bind( queue, "something" ).should.throw();
-		queue.getOnModule.bind( queue, [] ).should.throw();
-		queue.getOnModule.bind( queue, [1] ).should.throw();
-		queue.getOnModule.bind( queue, {} ).should.throw();
-		queue.getOnModule.bind( queue, { something: 1 } ).should.throw();
-		queue.getOnModule.bind( queue, function() {} ).should.throw();
-		queue.getOnModule.bind( queue, () => 1 ).should.throw();
+	test( "requires valid plugin index on addressing related slot for reading", function() {
+		queue.getOnPlugin.bind( queue ).should.throw();
+		queue.getOnPlugin.bind( queue, null ).should.throw();
+		queue.getOnPlugin.bind( queue, undefined ).should.throw();
+		queue.getOnPlugin.bind( queue, false ).should.throw();
+		queue.getOnPlugin.bind( queue, true ).should.throw();
+		queue.getOnPlugin.bind( queue, "" ).should.throw();
+		queue.getOnPlugin.bind( queue, "something" ).should.throw();
+		queue.getOnPlugin.bind( queue, [] ).should.throw();
+		queue.getOnPlugin.bind( queue, [1] ).should.throw();
+		queue.getOnPlugin.bind( queue, {} ).should.throw();
+		queue.getOnPlugin.bind( queue, { something: 1 } ).should.throw();
+		queue.getOnPlugin.bind( queue, function() {} ).should.throw();
+		queue.getOnPlugin.bind( queue, () => 1 ).should.throw();
 
-		queue.getOnModule.bind( queue, -1 ).should.throw();
-		queue.getOnModule.bind( queue, 0 ).should.not.throw();
-		queue.getOnModule.bind( queue, 1 ).should.not.throw();
-		queue.getOnModule.bind( queue, 9 ).should.not.throw();
-		queue.getOnModule.bind( queue, 10 ).should.throw();
+		queue.getOnPlugin.bind( queue, -1 ).should.throw();
+		queue.getOnPlugin.bind( queue, 0 ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 1 ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 9 ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 10 ).should.throw();
 	} );
 
-	test( "requires valid module index on addressing related slot for writing", function() {
-		queue.setOnModule.bind( queue ).should.throw();
-		queue.setOnModule.bind( queue, null ).should.throw();
-		queue.setOnModule.bind( queue, undefined ).should.throw();
-		queue.setOnModule.bind( queue, false ).should.throw();
-		queue.setOnModule.bind( queue, true ).should.throw();
-		queue.setOnModule.bind( queue, "" ).should.throw();
-		queue.setOnModule.bind( queue, "something" ).should.throw();
-		queue.setOnModule.bind( queue, [] ).should.throw();
-		queue.setOnModule.bind( queue, [1] ).should.throw();
-		queue.setOnModule.bind( queue, {} ).should.throw();
-		queue.setOnModule.bind( queue, { something: 1 } ).should.throw();
-		queue.setOnModule.bind( queue, function() {} ).should.throw();
-		queue.setOnModule.bind( queue, () => 1 ).should.throw();
+	test( "requires valid plugin index on addressing related slot for writing", function() {
+		queue.setOnPlugin.bind( queue ).should.throw();
+		queue.setOnPlugin.bind( queue, null ).should.throw();
+		queue.setOnPlugin.bind( queue, undefined ).should.throw();
+		queue.setOnPlugin.bind( queue, false ).should.throw();
+		queue.setOnPlugin.bind( queue, true ).should.throw();
+		queue.setOnPlugin.bind( queue, "" ).should.throw();
+		queue.setOnPlugin.bind( queue, "something" ).should.throw();
+		queue.setOnPlugin.bind( queue, [] ).should.throw();
+		queue.setOnPlugin.bind( queue, [1] ).should.throw();
+		queue.setOnPlugin.bind( queue, {} ).should.throw();
+		queue.setOnPlugin.bind( queue, { something: 1 } ).should.throw();
+		queue.setOnPlugin.bind( queue, function() {} ).should.throw();
+		queue.setOnPlugin.bind( queue, () => 1 ).should.throw();
 
-		queue.setOnModule.bind( queue, -1 ).should.throw();
-		queue.setOnModule.bind( queue, 0 ).should.not.throw();
-		queue.setOnModule.bind( queue, 1 ).should.not.throw();
-		queue.setOnModule.bind( queue, 9 ).should.not.throw();
-		queue.setOnModule.bind( queue, 10 ).should.throw();
+		queue.setOnPlugin.bind( queue, -1 ).should.throw();
+		queue.setOnPlugin.bind( queue, 0 ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 1 ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 9 ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 10 ).should.throw();
 	} );
 
 	test( "takes supported stage on selecting slot by index in either one's related list", function() {
-		queue.getOnModule.bind( queue, 0 ).should.not.throw();
-		queue.getOnModule.bind( queue, 1 ).should.not.throw();
-		queue.getOnModule.bind( queue, 9 ).should.not.throw();
-		queue.getOnModule.bind( queue, 0, "before" ).should.not.throw();
-		queue.getOnModule.bind( queue, 1, "before" ).should.not.throw();
-		queue.getOnModule.bind( queue, 9, "before" ).should.not.throw();
-		queue.getOnModule.bind( queue, 0, "after" ).should.not.throw();
-		queue.getOnModule.bind( queue, 1, "after" ).should.not.throw();
-		queue.getOnModule.bind( queue, 9, "after" ).should.not.throw();
-		queue.getOnModule.bind( queue, 0, true ).should.not.throw();
-		queue.getOnModule.bind( queue, 1, true ).should.not.throw();
-		queue.getOnModule.bind( queue, 9, true ).should.not.throw();
-		queue.getOnModule.bind( queue, 0, false ).should.not.throw();
-		queue.getOnModule.bind( queue, 1, false ).should.not.throw();
-		queue.getOnModule.bind( queue, 9, false ).should.not.throw();
-		queue.getOnModule.bind( queue, 0, "early" ).should.throw();
-		queue.getOnModule.bind( queue, 1, "early" ).should.throw();
-		queue.getOnModule.bind( queue, 9, "early" ).should.throw();
-		queue.getOnModule.bind( queue, 0, "late" ).should.throw();
-		queue.getOnModule.bind( queue, 1, "late" ).should.throw();
-		queue.getOnModule.bind( queue, 9, "late" ).should.throw();
-		queue.getOnModule.bind( queue, 0, "arbitrary" ).should.throw();
-		queue.getOnModule.bind( queue, 1, "arbitrary" ).should.throw();
-		queue.getOnModule.bind( queue, 9, "arbitrary" ).should.throw();
+		queue.getOnPlugin.bind( queue, 0 ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 1 ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 9 ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 0, "before" ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 1, "before" ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 9, "before" ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 0, "after" ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 1, "after" ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 9, "after" ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 0, true ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 1, true ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 9, true ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 0, false ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 1, false ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 9, false ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 0, "early" ).should.throw();
+		queue.getOnPlugin.bind( queue, 1, "early" ).should.throw();
+		queue.getOnPlugin.bind( queue, 9, "early" ).should.throw();
+		queue.getOnPlugin.bind( queue, 0, "late" ).should.throw();
+		queue.getOnPlugin.bind( queue, 1, "late" ).should.throw();
+		queue.getOnPlugin.bind( queue, 9, "late" ).should.throw();
+		queue.getOnPlugin.bind( queue, 0, "arbitrary" ).should.throw();
+		queue.getOnPlugin.bind( queue, 1, "arbitrary" ).should.throw();
+		queue.getOnPlugin.bind( queue, 9, "arbitrary" ).should.throw();
 
-		queue.setOnModule.bind( queue, 0 ).should.not.throw();
-		queue.setOnModule.bind( queue, 1 ).should.not.throw();
-		queue.setOnModule.bind( queue, 9 ).should.not.throw();
-		queue.setOnModule.bind( queue, 0, "before" ).should.not.throw();
-		queue.setOnModule.bind( queue, 1, "before" ).should.not.throw();
-		queue.setOnModule.bind( queue, 9, "before" ).should.not.throw();
-		queue.setOnModule.bind( queue, 0, "after" ).should.not.throw();
-		queue.setOnModule.bind( queue, 1, "after" ).should.not.throw();
-		queue.setOnModule.bind( queue, 9, "after" ).should.not.throw();
-		queue.setOnModule.bind( queue, 0, true ).should.not.throw();
-		queue.setOnModule.bind( queue, 1, true ).should.not.throw();
-		queue.setOnModule.bind( queue, 9, true ).should.not.throw();
-		queue.setOnModule.bind( queue, 0, false ).should.not.throw();
-		queue.setOnModule.bind( queue, 1, false ).should.not.throw();
-		queue.setOnModule.bind( queue, 9, false ).should.not.throw();
-		queue.setOnModule.bind( queue, 0, "early" ).should.throw();
-		queue.setOnModule.bind( queue, 1, "early" ).should.throw();
-		queue.setOnModule.bind( queue, 9, "early" ).should.throw();
-		queue.setOnModule.bind( queue, 0, "late" ).should.throw();
-		queue.setOnModule.bind( queue, 1, "late" ).should.throw();
-		queue.setOnModule.bind( queue, 9, "late" ).should.throw();
-		queue.setOnModule.bind( queue, 0, "arbitrary" ).should.throw();
-		queue.setOnModule.bind( queue, 1, "arbitrary" ).should.throw();
-		queue.setOnModule.bind( queue, 9, "arbitrary" ).should.throw();
+		queue.setOnPlugin.bind( queue, 0 ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 1 ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 9 ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 0, "before" ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 1, "before" ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 9, "before" ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 0, "after" ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 1, "after" ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 9, "after" ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 0, true ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 1, true ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 9, true ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 0, false ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 1, false ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 9, false ).should.not.throw();
+		queue.setOnPlugin.bind( queue, 0, "early" ).should.throw();
+		queue.setOnPlugin.bind( queue, 1, "early" ).should.throw();
+		queue.setOnPlugin.bind( queue, 9, "early" ).should.throw();
+		queue.setOnPlugin.bind( queue, 0, "late" ).should.throw();
+		queue.setOnPlugin.bind( queue, 1, "late" ).should.throw();
+		queue.setOnPlugin.bind( queue, 9, "late" ).should.throw();
+		queue.setOnPlugin.bind( queue, 0, "arbitrary" ).should.throw();
+		queue.setOnPlugin.bind( queue, 1, "arbitrary" ).should.throw();
+		queue.setOnPlugin.bind( queue, 9, "arbitrary" ).should.throw();
 	} );
 
-	test( "implicitly initializes selected module's slot on reading", function() {
-		queue.getOnModule( 0, "before", "test" ).should.equal( "test" );
-		queue.getOnModule( 0, "before", "another test" ).should.equal( "test" );
+	test( "implicitly initializes selected plugin's slot on reading", function() {
+		queue.getOnPlugin( 0, "before", "test" ).should.equal( "test" );
+		queue.getOnPlugin( 0, "before", "another test" ).should.equal( "test" );
 	} );
 
 	test( "always provides same value on fetching same slot", function() {
 		const original = {};
-		const a = queue.getOnModule( 0, "before", original );
-		const b = queue.getOnModule( 0, "before" );
+		const a = queue.getOnPlugin( 0, "before", original );
+		const b = queue.getOnPlugin( 0, "before" );
 
 		a.should.equal( b );
 	} );
 
 	test( "provides different value on fetching same slot index from different stage", function() {
 		const original = {};
-		const a = queue.getOnModule( 0, "before", original );
-		const b = queue.getOnModule( 0, "after" );
+		const a = queue.getOnPlugin( 0, "before", original );
+		const b = queue.getOnPlugin( 0, "after" );
 
 		a.should.not.equal( b );
 	} );
@@ -263,37 +263,37 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 	test( "works with 'before' stage by default", function() {
 		const before = {}, after = {};
 
-		queue.getOnModule( 0, "before", before );
-		queue.getOnModule( 0, "after", after );
+		queue.getOnPlugin( 0, "before", before );
+		queue.getOnPlugin( 0, "after", after );
 
-		queue.getOnModule( 0 ).should.equal( before );
-		queue.getOnModule( 0 ).should.not.equal( after );
+		queue.getOnPlugin( 0 ).should.equal( before );
+		queue.getOnPlugin( 0 ).should.not.equal( after );
 	} );
 
 	test( "provides queue on setting value of a slot for fluently chaining method invocations", function() {
-		queue.setOnModule( 0 ).should.equal( queue );
+		queue.setOnPlugin( 0 ).should.equal( queue );
 	} );
 
-	test( "rejects access via module's index after compacting queue", function() {
-		queue.setOnModule.bind( queue, 0, "before", {} ).should.not.throw();
-		queue.getOnModule.bind( queue, 0, "before" ).should.not.throw();
+	test( "rejects access via plugin's index after compacting queue", function() {
+		queue.setOnPlugin.bind( queue, 0, "before", {} ).should.not.throw();
+		queue.getOnPlugin.bind( queue, 0, "before" ).should.not.throw();
 		queue.compact();
-		queue.setOnModule.bind( queue, 0, "before", {} ).should.throw();
-		queue.getOnModule.bind( queue, 0, "before" ).should.throw();
+		queue.setOnPlugin.bind( queue, 0, "before", {} ).should.throw();
+		queue.getOnPlugin.bind( queue, 0, "before" ).should.throw();
 	} );
 
 	test( "removes any slot with falsy value on compacting", function() {
 		queue
-			.setOnModule( 0, "before", 0 )
-			.setOnModule( 1, "before", undefined )
-			.setOnModule( 2, "before", null )
-			.setOnModule( 3, "before", "" )
-			.setOnModule( 4, "before", false )
-			.setOnModule( 5, "before", true )
-			.setOnModule( 6, "before", 1 )
-			.setOnModule( 7, "before", "0" );
+			.setOnPlugin( 0, "before", 0 )
+			.setOnPlugin( 1, "before", undefined )
+			.setOnPlugin( 2, "before", null )
+			.setOnPlugin( 3, "before", "" )
+			.setOnPlugin( 4, "before", false )
+			.setOnPlugin( 5, "before", true )
+			.setOnPlugin( 6, "before", 1 )
+			.setOnPlugin( 7, "before", "0" );
 
-		queue.before.length.should.be.greaterThanOrEqual( queue.moduleSlotCount );
+		queue.before.length.should.be.greaterThanOrEqual( queue.pluginSlotCount );
 
 		queue.compact();
 
@@ -305,16 +305,16 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 
 	test( "manages all slots in stage 'before' in order of index of slots", function() {
 		queue
-			.setOnModule( 9, "before", 10 )
-			.setOnModule( 8, "before", 9 )
-			.setOnModule( 7, "before", 8 )
-			.setOnModule( 6, "before", 7 )
-			.setOnModule( 5, "before", 6 )
-			.setOnModule( 4, "before", 5 )
-			.setOnModule( 3, "before", 4 )
-			.setOnModule( 2, "before", 3 )
-			.setOnModule( 1, "before", 2 )
-			.setOnModule( 0, "before", 1 )
+			.setOnPlugin( 9, "before", 10 )
+			.setOnPlugin( 8, "before", 9 )
+			.setOnPlugin( 7, "before", 8 )
+			.setOnPlugin( 6, "before", 7 )
+			.setOnPlugin( 5, "before", 6 )
+			.setOnPlugin( 4, "before", 5 )
+			.setOnPlugin( 3, "before", 4 )
+			.setOnPlugin( 2, "before", 3 )
+			.setOnPlugin( 1, "before", 2 )
+			.setOnPlugin( 0, "before", 1 )
 			.compact();
 
 		for ( let i = 0, s = queue.before, l = s.length; i < l; i++ ) {
@@ -324,16 +324,16 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 
 	test( "manages all slots in stage 'after' in reverse order of index of slots", function() {
 		queue
-			.setOnModule( 0, "after", 10 )
-			.setOnModule( 1, "after", 9 )
-			.setOnModule( 2, "after", 8 )
-			.setOnModule( 3, "after", 7 )
-			.setOnModule( 4, "after", 6 )
-			.setOnModule( 5, "after", 5 )
-			.setOnModule( 6, "after", 4 )
-			.setOnModule( 7, "after", 3 )
-			.setOnModule( 8, "after", 2 )
-			.setOnModule( 9, "after", 1 )
+			.setOnPlugin( 0, "after", 10 )
+			.setOnPlugin( 1, "after", 9 )
+			.setOnPlugin( 2, "after", 8 )
+			.setOnPlugin( 3, "after", 7 )
+			.setOnPlugin( 4, "after", 6 )
+			.setOnPlugin( 5, "after", 5 )
+			.setOnPlugin( 6, "after", 4 )
+			.setOnPlugin( 7, "after", 3 )
+			.setOnPlugin( 8, "after", 2 )
+			.setOnPlugin( 9, "after", 1 )
 			.compact();
 
 		for ( let i = 0, s = queue.after, l = s.length; i < l; i++ ) {
@@ -344,10 +344,10 @@ suite( "On managing module-related slots using an instance of OrderedQueue", fun
 
 suite( "On managing custom slots using an instance of OrderedQueue", function() {
 	let queue;
-	const moduleNumber = 10;
+	const pluginNumber = 10;
 
 	beforeEach( function() {
-		queue = new OrderedQueue( moduleNumber );
+		queue = new OrderedQueue( pluginNumber );
 	} );
 
 	test( "exposes methods for getting/setting value of custom slots", function() {
@@ -411,7 +411,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.setCustomSlot.bind( queue, "arbitrary" ).should.throw();
 	} );
 
-	test( "implicitly initializes selected module's slot on reading", function() {
+	test( "implicitly initializes selected plugin's slot on reading", function() {
 		queue.getCustomSlot( "before", "test" ).should.equal( "test" );
 		queue.getCustomSlot( "before", "another test" ).should.equal( "test" );
 		queue.getCustomSlot( "after", "test 2" ).should.equal( "test 2" );
@@ -457,7 +457,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.setCustomSlot().should.equal( queue );
 	} );
 
-	test( "rejects access via module's index after compacting queue", function() {
+	test( "rejects access via plugin's index after compacting queue", function() {
 		queue.setCustomSlot.bind( queue, "before", {} ).should.not.throw();
 		queue.getCustomSlot.bind( queue, "before" ).should.not.throw();
 		queue.compact();
@@ -472,7 +472,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 			.setCustomSlot( "after", null )
 			.setCustomSlot( "late", 1 );
 
-		queue.before.length.should.be.greaterThanOrEqual( queue.moduleSlotCount );
+		queue.before.length.should.be.greaterThanOrEqual( queue.pluginSlotCount );
 
 		queue.compact();
 
@@ -486,16 +486,16 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 	test( "manages custom slots in list preceding inner slot in proper order", function() {
 		queue
 			.setCustomSlot( "before", 12 )
-			.setOnModule( 9, "before", 11 )
-			.setOnModule( 8, "before", 10 )
-			.setOnModule( 7, "before", 9 )
-			.setOnModule( 6, "before", 8 )
-			.setOnModule( 5, "before", 7 )
-			.setOnModule( 4, "before", 6 )
-			.setOnModule( 3, "before", 5 )
-			.setOnModule( 2, "before", 4 )
-			.setOnModule( 1, "before", 3 )
-			.setOnModule( 0, "before", 2 )
+			.setOnPlugin( 9, "before", 11 )
+			.setOnPlugin( 8, "before", 10 )
+			.setOnPlugin( 7, "before", 9 )
+			.setOnPlugin( 6, "before", 8 )
+			.setOnPlugin( 5, "before", 7 )
+			.setOnPlugin( 4, "before", 6 )
+			.setOnPlugin( 3, "before", 5 )
+			.setOnPlugin( 2, "before", 4 )
+			.setOnPlugin( 1, "before", 3 )
+			.setOnPlugin( 0, "before", 2 )
 			.setCustomSlot( "early", 1 )
 			.compact();
 
@@ -507,16 +507,16 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 	test( "manages custom slots in list succeeding inner slot in proper (reverse) order", function() {
 		queue
 			.setCustomSlot( "late", 12 )
-			.setOnModule( 0, "after", 11 )
-			.setOnModule( 1, "after", 10 )
-			.setOnModule( 2, "after", 9 )
-			.setOnModule( 3, "after", 8 )
-			.setOnModule( 4, "after", 7 )
-			.setOnModule( 5, "after", 6 )
-			.setOnModule( 6, "after", 5 )
-			.setOnModule( 7, "after", 4 )
-			.setOnModule( 8, "after", 3 )
-			.setOnModule( 9, "after", 2 )
+			.setOnPlugin( 0, "after", 11 )
+			.setOnPlugin( 1, "after", 10 )
+			.setOnPlugin( 2, "after", 9 )
+			.setOnPlugin( 3, "after", 8 )
+			.setOnPlugin( 4, "after", 7 )
+			.setOnPlugin( 5, "after", 6 )
+			.setOnPlugin( 6, "after", 5 )
+			.setOnPlugin( 7, "after", 4 )
+			.setOnPlugin( 8, "after", 3 )
+			.setOnPlugin( 9, "after", 2 )
 			.setCustomSlot( "after", 1 )
 			.compact();
 
@@ -528,10 +528,10 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 
 suite( "On managing inner-action slot using an instance of OrderedQueue", function() {
 	let queue;
-	const moduleNumber = 10;
+	const pluginNumber = 10;
 
 	beforeEach( function() {
-		queue = new OrderedQueue( moduleNumber );
+		queue = new OrderedQueue( pluginNumber );
 	} );
 
 	test( "exposes methods for getting/setting value of slot containing data related to inner action of queue", function() {
@@ -613,7 +613,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue
 			.setInnerSlot( 0 );
 
-		queue.before.length.should.be.greaterThanOrEqual( queue.moduleSlotCount );
+		queue.before.length.should.be.greaterThanOrEqual( queue.pluginSlotCount );
 
 		queue.compact();
 
@@ -624,7 +624,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue
 			.setInnerSlot( 1 );
 
-		queue.before.length.should.be.greaterThanOrEqual( queue.moduleSlotCount );
+		queue.before.length.should.be.greaterThanOrEqual( queue.pluginSlotCount );
 
 		queue.compact();
 
@@ -636,16 +636,16 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue
 			.setInnerSlot( 13 )
 			.setCustomSlot( "before", 12 )
-			.setOnModule( 9, "before", 11 )
-			.setOnModule( 8, "before", 10 )
-			.setOnModule( 7, "before", 9 )
-			.setOnModule( 6, "before", 8 )
-			.setOnModule( 5, "before", 7 )
-			.setOnModule( 4, "before", 6 )
-			.setOnModule( 3, "before", 5 )
-			.setOnModule( 2, "before", 4 )
-			.setOnModule( 1, "before", 3 )
-			.setOnModule( 0, "before", 2 )
+			.setOnPlugin( 9, "before", 11 )
+			.setOnPlugin( 8, "before", 10 )
+			.setOnPlugin( 7, "before", 9 )
+			.setOnPlugin( 6, "before", 8 )
+			.setOnPlugin( 5, "before", 7 )
+			.setOnPlugin( 4, "before", 6 )
+			.setOnPlugin( 3, "before", 5 )
+			.setOnPlugin( 2, "before", 4 )
+			.setOnPlugin( 1, "before", 3 )
+			.setOnPlugin( 0, "before", 2 )
 			.setCustomSlot( "early", 1 )
 			.compact();
 

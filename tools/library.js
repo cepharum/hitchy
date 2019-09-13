@@ -98,7 +98,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 
 	return Promises.each( LibraryComponents, moduleName => {
 		return Promise.resolve( require( Path.join( libFolder, moduleName ) ).call( api, options ) )
-			.then( function( moduleApi ) {
+			.then( moduleApi => {
 				Object.defineProperty( api, moduleName, {
 					value: Object.seal( moduleApi ),
 					enumerable: true,
