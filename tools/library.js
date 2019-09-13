@@ -68,7 +68,8 @@ function _toolLibraryCreateAPI( options = {} ) {
 			policies: {}
 		},
 		plugins: {},
-		loader: _nop
+		loader: _nop,
+		data: {},
 	};
 
 	api.cmp = _toolLibraryCMP.bind( api, api, options );
