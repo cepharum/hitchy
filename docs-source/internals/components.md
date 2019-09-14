@@ -14,7 +14,7 @@ Hitchy knows four different kinds of components described below. Either kind of 
 
 ### Controllers
 
-A controller is a software module or class that is exposing methods for eventually handling requests and sending some response. Controllers are discovered in folder **api/controllers** of your application as well as any installed plugin.
+A controller is a module or class that is exposing methods for eventually handling requests and sending some response. Controllers are discovered in folder **api/controllers** of your application as well as any installed plugin.
 
 **config/routes.js**
 ```javascript
@@ -32,33 +32,57 @@ module.exports = {
 };
 ```
 
+:::warning About Discovery
+Talking about the discovery of controllers doesn't imply to have some routes defined for linking either controller's handlers with requests they are meant to handle. Any routing configuration as provided in first example above must be defined manually.
+:::
 
 ### Policies
 
-A policy is a software module or class just like a controller. However, it is meant to handle requests collaboratively with other policies and some final controller. Thus it might ignore requests or adjust request information without ever responding to any request. Multiple policies may be involved in processing a single request. That's why policies are capable of passing control to next available policy in chain of processing policies which isn't possible for a controller.
+A policy is a module or class just like a [controller](#controllers). However, it is meant to handle requests collaboratively with other policies and some final controller. Thus it might ignore requests or adjust request information without ever responding to any request. Multiple policies may be involved in processing a single request. That's why policies are capable of passing control to next available policy in chain of processing policies which isn't possible for a controller.
 
 Policies are always able to send a response nonetheless. That's useful for implementing filters next to controllers.
 
 A final difference between controllers and policies regards the way they are picked to be involved in processing a particular request. Policies are applied to requests sharing prefix of URL path. A controller is obeyed when fully matching a request's URL path.
+
+:::tip Example
+Consider a client is requesting URL `/api/user/search?name=John`. 
+
+This request would pick controller routes matching `/api/user/search` as a whole, only. 
+
+In opposition to that, any policy route matching `/`, `/api`, `/api/user` or `/api/user/search` would be picked up for processing in order from shortest to longest matching prefix.
+:::
 
 Policy components are discovered in folder **api/policies** of your application as well as any installed plugin.
 
 **config/routes.js**
 ```javascript
 exports.policies = {
-    "/": "BodyPolicy.mark"
+    "/": "BodyPolicy.accessGranted"
 };
 ```
 
 **api/policies/body.js**
 ```javascript
 module.exports = {
-    mark( req, res, next ) {
-        req.marked = true;
-        next();
+    accessGranted( req, res, next ) {
+        if ( req.query.token === "secret" ) {
+            req.accessGranted = true;
+            res.set( "x-granted", "1" );
+            next();
+        } else {
+            res.status( 403 ).json( { error: "access forbidden" } );
+        }
     }
 };
 ```
+
+:::tip Remarks
+The preceding example illustrates support for callback provided in third argument for calling next policy in chain of policies to be applied. **In fact, any policy hast to invoke this callback unless it is returning a promise instead.**
+
+The example also illustrates a policy adjusting response without responding by [setting response header](../api/README.md#res-set-name-value). 
+
+Eventually it shows a _filter_ instantly responding to client in case of an error. In the latter case make sure the response is finished.
+:::
 
 
 ### Models
@@ -74,7 +98,7 @@ They are discovered in folder **api/models** of your application as well as any 
 
 ### Services
 
-Services are software modules or classes as well. They are meant to implement and provide features that are commonly required in controllers, policies and models. Whenever there is code to be used redundantly you should put it in a service.
+Services are modules or classes as well. They are meant to implement and provide features that are commonly required in controllers, policies and models. Whenever there is code to be used redundantly you should put it in a service.
 
 Service components are discovered in folder **api/services** of your application as well as any installed plugin.
 
@@ -98,7 +122,7 @@ For example, the following request handler is accessing a service component name
 function someRequestHandler( req, res ) {
     res
         .status( 200 )
-        .json( this.api.runtime.service.FileZipper.listFromArchive( "some/archive" ) );
+        .json( this.api.runtime.services.FileZipper.listFromArchive( "some/archive" ) );
 }
 ```
 
@@ -108,7 +132,7 @@ In methods of controllers and policies Hitchy's API is exposed as property `hitc
 function someRequestHandler( req, res ) {
     res
         .status( 200 )
-        .json( req.hitchy.runtime.service.FileZipper.listFromArchive( "some/archive" ) );
+        .json( req.hitchy.runtime.services.FileZipper.listFromArchive( "some/archive" ) );
 }
 ```
 

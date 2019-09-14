@@ -10,3 +10,6 @@ This is a moderated list of currently existing plugins for Hitchy:
 * [**hitchy-plugin-cookies**](https://www.npmjs.com/package/hitchy-plugin-cookies) - simplified cookie handling
 * [**hitchy-plugin-auth**](https://www.npmjs.com/package/hitchy-plugin-auth) - adds support for user authentication and request authorization
 
+## Writing Plugins
+
+See the description of [Hitchy's powerful plugin API](api/plugins.md) for integrating plugins to learn how to write your own plugins.

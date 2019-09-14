@@ -165,7 +165,7 @@ By applying the latter policy to the _late_ slot the URL [http://127.0.0.1:3000/
 
 ## Routing Parameters
 
-Hitchy integrates popular [path-to-regexp](https://www.npmjs.com/search?q=path%2Dto%2Dregexp) to support highly flexible definition of request paths. This includes definition of named parameters to be exposed in context of request handlers.
+Hitchy depends on popular [path-to-regexp](https://www.npmjs.com/search?q=path%2Dto%2Dregexp) to support highly flexible definition of request paths. This includes definition of named parameters to be exposed in context of request handlers.
 
 Append the following route definition in **config/routes.js**. This time you should know how to achieve that.
 

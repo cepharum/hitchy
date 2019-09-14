@@ -6,9 +6,9 @@ This document is introducing basic designs in Hitchy framework and how parts of 
 
 Hitchy consists of a very rudimentary core that's basically capable of these features:
 
-* integrating with some service, usually an HTTP service
-* discovering plugins
-* routing incoming requests through handlers resulting in a response
+* [integrating with some service](#integrating-with-services), usually an HTTP service
+* [discovering and loading plugins](#discovering-plugins)
+* [routing incoming requests](routing-basics.md) through handlers resulting in a response
 
 ## Integrating With Services
 
@@ -35,19 +35,29 @@ hitchy start --project path/name/of/hitchy/project
 
 Plugins are discovered when starting Hitchy. There is bootstrap code which is passing these stages:
 
-1. The first stage is called _triangulation_ and it is used to derive runtime options from current context unless given explicitly on start, e.g. detecting project folder to use.
+1. The first stage is called **triangulation** and it is used to derive runtime options from current context unless given explicitly on start, e.g. detecting project folder to use.
 
-2. The _discovery_ stage is used to search folders of a project for [plugins](#plugins) suitable for integrating with Hitchy. This results in a sequence of discovered plugins sorted in order of plugins relying on each other. Plugins depending on other plugins are listed late in this sequence.
+2. The **discovery** stage is used to search folders of a project for [plugins](#plugins) suitable for integrating with Hitchy. This results in a sequence of discovered plugins sorted in order of plugins relying on each other. Plugins depending on other plugins are listed late in this sequence.
 
-3. In _configuration_ stage every plugin is asked for its contribution to application's configuration. This includes processing the custom configuration provided as part of the current application itself as well.
+3. In **configuration** stage every plugin is asked for its contribution to application's configuration. This includes processing the custom configuration provided as part of the current application itself as well.
 
-4. _Exposure_ stage is loading [components](#components) provided by either plugin for exposing them in context of a resulting, commonly available [Hitchy API](../api).
+4. **Exposure** stage is loading [components](#components) provided by either plugin for exposing them in context of a resulting, commonly available [Hitchy API](../api).
 
-5. The _initialisation_ stage is used to let every plugin initialise its state.
+5. The **initialisation** stage is used to let every plugin initialise its state.
 
-6. Eventually a _routing_ stage is passed for compiling routing definitions into  optimized routing tables.
+6. Eventually a **routing** stage is passed for compiling routing definitions into  optimized routing tables.
 
-Eventually bootstrap process is finished by _preparing_ application for graceful shutdown which is going to request every plugin for shutting down prior to leaving application process when requested.
+Stages 3 to 6 are always processing plugins in order resulting from discovery stage. 
+
+This bootstrap process is finished by _preparing_ application for graceful **shutdown** stage which is going to request every plugin in reverse order for shutting down prior to leaving application process when requested.
+
+:::tip Additional Information?
+See the [description of plugin integration process](./plugin-integration.md) for more details.
+
+Read about [Hitchy's Plugin API](../api/plugins.md) to learn how to write your own plugin.
+:::
+
+## Building Blocks
 
 ### Plugins
 
