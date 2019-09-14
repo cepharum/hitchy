@@ -46,21 +46,13 @@ module.exports = {
 					return;
 				}
 
-				const buffers = [];
-
-				_res.on( "data", chunk => {
-					buffers.push( chunk );
-				} );
-
-				_res.on( "end", () => {
-					try {
-						const data = JSON.parse( Buffer.concat( buffers ).toString( "utf8" ) );
-						res.json( data );
-					} catch ( error ) {
+				_res.body()
+					.then( body => JSON.parse( body.toString( "utf8" ) ) )
+					.then( data => res.json( data ) )
+					.catch( error => {
 						res.status( 500 );
 						res.json( { error: `parsing JSON response failed: ${error.message}` } );
-					}
-				} );
+					} );
 
 				_res.on( "error", error => {
 					res.status( 500 );
