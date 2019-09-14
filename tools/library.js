@@ -72,6 +72,13 @@ function _toolLibraryCreateAPI( options = {} ) {
 		data: {},
 	};
 
+	// support singular names of either group of components as well
+	api.runtime.model = api.runtime.models;
+	api.runtime.controller = api.runtime.controllers;
+	api.runtime.service = api.runtime.services;
+	api.runtime.policy = api.runtime.policies;
+
+	// inject tools for supporting common-module (function) pattern
 	api.cmp = _toolLibraryCMP.bind( api, api, options );
 	api.cmfp = _toolLibraryCMFP.bind( api, api, options );
 
