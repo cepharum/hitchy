@@ -80,7 +80,7 @@ During bootstrap every discovered plugin is additionally represented by another 
 
 ### Notifying Plugins on Discovery
 
-Next, every plugin exporting a method called `onDiscovered()` as part of its API is notified on being discovered by invoking that function. This notification handler is invoked with `this` referring to Hitchy's still rudimentary API. Arguments passed are
+Next, every plugin with an approved role which is exporting a method called `onDiscovered()` as part of its API is notified on being discovered by invoking that function. This notification handler is invoked with `this` referring to Hitchy's still rudimentary API. Arguments passed are
  
 * Hitchy options,
 * a dictionary mapping either discovered plugin's name into its [handle](#a-plugins-handle) and
@@ -101,7 +101,7 @@ Next, plugins with their static roles dropped as described before are dropped. T
 For all leftover plugins a dependency graph is compiled. All plugins are sorted accordingly from plugin most other plugins rely on to those ones no other plugin relies on.
 
 :::tip
-Any follow-up action regarding _every plugin_ is obeying this sorting order. In shutdown stage as well as in handling late policies the order is reversed. 
+Any follow-up action regarding _every plugin_ is obeying this sorting order now. In shutdown stage as well as in handling late policies this order is reversed. 
 :::
 
 
@@ -115,7 +115,7 @@ Every plugin as well as the application is assumed to provide one or more config
 
 ### Final Notification
 
-After having compiled this object every plugin is notified by invoking method `configure()` optionally available in either plugin's API. Either function is invoked with `this` referring to Hitchy's partially compiled API and Hitchy options as well as either plugin's handle as arguments.
+After having compiled this object every plugin is notified by invoking method `configure()` optionally available in either plugin's API. The function is invoked with `this` referring to Hitchy's partially compiled API and Hitchy options as well as the notified plugin's handle as arguments.
 
 ## Exposure
 
@@ -125,13 +125,26 @@ Exposure stage is meant to compile components listed in section `api.runtime` of
 
 This stage starts with a notification called `onExposing()`. This notification is useful for accessing final configuration for the first time. 
 
-Every interested plugin must export a method called `onExposing()` in its API. Just like before, the function is invoked with `this` referring to still partial Hitchy API and Hitchy options as well as either plugin's handle as arguments.
+Every interested plugin must export a method called `onExposing()` in its API. Just like before, the function is invoked with `this` referring to still partial Hitchy API and Hitchy options as well as the notified plugin's handle as arguments.
 
 ### Collecting, Deriving, Replacing
 
 After that, components of every plugin are loaded prior to loading those provided by current application.
 
-Found components are instantly exposed in Hitchy's API so that plugins as well as the application are able to see those components e.g. for deriving new components from those exposed by preceding plugins. In addition every plugin may replace previously exposed components by re-exposing another component with the same name.
+Whenever a component complies with common module pattern the module function is invoked with `this` referring to Hitchy's API in its current state and Hitchy's options in first argument. In addition some existing component of same name to be replaced by loaded one is passed in second argument so the new component is capable of deriving from that existing one.
+
+:::tip Example
+Assume some plugin is providing same service module as another plugin it depends on. The module could look like this:
+
+**api/service/crypto.js:**
+```javascript
+module.exports = function( options, ExistingCryptoService ) {
+    return class RevisedCryptoService extends ExistingCryptoService {
+        // TODO provide some implementation here
+    };
+};
+```
+:::
 
 ### Final Notification
 
