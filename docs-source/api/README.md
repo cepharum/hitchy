@@ -90,6 +90,10 @@ module.exports = MyServiceComponent;
 ```
 :::
 
+#### Passing Additional Information
+
+Whenever Hitchy is supporting common module pattern it might intend to pass further information in addition to its API and options. This information will be provided as additional arguments following provided options.
+
 
 ### In Request Handlers
 

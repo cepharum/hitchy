@@ -32,9 +32,23 @@ The plugin hitchy-plugin-odem is claiming role **odm**. Its API is exposed at ru
 A different plugin may be designed as a drop-in replacement for **hitchy-plugin-odem** by claiming same role **odm** and providing same API with a different implementation e.g. for interacting with a different backend for storing data.
 :::
 
+#### Static vs. Dynamic vs. Approved
+
+For every plugin a claimed role may be encountered in these situations:
+
+1. In its **hitchy.json** beacon file (see below) a plugin may claim role explicitly or rely on role equivalent to its name by default. This role is called the plugin's _static role_.
+
+2. A plugin's API may include property `$meta` to be merged with information read from its **hitchy.json** file before. This may include a `role` in turn which is called the plugin's _dynamic role_.
+
+3. One of these roles - preferring the dynamic role over the static one - becomes the plugin's _approved role_ which is going to be only considered one while integrating either plugin with the application. 
+
+   The approved role of a plugin will be exposed as property `$role` of its API.
+
 #### Uniquity
 
-A plugin's role must be unique in context of a single application. Thus, in a single application you can't have two plugins claiming same role without one of the plugins depending on the other.
+A plugin's role must be unique in context of a single application. 
+
+Thus, in a single application you can't have two plugins claiming same role except for one situation: A plugin's dynamic role is accepted over always preferred over some other plugin claiming same role statically, only. This is meant to have a plugin inspecting all the available plugins and deciding to provide a superior implementation to be used in preference.
 
 ## The Beacon File
 
