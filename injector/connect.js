@@ -96,6 +96,7 @@ module.exports = function( options ) {
 	function middleware( req, res, next ) {
 		/** @type HitchyRequestContext */
 		const context = {
+			context: "express",
 			request: req,
 			response: res,
 			done: next,

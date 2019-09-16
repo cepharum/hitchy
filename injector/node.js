@@ -99,6 +99,7 @@ module.exports = function( options ) {
 	function middleware( req, res ) {
 		/** @type HitchyRequestContext */
 		const context = {
+			context: "standalone",
 			request: req,
 			response: res,
 			done: _error => {
