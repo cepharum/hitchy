@@ -1,6 +1,8 @@
 # Hitchy's API
 
-In this topic you learn [how to access Hitchy's API](#gaining-access) in components of your application. It provides a detailed introduction of [features exposed in that API](#api-elements). Finally, there is an introduction of additional properties and methods provided as part of [request](#request-helpers) and [response](#response-helpers) data available in controllers and policies.
+In this topic you learn [how to access Hitchy's API](#gaining-access) in components of your application. It provides a detailed introduction of [features exposed in that API](#api-elements). 
+
+Regarding request handling, there is an introduction of special [context for every request handler](#request-context) and additional properties and methods provided as part of [request](#request-helpers) and [response](#response-helpers) descriptors provided as arguments there.
 
 ## Gaining Access
 
@@ -99,7 +101,7 @@ Whenever Hitchy is supporting common module pattern it might intend to pass furt
 
 In request handlers the API is exposed in two different ways:
 
-1. Every request handler is invoked with `this` referring to some _request context_ which is including reference on Hitchy's API in property `api`:
+1. Every request handler is invoked with `this` referring to some [_request context_](#request-context) which is including [reference on Hitchy's API in property `api`](#this-api):
 
    ```javascript
    function someRequestHandler( req, res ) {
@@ -164,6 +166,10 @@ Hitchy's API can be divided into several sections to be described here.
 The following description assumes you know [how to gain access on Hitchy's API](#gaining-access) in either situation, thus referring to it using just `api`. 
 :::
 
+### api.config <Badge type="info">+0.3.0</Badge>
+
+All configuration of every available plugin as well as the application itself is loaded from Javascript files in either ones' **config** sub-folder and merged into a single configuration object which is exposed here.
+
 ### api.runtime
 
 This section of Hitchy's API is exposing a compilation of all components exposed by discovered plugins as well as current application itself. They are grouped by component type.
@@ -174,6 +180,10 @@ This section of Hitchy's API is exposing a compilation of all components exposed
 * Services are exposed in `api.runtime.services`.
 
 For the sake of flexibility and fault tolerance either group is exposed using its singular name as well. Thus using `api.runtime.controller` is equivalent to using `api.runtime.controllers` etc.
+
+:::warning Change of API
+Starting with version 0.3.0 the configuration isn't available as `api.runtime.config` anymore, but exposed as [`api.config`](#api-config).
+:::
 
 ### api.data
 
@@ -345,12 +355,120 @@ This method is invoking some function provided by reference with support for _co
 
 Invoked functions are assumed to expect Hitchy's API as `this` and global options provided in first argument which is implicitly prepended by this method.
 
+## Request Context
+
+On request handling routes are used to select handlers to be invoked. Those handlers areare functions invoked with `this` referring to a _request context_ which is providing information related to currently dispatched request.
+
+:::tip
+In a request handler like
+
+```javascript
+function( req, res ) {
+    // TODO add some handling code here
+}
+```
+
+the _request context_ is available using `this`.
+:::
+
+### this.request
+
+This property is a reference on [IncomingMessage](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_incomingmessage) describing current request to be handled. It is identical to the reference provided in first argument usually named `req` of either handler.
+
+### this.response
+
+This property is a reference on [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) for managing response to be sent. It is identical to the reference provided in second argument usually named `res` of either handler.
+
+### this.local
+
+This object is provided for sharing volatile information between handlers involved in handling a particular request. This information is shared between policies and controllers participating in handling a request and gets dropped when handling request has finished.
+
+### this.api
+
+[Hitchy's API](#api-elements) is provided in request context for simplified access.
+
+### this.config <Badge type="info">+0.3.0</Badge>
+
+This property is an alias for simplified access on [`api.config`](#api-config) of Hitchy's API exposing current runtime configuration.
+
+### this.runtime
+
+This property is an alias for simplified access on [`api.runtime`](#api-runtime) of Hitchy's API exposing available components.
+
+### this.controllers <Badge type="info">+0.3.0</Badge>
+
+This is another alias for simplifying access on collection of available controllers.
+
+:::tip
+Using `this.controller` is supported as well.
+:::
+
+### this.policies <Badge type="info">+0.3.0</Badge>
+
+This alias is simplifying access on collection of available policies.
+
+:::tip
+Using `this.policy` is supported as well.
+:::
+
+### this.services <Badge type="info">+0.3.0</Badge>
+
+This alias is simplifying access on collection of available services.
+
+:::tip
+Using `this.service` is supported as well.
+:::
+
+### this.models <Badge type="info">+0.3.0</Badge>
+
+This alias is simplifying access on collection of available models.
+
+:::tip
+Using `this.model` is supported as well.
+:::
+
+### this.startTime
+
+This property is exposing the time of handling current request has started as number of milliseconds since midnight of January 1st, 1970.
+
+### this.context <Badge type="info">+0.3.0</Badge>
+
+This property is a string naming the service hitchy is integrated with. Currently supported values are:
+
+* `standalone` when running current application without any integration into some other application.
+* `express` when running current application with Hitchy integrated into an Express-based application.
+
+### this.done
+
+This callback is provided by the service Hitchy is integrating with. When using Hitchy with [Express](https://expressjs.com/) invoking this function is starting next handler function registered with Express skipping any code that's authoritative in scope of Hitchy integrating with Express.
+
+:::tip Caution
+Don't use this function for it might be causing significant side effects.
+:::
+
+### this.consumed
+
+This property contains markers used internally to handle cases that haven't been handled by any controller. You shouldn't use or adjust those marks.
+
+
 ## Request Helpers
 
 In request handlers of [controllers](../internals/components.md#controllers) and [policies](../internals/components.md#policies) there are two provided arguments usually named `req` and `res`. The former is basically an [IncomingMessage](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_incomingmessage) and the latter is a [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse). But either object is extended to provide additional information and functionality.
 
 :::warning Standalone vs. Integrated With ExpressJS
 Most helpers described here are basically available in a standalone Hitchy application. When using [Hitchy integrated with ExpressJS](../internals/architecture-basics.md#integrating-with-services) most of these helpers are provided by ExpressJS and thus may behave differently.
+:::
+
+:::tip
+In a request handler like
+
+```javascript
+function( req, res ) {
+    // TODO add some handling code here
+}
+```
+
+the _request helpers_ are available as part of object provided as `req`.
 :::
 
 ### `req.accept`
@@ -476,6 +594,19 @@ Hitchy is designed to detect any such request limiting capabilities of response 
 :::warning Standalone vs. Integrated With ExpressJS
 Most helpers described here are basically available in a standalone Hitchy application. When using [Hitchy integrated with ExpressJS](../internals/architecture-basics.md#integrating-with-services) most of these helpers are provided by ExpressJS and thus may behave differently.
 :::
+
+:::tip
+In a request handler like
+
+```javascript
+function( req, res ) {
+    // TODO add some handling code here
+}
+```
+
+the _response helpers_ are available as part of object provided as `res`.
+:::
+
 
 ### `res.format( handlers )`
 

@@ -1,8 +1,8 @@
 # Integrating Plugins
 
-This topic is providing a brief description of Hitchy's bootstrap operation and the way it is discovering and integrating available plugins.
+This topic is providing a brief description of Hitchy's bootstrap operation which is mostly for discovering and integrating available plugins.
 
-On startup Hitchy is discovering available plugins and integrating them with the application. This process is tightly bound to [bootstrap stages](../internals/architecture-basics.md#discovering-plugins).
+On startup Hitchy is discovering available plugins and integrating them with the application. This process is divided into several so called [_bootstrap stages_](../internals/architecture-basics.md#discovering-plugins).
 
 ## Triangulation
 
@@ -53,7 +53,7 @@ At this stage plugins are loaded in arbitrary order. Thus you can't rely on ever
 
 Hitchy is passing additional information on loading a plugin which is complying with common module pattern. In addition to its highly rudimentary API provided as `this` and its [options](../api/README.md#options) provided in first argument it is passing
 
-* a dictionary mapping every basically discovered plugin's name into either one's rudimentary handle in second argument and
+* a dictionary mapping every basically discovered plugin's name into either one's rudimentary [handle](#a-plugin-s-handle) in second argument and
 * notified plugin's own handle in third argument.
 
 Plugins may use this opportunity for dynamically claiming to take a role after inspecting available plugins. Whenever claiming to take a role dynamically every static claim for the same role is dropped probably resulting in plugins stripped off any role.
@@ -111,7 +111,13 @@ In configuration stage the application's configuration is compiled from every pl
 
 ### Collecting & Compiling
 
-Every plugin as well as the application is assumed to provide one or more configuration files with extension **.js** in sub-folder **config**. Hitchy is reading all those files merging them into a single configuration object which is exposed as part of Hitchy's API at `api.runtime.config`.
+Every plugin as well as the application is assumed to provide zero or more non-hidden configuration files implemented as Javascript modules in sub-folder **config**. Every file in that sub-folder that does not start with a full stop `.` and ends with **.js** is assumed to export another part of eventual configuration.
+
+Hitchy is reading all those files merging them into a single configuration object which is exposed as part of Hitchy's API at `api.runtime.config`.
+
+:::tip Special Case: local.js
+Every plugin as well as the application may use a file **config/local.js** which is always processed after having processed all the other configuration files in a folder. This helps with safely declaring defaults prior to providing a custom configuration for the current installation which might be deviating from those defaults.
+:::
 
 ### Final Notification
 
@@ -163,6 +169,10 @@ For every plugin a method `initialize()` exported as part of its API is invoked.
 Application may provide its initialisation code to be invoked after having initialised all plugins. Applications requiring special setup provide a file named **initialize.js** in project folder. This file is invoked in compliance with common module pattern. 
 
 ## Routing
+
+:::tip Dedicated Stage For Routing
+Routing stage is a dedicated stage at end of bootstrap so it is capable of using APIs, components and configuration of existing plugins and the application for eventually declaring routes.
+:::
 
 In routing stage the routing definitions in configuration of every plugin are processed resulting in routes for later dispatch of request. Routes are read from configuration properties `routes`, `policies` and `blueprints`.
 

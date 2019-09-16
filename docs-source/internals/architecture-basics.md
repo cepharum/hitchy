@@ -35,9 +35,9 @@ hitchy start --project path/name/of/hitchy/project
 
 Plugins are discovered when starting Hitchy. There is bootstrap code which is passing these stages:
 
-1. The first stage is called **triangulation** and it is used to derive runtime options from current context unless given explicitly on start, e.g. detecting project folder to use.
+1. The first stage is called **triangulation** and it is used to derive runtime options from current context unless given explicitly on start, e.g. detecting application's project folder to use.
 
-2. The **discovery** stage is used to search folders of a project for [plugins](#plugins) suitable for integrating with Hitchy. This results in a sequence of discovered plugins sorted in order of plugins relying on each other. Plugins depending on other plugins are listed late in this sequence.
+2. The **discovery** stage is used to search folders of a project for [plugins](#plugins) suitable for integrating with Hitchy-based application. This results in a sequence of discovered plugins sorted in order of plugins relying on each other. Plugins depending on other plugins are listed late in this sequence.
 
 3. In **configuration** stage every plugin is asked for its contribution to application's configuration. This includes processing the custom configuration provided as part of the current application itself as well.
 
@@ -45,14 +45,14 @@ Plugins are discovered when starting Hitchy. There is bootstrap code which is pa
 
 5. The **initialisation** stage is used to let every plugin initialise its state.
 
-6. Eventually a **routing** stage is passed for compiling routing definitions into  optimized routing tables.
+6. Eventually a **routing** stage is passed for compiling routing definitions into optimized routing tables.
 
 Stages 3 to 6 are always processing plugins in order resulting from discovery stage. 
 
 This bootstrap process is finished by _preparing_ application for graceful **shutdown** stage which is going to request every plugin in reverse order for shutting down prior to leaving application process when requested.
 
 :::tip Additional Information?
-See the [description of plugin integration process](./plugin-integration.md) for more details.
+See the [very detailed description of bootstrap process](./bootstrap.md) for more details.
 
 Read about [Hitchy's Plugin API](../api/plugins.md) to learn how to write your own plugin.
 :::
@@ -64,7 +64,7 @@ Read about [Hitchy's Plugin API](../api/plugins.md) to learn how to write your o
 In context of a Hitchy-based application a plugin is meant to introduce new features to simplify development of any such application. Plugins usually consist of files distributed as npm packages. They need to comply with some specific conventions to be discovered as plugins and to be properly integrated with the bootstrap process described before.
 
 :::tip
-A commonly used alias is _extension_ but starting with Hitchy 0.2.0 terminology has been revised. The term plugin is preferred since then for official plugin packages using names starting with **hitchy-plugin-...**.
+A commonly used alias is _extension_ but starting with Hitchy 0.2.0 terminology has been revised. The term _plugin_ is preferred since then for official plugin packages using names starting with **hitchy-plugin-...**.
 :::
 
 ### Components

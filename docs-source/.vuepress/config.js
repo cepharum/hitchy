@@ -18,7 +18,7 @@ module.exports = {
 			{ text: "Internals", items: [
 					{ text: "Architecture", link: "/internals/architecture-basics.html" },
 					{ text: "Components", link: "/internals/components.html" },
-					{ text: "Plugins", link: "/internals/plugin-integration.html" },
+					{ text: "Plugins", link: "/internals/bootstrap.html" },
 					{ text: "Routing", link: "/internals/routing-basics.html" },
 			] },
 			{ text: "Hitchy", items: [
