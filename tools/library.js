@@ -60,8 +60,8 @@ module.exports = {
  */
 function _toolLibraryCreateAPI( options = {} ) {
 	const api = {
+		config: {},
 		runtime: {
-			config: {},
 			models: {},
 			controllers: {},
 			services: {},

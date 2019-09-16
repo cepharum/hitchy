@@ -52,10 +52,10 @@ suite( "Hitchy", function() {
 
 	test( "is reading configuration files provided by discovered extension", function() {
 		return hitchy.onStarted.then( () => {
-			hitchy.hitchy.runtime.config.should.be.Object();
-			hitchy.hitchy.runtime.config.should.have.property( "custom" ).which.is.an.Object().which.has.property( "visible" ).which.is.true();
-			hitchy.hitchy.runtime.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "additional" ).which.is.true();
-			hitchy.hitchy.runtime.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "overloaded" ).which.is.equal( "yes" );
+			hitchy.hitchy.config.should.be.Object();
+			hitchy.hitchy.config.should.have.property( "custom" ).which.is.an.Object().which.has.property( "visible" ).which.is.true();
+			hitchy.hitchy.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "additional" ).which.is.true();
+			hitchy.hitchy.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "overloaded" ).which.is.equal( "yes" );
 		} );
 	} );
 } );
