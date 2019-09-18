@@ -404,6 +404,28 @@ exports.routes = {
 
 This property is exposing a function invoked with a buffer representing a request's raw body. It is invoked to parse this buffer for some contained information provided on invoking [`req.fetchBody()`](#req-fetchbody-parser) without any parameter. The function may return promise to deferredly deliver parsed content.
 
+### config.deepComponents <Badge type="info">v0.3.2+</Badge>
+
+This boolean property controls whether Hitchy is deeply searching for components in either type's sub-folder or not. Deep search is enabled by default.
+
+:::tip Example
+When set or omitted, file **api/controllers/user/management.js** is discovered and exposed as `api.runtime.controllers.UserManagement`. Otherwise this file isn't discovered and therefore won't be exposed at all.
+:::
+
+:::warning Compatibility
+Versions before v0.3.2 did not support deep searching components at all. Due to enabling it since then by default you need to explicitly set this property `false` to stick with the previous behaviour.
+:::
+
+:::warning Risk of Conflicts
+When deeply searching components two different files might be exposed under the same name due to the way files in sub-folders are processed.
+
+A file **api/controllers/user/management.js** is discovered as **user/management.js**. The component's name is derived by converting slashes into dashes, dropping extension, eventually converting naming style from kebab-case to PascalCase, thus resulting in **UserManagement**.
+
+The same applies to file **api/controllers/user-management.js**. There are no slashes, but dashes are used already. Extension is dropped and naming style is converted from kebab-case to PascalCase, thus resulting in **UserManagement** as well.
+
+Deeply searching for components processes either folder before descending into sub-folders, thus in this example the former would be exposed last and thus replacing the latter.
+:::
+
 ## API Elements
 
 Hitchy's API can be divided into several sections to be described here.

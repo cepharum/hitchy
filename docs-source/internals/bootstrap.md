@@ -133,9 +133,17 @@ Every interested plugin must export a method called `onExposing()` in its API. J
 
 ### Collecting, Deriving, Replacing
 
-After that, components of every plugin are loaded prior to loading those provided by current application.
+Components of every plugin are processed before processing components of application.
 
-Whenever a component complies with common module pattern the module function is invoked with `this` referring to Hitchy's API in its current state and Hitchy's options in first argument. In addition some existing component of same name to be replaced by loaded one is passed in second argument so the new component is capable of deriving from that existing one.
+In either case components are processed [type](architecture-basics.md#components) by type. For every component another Javascript file is expected in either type of component's sub-folder **api/controllers**, **api/policies** etc. Starting with v0.3.2 Hitchy is deeply searching in either folder. [Configuration](../api/README.md#config-deepcomponents-0-3-2) is read to keep the previous behaviour.
+
+Every found Javascript file is loaded for exporting related component's API which is exposed as part of Hitchy's API at runtime using a name that is derived from found file's name: Using the relative pathname of either file path separators are replaced with dashes and the extension **.js** is dropped. The resulting name is assumed to be kebab-case, then converted to PascalCase. 
+
+:::tip Example
+A plugin's file **api/services/client/rest/external-user.js** is assumed to provide API of a  _service_ component named **ClientRestExternalUser** and thus gets exposed as `api.runtime.services.ClientRestExternalUser`.
+:::
+
+Either component's module may comply with [common module pattern](../api/README.md#using-common-module-pattern). In this case the exported  function is invoked with `this` referring to Hitchy's API in its current state and Hitchy's options in first argument as usual. In addition, however, some existing component of same name to be replaced by loaded one is passed in second argument so the new component is capable of deriving from that existing one.
 
 :::tip Example
 Assume some plugin is providing same service module as another plugin it depends on. The module could look like this:
