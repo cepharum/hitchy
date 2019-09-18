@@ -158,6 +158,246 @@ This boolean option is controlling whether debug output is desired or not. Basic
 This option is supported to select plugins current application depends on. It is replacing any such list of plugins read from application's own **hitchy.json** file. In addition it is limiting set of eventually available plugins.
 
 
+## Configuration
+
+During [bootstrap](../internals/architecture-basics.md#discovering-plugins) Hitchy is _shallowly_ reading Javascript files available in sub-folder **config** of your application as well as of any plugin. Either file is assumed to export part of resulting configuration:
+
+```javascript
+exports.part = { ... };
+```
+
+Either file may comply with [common module pattern](#using-common-module-pattern) e.g. to gain access on [Hitchy's options](#options) and [its API](#api-elements) or to provide its configuration asynchronously by returning Promise.
+
+```javascript
+module.exports = function( options ) {
+    const api = this;
+
+    return checkSomeSource()
+        .then( info => {
+            return {
+                part: { ... },
+            };
+        } );
+};
+```
+
+All files' exports are merged into one configuration object which is exposed at runtime as [`api.config`](#api-config-0-3-0) in modules complying with [common module pattern](#using-common-module-pattern) and as [`this.config`](#this-config-0-3-0) in request handlers.
+
+:::tip Rules For Naming Files
+A configuration file's name 
+
+* **must not** start with a full stop `.` and 
+* **must** have extension **.js**. 
+
+Apart from that you may choose any name you like. 
+
+As a convention, though, there is another file for every first-level property of resulting configuration object with the filename matching that property's name. So, configuration for `config.routes` would be found in file **config/routes.js** and it is exporting related part of configuration like this:
+
+```javascript
+exports.routes = { ... };
+```
+:::
+
+:::tip Order of Processing
+For every plugin as well as the application itself all its configuration files are sorted by name and processed in resulting order. Application's files are processed after either plugin's configuration.
+
+In either context a file named **config/local.js** is always processed last. It is meant to contain local-only customizations for all other files which are part of distributed application.
+:::
+
+The structure of configuration depends on used plugins and it might include arbitrary information specific to your application, as well. However, some properties are supported by Hitchy's core and they are listed below:
+
+### config.policies
+
+:::tip Hitchy's Routing Concept
+Reading the [introduction on Hitchy's routing](../internals/routing-basics.md) is highly recommended.
+:::
+
+This property is exposing routing declarations of [policies](../internals/routing-basics.md#policies). Policies can be declared in plugins as well as in application.
+
+The supported format is mostly identical to the one supported for `config.routes` below. 
+
+:::tip
+See [`config.routes`](#config-routes) for additional information.
+:::
+
+These are the differences between policies and routes:
+
+* When declaring policies targets are addressing [policy components](../internals/components.md#policies) instead of [controller components](../internals/components.md#controllers).
+
+* Targets of a route may be declared with optional suffix **Controller**. When declaring policy targets the supported suffix is **Policy** instead.
+
+  ```javascript
+  config.routes = {
+      "/some/route": "FooController.action",
+  };
+  config.policies = {
+      "/some/route": "FooPolicy.action",
+  };
+  ```
+
+* When declaring routes every source must be linked with exactly one target. When declaring policies every source may also have a list of targets to be processed in order. 
+
+  **bad:**
+  ```javascript
+  config.routes = {
+      "/some/route": [
+          "FooController.action",
+          "FooController.altAction",
+      ],
+  };
+  ```
+
+  **good:**
+  ```javascript
+  config.routes = {
+      "/some/route": "FooController.action",
+  };
+  config.policies = {
+      "/some/route": [
+          "FooPolicy.action",
+          "FooPolicy.altAction",
+      ],
+  };
+  ```
+
+### config.blueprints
+
+:::warning
+By intention, blueprints are supported in plugins, only.
+:::
+
+:::tip Hitchy's Routing Concept
+Reading the [introduction on Hitchy's routing](../internals/routing-basics.md) is highly recommended.
+:::
+
+Declaration of blueprints is equivalent to declaring routes in [`config.routes`](#config-routes).
+
+### config.routes
+
+:::tip Hitchy's Routing Concept
+Reading the [introduction on Hitchy's routing](../internals/routing-basics.md) is highly recommended.
+:::
+
+This property is exposing declarations of (terminal) [routes](../internals/routing-basics.md#routes).
+
+:::warning Required
+Routes are essential in Hitchy for it doesn't know how to handle incoming requests otherwise.
+:::
+
+A set of routing declarations is given as [Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) or as a [Map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map) with the latter assuring certain order of processing, though this isn't quite as important in most cases due to Hitchy's routing preferring to match longer sources over shorter ones.
+
+The set may be divided into slots for providing different sets per [routing slot](../internals/routing-basics.md#routing-slots). Supported names for dividing declarations are **early**, **before**, **after** and **late**. By default, routing declarations are applied to **before** slot.
+
+:::warning
+Providing declarations per routing slot is not supported for plugins.
+:::
+
+Every single declaration is associating a _routing source_ with a _routing target_. 
+
+* The source is a string optionally selecting an HTTP method and mandatorily providing a pattern to be matched by a request's URL path. Patterns are supported using [path-to-regexp](https://www.npmjs.com/package/path-to-regexp). 
+
+  Here are some valid examples:
+
+  ```
+  "/some/path"
+  "GET /api/:model/:id"
+  "POST /api/:model/write/:id"
+  "ALL /api/:model"
+  ```
+  
+  When omitting provision of HTTP method it defaults to `GET`.
+
+* The target is given 
+
+  * as a regular function,
+  
+    ```javascript
+    "/some/route": function( req, res ) {
+        // TODO implement this handler
+    }
+    ```
+
+  * as an arrow function,
+  
+    ```javascript
+    "/some/route": ( req, res )  => {
+        // TODO implement this handler
+    }
+    ```
+  
+  * as a string describing function exposed by available [controller component](../internals/components.md#controllers) or
+  
+    ```javascript
+    "/some/route": "FooController.action",
+    "/some/route": "Foo.action", // equivalent for "Controller" is optional
+    "/some/route": "Foo::action", // equivalent, just in case you prefer this notation style
+    ```
+  
+  * as an object selecting function exposed by available [controller component](../internals/components.md#controllers).
+  
+    ```javascript
+    "/some/route": { module: "FooController", method: "action" },
+    "/some/route": { module: "Foo", method: "action" },
+    "/some/route": { module: "Foo" }, // default for "method" is "index"
+    "/some/route": { controller: "Foo" },
+    "/some/route": { policy: "Foo" },
+    ```
+    
+    :::tip
+    **controller** and **policy** are just aliases for **module** supported for readability, only. They don't enable use of controllers in declaring policies or use of policies in declaring routes.
+    :::
+    
+    Using this most complex syntax it is possible to declare additional arguments provided on invoking either request handler:
+    
+    ```javascript
+    "/some/route": { module: "Foo", method: "action", args: [
+        "foo",
+        "bar"
+    ] },
+    ```
+    
+    Those arguments are appended to the regularly provided arguments `req`, `res` and - in case of policies, only - `next`:
+
+    ```javascript
+    // in api/controllers/foo.js
+    exports.action = function( req, res, foo, bar ) {
+        // foo will contain "foo" due to given declaration
+        // bar will contain "bar" due to given declaration
+    }
+    ```
+
+:::tip Regular Example
+```javascript
+exports.routes = {
+    "/some/route": "FooController.action",
+    "/api/:model": { module: "ModelController" },
+    "/api/:model/:id"( req, res ) {
+        res.end( "Hello World!" );
+    },
+}
+```
+:::
+
+:::tip Example With Routing Slots
+```javascript
+exports.routes = {
+    early: {
+        "/some/route": "FooController.action",
+        "/api/:model": { module: "ModelController" },
+    },
+    after: {
+        "/api/:model/:id"( req, res ) {
+            res.end( "Hello World!" );
+        },
+    }
+}
+```
+:::
+
+### config.bodyParser
+
+This property is exposing a function invoked with a buffer representing a request's raw body. It is invoked to parse this buffer for some contained information provided on invoking [`req.fetchBody()`](#req-fetchbody-parser) without any parameter. The function may return promise to deferredly deliver parsed content.
+
 ## API Elements
 
 Hitchy's API can be divided into several sections to be described here.
@@ -492,7 +732,7 @@ This property exposes object containing all cookies transmitted by client in cur
 This method promises request's body. The optional parameter can be used to control parser used for extracting contained information.
 
 :::warning
-When integrating with ExpressJS this function has limited capabilities to access the raw body and parsed for custom content.
+When integrating with ExpressJS it might have parsed request body before thus preventing this function from accessing request body at all. This would result in returned promise never settled.
 :::
  
 * When omitted or set `null` any parser function in configuration is used to commonly parse raw body for contained information. When there is no configured parser some fallback is used supporting JSON and form-encoded request bodies.
@@ -502,9 +742,9 @@ When integrating with ExpressJS this function has limited capabilities to access
 * On providing `false` the raw body is promised as instance of Buffer. This is bypassing any parser to be invoked thus won't result in caching some parser's output as well.
 
   :::warning
-  This method is caching any previously extracted body data. Thus, re-invoking this method with a different parameter doesn't result in another set of information but fetches the same result as before.
-
-  Providing `false` is the only exclusion from this rule.
+  This method is caching any previously extracted body data in association with provided parser argument. Thus, re-invoking this method with a different parser results in parsing raw body again while providing same parser re-fetches same information as before.
+  
+  When providing custom function make sure to provide the same instance of that function to benefit from this caching. As an option assign a global body parser function in configuration as `config.bodyParser`.
   :::
 
 ### `req.hitchy`

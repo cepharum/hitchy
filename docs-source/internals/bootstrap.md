@@ -1,8 +1,6 @@
 # Integrating Plugins
 
-This topic is providing a brief description of Hitchy's bootstrap operation which is mostly for discovering and integrating available plugins.
-
-On startup Hitchy is discovering available plugins and integrating them with the application. This process is divided into several so called [_bootstrap stages_](../internals/architecture-basics.md#discovering-plugins).
+On startup Hitchy is discovering available plugins and integrating them with the application. This topic is providing a brief description of this so called _bootstrap operation_ which is divided into several [_bootstrap stages_](../internals/architecture-basics.md#discovering-plugins).
 
 ## Triangulation
 
