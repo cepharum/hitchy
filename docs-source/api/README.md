@@ -92,6 +92,12 @@ module.exports = MyServiceComponent;
 ```
 :::
 
+#### Returning Promise
+
+When complying with common module pattern a module may return an instance of Promise rather than some API. In that case Hitchy is waiting for the promise to be resolved with the actually desired API.
+
+Thus, when complying with common module pattern either module is capable of deferring bootstrap code of Hitchy and get all the opportunities required to deliver its export.
+
 #### Passing Additional Information
 
 Whenever Hitchy is supporting common module pattern it might intend to pass further information in addition to its API and options. This information will be provided as additional arguments following provided options.
