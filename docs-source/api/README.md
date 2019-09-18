@@ -747,11 +747,11 @@ When integrating with ExpressJS it might have parsed request body before thus pr
 
 * On providing `false` the raw body is promised as instance of Buffer. This is bypassing any parser to be invoked thus won't result in caching some parser's output as well.
 
-  :::warning
-  This method is caching any previously extracted body data in association with provided parser argument. Thus, re-invoking this method with a different parser results in parsing raw body again while providing same parser re-fetches same information as before.
-  
-  When providing custom function make sure to provide the same instance of that function to benefit from this caching. As an option assign a global body parser function in configuration as `config.bodyParser`.
-  :::
+:::warning
+This method is caching any previously extracted body data in association with provided parser argument. Thus, re-invoking this method with a different parser results in parsing raw body again while providing same parser re-fetches same information as before.
+
+When providing custom function make sure to provide the same instance of that function to benefit from this caching. As an option assign a global body parser function in configuration as `config.bodyParser`.
+:::
 
 ### `req.hitchy`
 
