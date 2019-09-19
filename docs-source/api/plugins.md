@@ -227,6 +227,10 @@ After [loading plugin in discovery stage](../internals/bootstrap.md#loading-plug
 
 Due to sorting plugins for sequential processing either plugin has an index into that list which is exposed in this property mostly for testing purposes.
 
+### plugin.$config <Badge type="info">0.3.3+</Badge>
+
+When loading configuration files of a plugin a single object merged from information exported by either found file is exposed as part of plugin's API. The information is also merged with related configuration objects of all other plugins and the application itself into one [global configuration object](README.md#api-config-0-3-0).
+
 ### plugin.onDiscovered()
 
 **Signature:** `onDiscovered( options, pluginHandles, myHandle )`

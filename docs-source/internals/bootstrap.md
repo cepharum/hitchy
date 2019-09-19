@@ -73,6 +73,7 @@ During bootstrap every discovered plugin is additionally represented by another 
 * `handle.folder` is providing the folder the plugin has been loaded from.
 * `handle.meta` is providing the plugin's loaded, merged and probably qualified meta information.
 * `handle.api` is finally providing the API exported by the plugin.
+* `handle.config` provides individual configuration of plugin read from its **config** folder in configuration stage.
 :::
 
 
@@ -121,6 +122,7 @@ Every plugin as well as the application may use a file **config/local.js** which
 
 After having compiled this object every plugin is notified by invoking method `configure()` optionally available in either plugin's API. The function is invoked with `this` referring to Hitchy's partially compiled API and Hitchy options as well as the notified plugin's handle as arguments.
 
+
 ## Exposure
 
 Exposure stage is meant to compile components listed in section `api.runtime` of Hitchy's API.
@@ -135,13 +137,13 @@ Every interested plugin must export a method called `onExposing()` in its API. J
 
 Components of every plugin are processed before processing components of application.
 
-In either case components are processed [type](architecture-basics.md#components) by type. For every component another Javascript file is expected in either type of component's sub-folder **api/controllers**, **api/policies** etc. Starting with v0.3.2 Hitchy is deeply searching in either folder. [Configuration](../api/README.md#config-deepcomponents-0-3-2) is read to keep the previous behaviour.
+In either case components are processed [type](architecture-basics.md#components) by type. For every component another Javascript file is expected in either type of component's sub-folder **api/controllers**, **api/policies** etc. 
 
-Every found Javascript file is loaded for exporting related component's API which is exposed as part of Hitchy's API at runtime using a name that is derived from found file's name: Using the relative pathname of either file path separators are replaced with dashes and the extension **.js** is dropped. The resulting name is assumed to be kebab-case, then converted to PascalCase. 
-
-:::tip Example
-A plugin's file **api/services/client/rest/external-user.js** is assumed to provide API of a  _service_ component named **ClientRestExternalUser** and thus gets exposed as `api.runtime.services.ClientRestExternalUser`.
+:::tip
+Starting with v0.3.3 Hitchy is deeply searching in either folder. [Configuration](../api/README.md#config-hitchy-deepcomponents-0-3-3) is read to keep the previous behaviour.
 :::
+
+Every found Javascript file is loaded to export the component's API. This might be any kind of data. Usually, it is a class or an object of functions. It is exposed as part of [Hitchy's API](../api/README.md#api-runtime) at runtime using a [name that is derived from found file's name](components.md#derivation-of-component-names). 
 
 Either component's module may comply with [common module pattern](../api/README.md#using-common-module-pattern). In this case the exported  function is invoked with `this` referring to Hitchy's API in its current state and Hitchy's options in first argument as usual. In addition, however, some existing component of same name to be replaced by loaded one is passed in second argument so the new component is capable of deriving from that existing one.
 

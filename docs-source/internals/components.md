@@ -1,16 +1,19 @@
 # Components
 
-A Hitchy-based application relies on components to be exposed by the application as well as any available plugin. When there are multiple files in installed plugins and your application for the same component all those files are merged in order of plugin discovery.
+A Hitchy-based application relies on components to be exposed by the application as well as any available plugin. During [bootstrap](bootstrap.md) Hitchy is [searching for Javascript files implementing components](bootstrap.md#collecting-deriving-replacing) in certain folders of every plugin as well as the application.
 
-Either component's file is used to derive the component's name. The former are assumed to be in kebab-case, camelCase or PascalCase. The extension **.js** is always dropped. The component's name is in PascalCase.
-
-:::tip Example
-A file in folder **api/services/file-zipper.js** is assumed to provide the service component named **FileZipper**.
+:::tip
+Those folders are mentioned below in context of either type of component. 
 :::
 
-Hitchy knows four different kinds of components described below. Either kind of component is assumed to be implemented as a [CommonJS module as supported by Node.js](https://nodejs.org/dist/latest/docs/api/modules.html#modules_modules) currently.
+When loading a component's file it is assumed to export the component's API. This might be some class or some object providing its methods.
+
+Every component is exposed at runtime using a name for either component which is [derived from its file's relative path name](#derivation-of-component-names). When multiple files in installed plugins and your application result in same name of component only the last one read will be exposed. However either file is loaded with a reference to the existing component it is replacing.
+
 
 ## Kinds of Components
+
+Hitchy knows four different kinds of components described below. Either kind of component is assumed to be implemented as a [CommonJS module as supported by Node.js](https://nodejs.org/dist/latest/docs/api/modules.html#modules_modules) currently.
 
 ### Controllers
 
@@ -105,16 +108,56 @@ Service components are discovered in folder **api/services** of your application
 
 ## Exposure At Runtime
 
-All components are exposed at runtime in section `runtime` of [Hitchy's API](../api). There are separate groups for every kind of component:
+All components are exposed at runtime in section `runtime` of [Hitchy's API](../api/README.md#api-runtime). There are separate groups for every kind of component:
 
-* `this.api.runtime.controllers` 
-* `this.api.runtime.policies` 
-* `this.api.runtime.models` 
-* `this.api.runtime.services`
+* `api.runtime.controllers` 
+* `api.runtime.policies` 
+* `api.runtime.models` 
+* `api.runtime.services`
 
-:::warning 
-In either collection components are exposed using PascalCase name derived from its kebab-case filename.
+In addition, in [context of a controller's or a policy's request handler](../api/README.md#request-context) either collection of components is available via some convenient alias:
+
+* `this.controllers`
+* `this.policies`
+* `this.models`
+* `this.services`
+
+:::tip Singular Collection Names
+For the sake of convenience and integrity either collection can be addressed using singular names as well.
 :::
+
+### Derivation of Component Names
+
+When exposing components Hitchy is deriving either component's resulting name from path name of module that was providing its implementation relative to the type of component's folder following this process:
+
+1. The file's extension **.js** is dropped.
+2. Leading digits optionally separated by a dash or underscore are stripped off.
+
+   Leading digits can be used to optionally control the order of loading available modules during bootstrap e.g. to assure that some component is capable of accessing its previously loaded parent class.
+3. The segments of path name 
+   * [are reversed](../api/README.md#config-hitchy-appendfolders-0-3-3) and
+   * joined by dashes instead of slashes.
+4. The resulting name 
+   * is converted to all lowercase letters and eventually 
+   * converted from kebab-case naming style into PascalCase naming style.
+
+:::tip Example
+Consider having a file **api/services/01-converter-tool/archive/1_ZIP.js**. This would result in the following value per step given before:
+
+1. **01-converter-tool/archive/1_ZIP**
+2. **converter-tool/archive/ZIP**
+3. 
+   * **ZIP/archive/converter-tool**
+   * **ZIP-archive-converter-tool**
+4.
+   * **zip-archive-converter-tool**
+   * **ZipArchiveConverterTool**
+
+Thus the component implemented in assumed file would be exposed as `api.runtime.services.ZipArchiveConverterTool`.
+:::
+
+
+### Accessing Components
 
 For example, the following request handler is accessing a service component named `FileZipper` which is discovered in file **api/service/file-zipper.js**:
 
@@ -136,8 +179,14 @@ function someRequestHandler( req, res ) {
 }
 ```
 
-In either example `req.hitchy` and `this.api` are referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
+In either example [`req.hitchy`](../api/README.md#req-hitchy-0-2-0) and [`this.api`](../api/README.md#this-api) are referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
 
-:::warning
-Support for `req.hitchy` has been introduced in v0.2.0.
-:::
+In those functions using alias provided in its context looks like this:
+
+```javascript
+function someRequestHandler( req, res ) {
+    res
+        .status( 200 )
+        .json( this.services.FileZipper.listFromArchive( "some/archive" ) );
+}
+```
