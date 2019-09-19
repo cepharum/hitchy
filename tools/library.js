@@ -60,7 +60,9 @@ module.exports = {
  */
 function _toolLibraryCreateAPI( options = {} ) {
 	const api = {
-		config: {},
+		config: {
+			hitchy: {},
+		},
 		runtime: {
 			models: {},
 			controllers: {},
