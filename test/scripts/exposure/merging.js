@@ -105,4 +105,9 @@ suite( "Serving project with complex exposure", function() {
 		node.hitchy.runtime.policies.Static.staticMethod.should.be.Function();
 		node.hitchy.runtime.policies.Static.staticMethod().should.equal( "original static policy method" );
 	} );
+
+	test( "supports explicit sorting via numeric prefixes", function() {
+		node.hitchy.runtime.services.ActualFileMinorMajor.should.be.String().which.is.equal( "actual-file #6" );
+		node.hitchy.runtime.services.LatestFileMinorMajor.should.be.String().which.is.equal( "latest-file #9" );
+	} );
 } );
