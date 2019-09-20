@@ -55,7 +55,7 @@ module.exports = {
  * Creates initial skeleton API instance.
  *
  * @param {object} options global options customizing Hitchy
- * @returns {HitchyLibrary} library exposed as Hitchy's  API
+ * @returns {HitchyLibraryAPI} library exposed as Hitchy's  API
  * @private
  */
 function _toolLibraryCreateAPI( options = {} ) {
@@ -119,7 +119,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 						// provide shortcut for accessing logger factory
 						Object.defineProperties( api, {
 							/**
-							 * @name HitchyLibrary.log
+							 * @name HitchyLibraryAPI.log
 							 * @property {function(prefix:string):function(message:string)}
 							 * @readonly
 							 */
@@ -134,7 +134,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 						// provide shortcut for accessing router client
 						Object.defineProperties( api, {
 							/**
-							 * @name HitchyLibrary.Client
+							 * @name HitchyLibraryAPI.Client
 							 * @property {class<HitchyClientRequest>}
 							 * @readonly
 							 */
@@ -216,16 +216,3 @@ function _toolLibraryCMP( api, options = {}, modulePathname, moduleArguments = [
 function _toolLibraryCMFP( api, options = {}, fn, fnArguments = [] ) {
 	return fn.call( api, options, ...fnArguments );
 }
-
-
-
-/**
- * @typedef {object} HitchyLibrary
- * @property {HitchyBootstrapAPI} bootstrap
- * @property {HitchyResponderAPI} responder
- * @property {HitchyRouterAPI} router
- * @property {HitchyUtilityAPI} utility
- * @property {function(namespace:string):function} log alias for api.utility.logger.get
- * @property {function(name:string, moduleArguments:*[]):(object|function)} loader wraps require() to
- *           use on loading components from project folder (primarily to mock component loading for testing purposes)
- */
