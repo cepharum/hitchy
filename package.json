@@ -6,6 +6,7 @@
   "repository": "https://github.com/hitchyjs/core",
   "license": "MIT",
   "main": "injector",
+  "types": "hitchy.d.ts",
   "scripts": {
     "start": "node scripts/server.js",
     "lint": "eslint .",
