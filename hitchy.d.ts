@@ -35,7 +35,7 @@ export interface HitchyLibraryAPI {
      *
      * @param facility name of logging facility
      */
-    log( facility: string ): LoggerFunction;
+    log: HitchyLoggerGenerator;
 
     bootstrap: HitchyBootstrapAPI;
 
@@ -76,14 +76,78 @@ export interface HitchyResponderAPI {
 }
 
 export interface HitchyUtilityAPI {
+    object: {
+        /**
+         * Deeply seals provided data object.
+         *
+         * @param data object to be sealed deeply
+         * @param testFn callback invoked with segments of current properties breadcrumb for deciding if property shall be frozen or not
+         */
+        seal( data: object, testFn?: ( segments: string[] ) => boolean ): object,
 
+        /**
+         * Deeply freezes provided data object.
+         *
+         * @param data object to be frozen deeply
+         * @param testFn callback invoked with segments of current properties breadcrumb for deciding if property shall be frozen or not
+         */
+        freeze( data: object, testFn?: ( segments: string[] ) => boolean ): object,
+
+        /**
+         * Deeply merges provided source objects into given target object
+         * returning the latter.
+         *
+         * @param target target object adjusted by merging
+         * @param sources object to be deeply merged into given target
+         */
+        merge( target: object, ...sources: object[] ): object,
+    },
+
+    case: {
+        /**
+         * Converts naming style of provided string from kebab-case to camelCase.
+         *
+         * @param input string to be converted
+         */
+        kebabToCamel( input: string ): string,
+
+        /**
+         * Converts naming style of provided string from kebab-case to PascalCase.
+         *
+         * @param input string to be converted
+         */
+        kebabToPascal( input: string ): string,
+
+        /**
+         * Converts naming style of provided string from camelCase to kebab-case.
+         *
+         * @param input string to be converted
+         */
+        camelToKebab( input: string ): string,
+
+        /**
+         * Converts naming style of provided string from PascalCase to kebab-case.
+         *
+         * @param input string to be converted
+         */
+        pascalToKebab( input: string ): string,
+
+        /**
+         * Converts naming style of provided string from camelCase to PascalCase.
+         *
+         * @param input string to be converted
+         */
+        camelToPascal( input: string ): string,
+    },
+
+    logger: HitchyLoggerGenerator,
 }
 
 /**
  * Describes API of client for internally dispatching requests.
  */
 export interface HitchyRouterClient {
-    constructor( options: HitchyRouterClientOptions );
+    new( options: HitchyRouterClientOptions ) : HitchyRouterClient;
     dispatch: () => Promise<NodeJsServerResponse>;
     url: string;
     method: string;
@@ -308,10 +372,12 @@ export interface HitchyPluginHandle {
     api: HitchyPluginAPI;
 }
 
+export type HitchyLoggerGenerator = ( facility: string ) => HitchyLoggerFunction;
+
 /**
  * Logs provided message on behalf of a particular logging facility.
  */
-export type LoggerFunction = ( message: string ) => void;
+export type HitchyLoggerFunction = ( message: string ) => void;
 
 /**
  * Represents essential subset of either Hitchy-based application's
