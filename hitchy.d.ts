@@ -2,6 +2,10 @@
  * Provides all Hitchy-related information available in modules and functions of
  * a Hitchy-based application.
  */
+
+import { IncomingMessage, ServerResponse } from "http";
+
+
 export interface HitchyAPI extends HitchyLibraryAPI {
     /**
      * Exposes application's current runtime configuration.
@@ -50,18 +54,18 @@ export interface HitchyLibraryAPI {
      * module pattern.
      *
      * @param modulePath path name of module to load
-     * @param moduelArguments arguments to pass in addition to module complying with common module pattern
+     * @param moduleArguments arguments to pass in addition to module complying with common module pattern
      */
-    loader: ( modulePath: string, moduelArguments?: any[] ) => ( object | Function | Promise<object|Function> );
+    loader: (modulePath: string, moduleArguments?: any[]) => (object | Function | Promise<object | Function>);
 
-    cmp: ( modulePath: string, customArgs?: any[] ) => any;
+    cmp: (modulePath: string, customArgs?: any[]) => any;
 
-    cmfp: ( fn: HitchyCMP, customArgs?: any[] ) => any;
+    cmfp: (fn: HitchyCMP, customArgs?: any[]) => any;
 
     Client: HitchyRouterClient;
 }
 
-export type HitchyCMP = ( this: HitchyAPI, options: HitchyOptions, ...customArgs: any[] ) => any;
+export type HitchyCMP = (this: HitchyAPI, options: HitchyOptions, ...customArgs: any[]) => any;
 
 export interface HitchyBootstrapAPI {
 
@@ -83,7 +87,7 @@ export interface HitchyUtilityAPI {
          * @param data object to be sealed deeply
          * @param testFn callback invoked with segments of current properties breadcrumb for deciding if property shall be frozen or not
          */
-        seal( data: object, testFn?: ( segments: string[] ) => boolean ): object,
+        seal(data: object, testFn?: (segments: string[]) => boolean): object,
 
         /**
          * Deeply freezes provided data object.
@@ -91,7 +95,7 @@ export interface HitchyUtilityAPI {
          * @param data object to be frozen deeply
          * @param testFn callback invoked with segments of current properties breadcrumb for deciding if property shall be frozen or not
          */
-        freeze( data: object, testFn?: ( segments: string[] ) => boolean ): object,
+        freeze(data: object, testFn?: (segments: string[]) => boolean): object,
 
         /**
          * Deeply merges provided source objects into given target object
@@ -100,7 +104,7 @@ export interface HitchyUtilityAPI {
          * @param target target object adjusted by merging
          * @param sources object to be deeply merged into given target
          */
-        merge( target: object, ...sources: object[] ): object,
+        merge(target: object, ...sources: object[]): object,
     },
 
     case: {
@@ -109,35 +113,35 @@ export interface HitchyUtilityAPI {
          *
          * @param input string to be converted
          */
-        kebabToCamel( input: string ): string,
+        kebabToCamel(input: string): string,
 
         /**
          * Converts naming style of provided string from kebab-case to PascalCase.
          *
          * @param input string to be converted
          */
-        kebabToPascal( input: string ): string,
+        kebabToPascal(input: string): string,
 
         /**
          * Converts naming style of provided string from camelCase to kebab-case.
          *
          * @param input string to be converted
          */
-        camelToKebab( input: string ): string,
+        camelToKebab(input: string): string,
 
         /**
          * Converts naming style of provided string from PascalCase to kebab-case.
          *
          * @param input string to be converted
          */
-        pascalToKebab( input: string ): string,
+        pascalToKebab(input: string): string,
 
         /**
          * Converts naming style of provided string from camelCase to PascalCase.
          *
          * @param input string to be converted
          */
-        camelToPascal( input: string ): string,
+        camelToPascal(input: string): string,
     },
 
     logger: HitchyLoggerGenerator,
@@ -147,8 +151,9 @@ export interface HitchyUtilityAPI {
  * Describes API of client for internally dispatching requests.
  */
 export interface HitchyRouterClient {
-    new( options: HitchyRouterClientOptions ) : HitchyRouterClient;
-    dispatch: () => Promise<NodeJsServerResponse>;
+    new(options: HitchyRouterClientOptions): HitchyRouterClient;
+
+    dispatch: () => Promise<ServerResponse>;
     url: string;
     method: string;
     rawHeaders: string[];
@@ -163,7 +168,7 @@ export interface HitchyRouterClient {
         remotePort: number;
         remoteFamily: string;
     };
-    response: NodeJsServerResponse;
+    response: ServerResponse;
     httpVersion: string;
 }
 
@@ -285,7 +290,7 @@ export interface HitchyPluginAPI {
      * @param plugins all available plugins' handles
      * @param handle current plugin's handle
      */
-    onDiscovered?( this:HitchyAPI, options:HitchyOptions, plugins:HitchyPluginHandles, handle:HitchyPluginHandle ): void;
+    onDiscovered?(this: HitchyAPI, options: HitchyOptions, plugins: HitchyPluginHandles, handle: HitchyPluginHandle): void;
 
     /**
      * Gets invoked after global configuration has been compiled from either
@@ -294,7 +299,7 @@ export interface HitchyPluginAPI {
      * @param options options used on invoking application
      * @param handle current plugin's handle
      */
-    configure?( this:HitchyAPI, options:HitchyOptions, handle:HitchyPluginHandle ): void;
+    configure?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
 
     /**
      * Gets invoked before loading and exposing components of plugin.
@@ -302,7 +307,7 @@ export interface HitchyPluginAPI {
      * @param options options used on invoking application
      * @param handle current plugin's handle
      */
-    onExposing?( this:HitchyAPI, options:HitchyOptions, handle:HitchyPluginHandle ): void;
+    onExposing?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
 
     /**
      * Gets invoked after having loaded and exposed components of plugin.
@@ -310,7 +315,7 @@ export interface HitchyPluginAPI {
      * @param options options used on invoking application
      * @param handle current plugin's handle
      */
-    onExposed?( this:HitchyAPI, options:HitchyOptions, handle:HitchyPluginHandle ): void;
+    onExposed?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
 
     /**
      * Gets invoked after having exposed all components of every available
@@ -322,7 +327,7 @@ export interface HitchyPluginAPI {
      * @param options options used on invoking application
      * @param handle current plugin's handle
      */
-    initialize?( this:HitchyAPI, options:HitchyOptions, handle:HitchyPluginHandle ): void;
+    initialize?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
 
     /**
      * Gets invoked on gracefully shutting down Hitchy-based application.
@@ -332,7 +337,7 @@ export interface HitchyPluginAPI {
      * @param options options used on invoking application
      * @param handle current plugin's handle
      */
-    shutdown?( this:HitchyAPI, options:HitchyOptions, handle:HitchyPluginHandle ): void;
+    shutdown?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
 }
 
 /**
@@ -372,12 +377,12 @@ export interface HitchyPluginHandle {
     api: HitchyPluginAPI;
 }
 
-export type HitchyLoggerGenerator = ( facility: string ) => HitchyLoggerFunction;
+export type HitchyLoggerGenerator = (facility: string) => HitchyLoggerFunction;
 
 /**
  * Logs provided message on behalf of a particular logging facility.
  */
-export type HitchyLoggerFunction = ( message: string ) => void;
+export type HitchyLoggerFunction = (message: string) => void;
 
 /**
  * Represents essential subset of either Hitchy-based application's
@@ -433,7 +438,9 @@ export interface HitchyCoreConfig {
     deepComponents?: boolean;
 }
 
-export type HitchyRoutingConfig = HitchyRoutingDeclaration | HitchyRoutingSlotDeclaration;
+export type HitchyRoutingConfig =
+    HitchyRoutingDeclaration
+    | HitchyRoutingSlotDeclaration;
 
 /**
  * Describes routing declarations grouped by routing slot for explicit
@@ -453,9 +460,15 @@ export interface HitchyRoutingDeclaration {
     [key: string]: HitchyRoutingTargetDeclaration;
 }
 
-export type HitchyRoutingTargetDeclaration = HitchyRoutingTargetFunction | HitchyRoutingTargetName | HitchyRoutingTargetDescriptor;
-export type HitchyRoutingTargetFunction = HitchyRequestControllerHandler | HitchyRequestPolicyHandler;
+export type HitchyRoutingTargetDeclaration =
+    HitchyRoutingTargetFunction
+    | HitchyRoutingTargetName
+    | HitchyRoutingTargetDescriptor;
+export type HitchyRoutingTargetFunction =
+    HitchyRequestControllerHandler
+    | HitchyRequestPolicyHandler;
 export type HitchyRoutingTargetName = String;
+
 export interface HitchyRoutingTargetDescriptor {
     module: HitchyControllerComponent | HitchyPolicyComponent;
     method: HitchyRequestControllerHandler | HitchyRequestPolicyHandler;
@@ -465,12 +478,12 @@ export interface HitchyRoutingTargetDescriptor {
 /**
  * Defines signature of a controller's request handler.
  */
-export type HitchyRequestControllerHandler = ( this: HitchyRequestContext, req: HitchyIncomingMessage, res: HitchyServerResponse, ...customParameters: any[] ) => Promise<any>;
+export type HitchyRequestControllerHandler = (this: HitchyRequestContext, req: HitchyIncomingMessage, res: HitchyServerResponse, ...customParameters: any[]) => Promise<any>;
 
 /**
  * Defines signature of a policy's request handler.
  */
-export type HitchyRequestPolicyHandler = ( this: HitchyRequestContext, req: HitchyIncomingMessage, res: HitchyServerResponse, next: ( error?: Error ) => void, ...customParameters: any[] ) => Promise<any>;
+export type HitchyRequestPolicyHandler = (this: HitchyRequestContext, req: HitchyIncomingMessage, res: HitchyServerResponse, next: (error?: Error) => void, ...customParameters: any[]) => Promise<any>;
 
 /**
  * Defines collections of components grouped by type of component.
@@ -489,12 +502,15 @@ export interface HitchyRuntime {
 export interface HitchyControllerComponents {
     [key: string]: HitchyControllerComponent;
 }
+
 export interface HitchyPolicyComponents {
     [key: string]: HitchyPolicyComponent;
 }
+
 export interface HitchyModelComponents {
     [key: string]: HitchyModelComponent;
 }
+
 export interface HitchyServiceComponents {
     [key: string]: HitchyServiceComponent;
 }
@@ -510,48 +526,66 @@ export type HitchyServiceComponent = HitchyComponent;
 /**
  * Extends IncomingMessage of Node.js in context of a Hitchy-based application.
  */
-export interface HitchyIncomingMessage {
+export interface HitchyIncomingMessage extends IncomingMessage {
+    hitchy: HitchyAPI;
+    accept: string[];
+    cookies?: { [key: string]: string };
+    params: { [key: string]: string | string[] };
+    path: string;
+    query: { [key: string]: string | string[] }
+    session?: { [key: string]: any }
 
-}
-
-/**
- * Partially re-declares ServerResponse supported by Node.js.
- */
-export interface NodeJsServerResponse {
-    end( content?: ( string | Buffer ), encoding?: string ): void;
-    write( content: ( string | Buffer ), encoding?: string ): void;
-    writeHead( statusCode: number, headers: { [key: string]: string } ): void;
-    setHeader( headersOrName: ( { [key: string]: string } | string ), value: string ): void;
-    getHeader( name: string ): string;
-    statusCode: number;
+    fetchBody(parser?: boolean | HitchyBodyParser);
 }
 
 /**
  * Extends ServerResponse of Node.js in context of a Hitchy-based application.
  */
-export interface HitchyServerResponse extends NodeJsServerResponse {
-    send( content: ( string | Buffer ), encoding?: string ): HitchyServerResponse;
-    status( statusCode: number ): HitchyServerResponse;
-    type( typeName: string ): HitchyServerResponse;
-    format( handlers: { [key: string]: HitchyRequestControllerHandler } ): HitchyServerResponse;
-    json( data: object ): HitchyServerResponse;
-    set( headersOrName: ( { [key: string]: string } | string ), value: string ): HitchyServerResponse;
-    redirect( statusCode: number, url: string ): HitchyServerResponse;
+export interface HitchyServerResponse extends ServerResponse {
+    send(content: (string | Buffer), encoding?: string): HitchyServerResponse;
+
+    status(statusCode: number): HitchyServerResponse;
+
+    type(typeName: string): HitchyServerResponse;
+
+    format(handlers: { [key: string]: HitchyRequestControllerHandler }): HitchyServerResponse;
+
+    json(data: object): HitchyServerResponse;
+
+    set(headersOrName: ({ [key: string]: string } | string), value: string): HitchyServerResponse;
+
+    redirect(statusCode: number, url: string): HitchyServerResponse;
 }
 
-export type HitchyBodyParser = ( raw: Buffer ) => ( any | Promise<any> );
+export type HitchyBodyParser = (raw: Buffer) => (any | Promise<any>);
 
 /**
  * Describes context via `this` in request handlers of a Hitchy-based
  * application.
  */
 export interface HitchyRequestContext {
-    accept: string[];
-    cookies?: { [key: string]: string };
-    fetchBody( parser?: boolean | HitchyBodyParser );
-    hitchy: HitchyAPI;
-    params: { [key: string]: string | string[] };
-    path: string;
-    query: { [key: string]: string | string[] }
-    session?: { [key: string]: any }
+    request: HitchyIncomingMessage;
+    response: HitchyServerResponse;
+    local: { [key: string]: any };
+    api: HitchyAPI;
+    config: HitchyConfig;
+    runtime: HitchyRuntime;
+    controllers: HitchyControllerComponents;
+    controller: HitchyControllerComponents;
+    policies: HitchyPolicyComponents;
+    policy: HitchyPolicyComponents;
+    models: HitchyModelComponents;
+    model: HitchyModelComponents;
+    services: HitchyServiceComponents;
+    service: HitchyServiceComponents;
+    startTime: number;
+    context: HitchyContextIdentifier;
+    done( error?: Error ): void;
+    /** @private */
+    consumed: boolean;
+}
+
+export enum HitchyContextIdentifier {
+    Standalone= "standalone",
+    Express= "express",
 }
