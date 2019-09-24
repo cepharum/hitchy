@@ -108,22 +108,17 @@ function _toolObjectDeepFreeze( object, testFn = null, _path = [] ) {
  * Deeply merges properties of one or more objects into a given target object.
  *
  * @param {object} target object properties of provided sources are merged into
- * @param {object[]} sources list of objects properties are read from
+ * @param {object|object[]} sources single source object or list of source objects properties are read from
+ * @param {function(string):string} strategyFn callback invoked per property of object to be merged for picking merging strategy
  * @returns {object} reference on provided target object with properties of sources merged
  */
-function _toolObjectDeepMerge( target, ...sources ) {
+function _toolObjectDeepMerge( target, sources, strategyFn = null ) {
 	const _target = target && typeof target === "object" ? target : {};
-	let numSources = sources.length;
-	let strategyFn;
-
-	if ( typeof sources[numSources - 1] === "function" ) {
-		strategyFn = sources[--numSources];
-	} else {
-		strategyFn = null;
-	}
+	const _sources = Array.isArray( sources ) ? sources : sources == null ? [] : [sources];
+	const numSources = _sources.length;
 
 	for ( let s = 0; s < numSources; s++ ) {
-		merge( _target, sources[s], strategyFn, null );
+		merge( _target, _sources[s], strategyFn, [] );
 	}
 
 	return _target;
@@ -135,12 +130,12 @@ function _toolObjectDeepMerge( target, ...sources ) {
 	 * @param {object} to target properties of `from` are transferred to
 	 * @param {*} from value to be merged,
 	 * @param {?function(string, string, *, object):string} fn optional callback invoked to select strategy for transferring either property
-	 * @param {?string} pathname pathname of super-ordinated properties passed to access current value in `from`
+	 * @param {string[]} segments lists names of properties superordinated to the current one to be merged (breadcrumb into object hierarchy)
 	 * @return {object|*} object provided in `to` with properties of object in `from` or non-object value provided in `from`
 	 */
-	function merge( to, from, fn, pathname ) {
+	function merge( to, from, fn, segments ) {
 		if ( from && typeof from === "object" ) {
-			const names = Array.isArray( from ) ? Array.from( Array( from.length ).keys() ) : Object.keys( from );
+			const names = Array.isArray( from ) ? Array.from( Array( from.length ).keys() ) : from instanceof Map ? Array.from( from.keys() ) : Object.keys( from ); // eslint-disable-line max-len
 			const numNames = names.length;
 
 			for ( let i = 0; i < numNames; i++ ) {
@@ -150,21 +145,21 @@ function _toolObjectDeepMerge( target, ...sources ) {
 					continue;
 				}
 
-				let sValue = from[name];
+				const subSegments = segments.concat( name );
+				let sValue = from instanceof Map ? from.get( name ) : from[name];
 				let dValue = to[name];
-				const subName = pathname == null ? name : pathname + "|" + name;
 				let strategy;
 
 				if ( sValue === undefined ) {
 					strategy = "keep";
-				} else if ( dValue && typeof dValue === "object" && !Array.isArray( dValue ) ) {
-					strategy = "merge";
+				} else if ( dValue && typeof dValue === "object" ) {
+					strategy = Array.isArray( dValue ) ? "concat" : "merge";
 				} else {
 					strategy = "replace";
 				}
 
 				if ( fn ) {
-					strategy = fn( subName, strategy, sValue, dValue );
+					strategy = fn( subSegments, strategy, sValue, dValue );
 				}
 
 				switch ( strategy ) {
@@ -188,28 +183,38 @@ function _toolObjectDeepMerge( target, ...sources ) {
 								const concat = strategy === "concat";
 								const _numSources = sValue.length;
 
-								if ( dValue == null || typeof dValue !== "object" ) {
-									to[name] = dValue = [];
+								if ( dValue == null ) {
+									dValue = [];
 								} else if ( concat && !Array.isArray( dValue ) ) {
-									to[name] = dValue = [dValue];
+									dValue = [dValue];
+								}
+
+								if ( to instanceof Map ) {
+									to.set( name, dValue );
+								} else {
+									to[name] = dValue;
 								}
 
 								for ( let j = 0; j < _numSources; j++ ) {
 									let item = sValue[j];
 
-									if ( item && typeof item === "object" ) {
-										item = merge( {}, item, fn, subName + "[]" );
-									}
-
 									if ( concat || ( Array.isArray( dValue ) && j >= dValue.length ) ) {
 										dValue.push( item );
 									} else {
+										if ( item && typeof item === "object" ) {
+											item = merge( {}, item, fn, subSegments.concat( "[]" ) );
+										}
+
 										dValue[j] = item;
 									}
 								}
-							} else if ( sValue.constructor === Object ) {
-								// got some native object -> merge recursively
-								to[name] = merge( dValue || {}, sValue, fn, subName );
+							} else if ( sValue.constructor === Object || sValue instanceof Map ) {
+								// got some native object or Map -> merge recursively
+								if ( to instanceof Map ) {
+									to.set( name, merge( dValue || {}, sValue, fn, subSegments ) );
+								} else {
+									to[name] = merge( dValue || {}, sValue, fn, subSegments );
+								}
 							} else {
 								// got instance of some custom class -> replace
 								to[name] = sValue;

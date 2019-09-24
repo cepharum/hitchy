@@ -57,24 +57,26 @@ describe( "Utility method for deeply merging objects", () => {
 			const t = {};
 
 			merge( {}, null ).should.be.Object().which.has.size( 0 );
-			merge( {}, null, null, null ).should.be.Object().which.has.size( 0 );
+			merge( {}, [null] ).should.be.Object().which.has.size( 0 );
+			merge( {}, [ null, null, null ] ).should.be.Object().which.has.size( 0 );
 
-			merge( null, null, null, null ).should.be.Object().which.has.size( 0 );
-			merge( undefined, null, null, null ).should.be.Object().which.has.size( 0 );
+			merge( null, [ null, null, null ] ).should.be.Object().which.has.size( 0 );
+			merge( undefined, [ null, null, null ] ).should.be.Object().which.has.size( 0 );
 
-			merge( t, null, null, null ).should.be.equal( t ).which.has.size( 0 );
+			merge( t, [ null, null, null ] ).should.be.equal( t ).which.has.size( 0 );
 		} );
 
 		it( "ignoring undefined sources", () => {
 			const t = {};
 
 			merge( {}, undefined ).should.be.Object().which.has.size( 0 );
-			merge( {}, undefined, undefined, undefined ).should.be.Object().which.has.size( 0 );
+			merge( {}, [undefined] ).should.be.Object().which.has.size( 0 );
+			merge( {}, [ undefined, undefined, undefined ] ).should.be.Object().which.has.size( 0 );
 
-			merge( null, undefined, undefined, undefined ).should.be.Object().which.has.size( 0 );
-			merge( undefined, undefined, undefined, undefined ).should.be.Object().which.has.size( 0 );
+			merge( null, [ undefined, undefined, undefined ] ).should.be.Object().which.has.size( 0 );
+			merge( undefined, [ undefined, undefined, undefined ] ).should.be.Object().which.has.size( 0 );
 
-			merge( t, undefined, undefined, undefined ).should.be.equal( t ).which.has.size( 0 );
+			merge( t, [ undefined, undefined, undefined ] ).should.be.equal( t ).which.has.size( 0 );
 		} );
 
 		it( "ignoring string sources", () => {
@@ -83,12 +85,13 @@ describe( "Utility method for deeply merging objects", () => {
 					const t = {};
 
 					merge( {}, string ).should.be.Object().which.has.size( 0 );
-					merge( {}, string, string, string ).should.be.Object().which.has.size( 0 );
+					merge( {}, [string] ).should.be.Object().which.has.size( 0 );
+					merge( {}, [ string, string, string ] ).should.be.Object().which.has.size( 0 );
 
-					merge( null, string, string, string ).should.be.Object().which.has.size( 0 );
-					merge( undefined, string, string, string ).should.be.Object().which.has.size( 0 );
+					merge( null, [ string, string, string ] ).should.be.Object().which.has.size( 0 );
+					merge( undefined, [ string, string, string ] ).should.be.Object().which.has.size( 0 );
 
-					merge( t, string, string, string ).should.be.equal( t ).which.has.size( 0 );
+					merge( t, [ string, string, string ] ).should.be.equal( t ).which.has.size( 0 );
 				} );
 		} );
 
@@ -98,12 +101,13 @@ describe( "Utility method for deeply merging objects", () => {
 					const t = {};
 
 					merge( {}, numeric ).should.be.Object().which.has.size( 0 );
-					merge( {}, numeric, numeric, numeric ).should.be.Object().which.has.size( 0 );
+					merge( {}, [numeric] ).should.be.Object().which.has.size( 0 );
+					merge( {}, [ numeric, numeric, numeric ] ).should.be.Object().which.has.size( 0 );
 
-					merge( null, numeric, numeric, numeric ).should.be.Object().which.has.size( 0 );
-					merge( undefined, numeric, numeric, numeric ).should.be.Object().which.has.size( 0 );
+					merge( null, [ numeric, numeric, numeric ] ).should.be.Object().which.has.size( 0 );
+					merge( undefined, [ numeric, numeric, numeric ] ).should.be.Object().which.has.size( 0 );
 
-					merge( t, numeric, numeric, numeric ).should.be.equal( t ).which.has.size( 0 );
+					merge( t, [ numeric, numeric, numeric ] ).should.be.equal( t ).which.has.size( 0 );
 				} );
 		} );
 
@@ -113,12 +117,13 @@ describe( "Utility method for deeply merging objects", () => {
 					const t = {};
 
 					merge( {}, boolean ).should.be.Object().which.has.size( 0 );
-					merge( {}, boolean, boolean, boolean ).should.be.Object().which.has.size( 0 );
+					merge( {}, [boolean] ).should.be.Object().which.has.size( 0 );
+					merge( {}, [ boolean, boolean, boolean ] ).should.be.Object().which.has.size( 0 );
 
-					merge( null, boolean, boolean, boolean ).should.be.Object().which.has.size( 0 );
-					merge( undefined, boolean, boolean, boolean ).should.be.Object().which.has.size( 0 );
+					merge( null, [ boolean, boolean, boolean ] ).should.be.Object().which.has.size( 0 );
+					merge( undefined, [ boolean, boolean, boolean ] ).should.be.Object().which.has.size( 0 );
 
-					merge( t, boolean, boolean, boolean ).should.be.equal( t ).which.has.size( 0 );
+					merge( t, [ boolean, boolean, boolean ] ).should.be.equal( t ).which.has.size( 0 );
 				} );
 		} );
 
@@ -128,12 +133,13 @@ describe( "Utility method for deeply merging objects", () => {
 					const t = {};
 
 					merge( {}, fn ).should.be.Object().which.has.size( 0 );
-					merge( {}, fn, fn, fn ).should.be.Object().which.has.size( 0 );
+					merge( {}, [fn] ).should.be.Object().which.has.size( 0 );
+					merge( {}, [ fn, fn, fn ] ).should.be.Object().which.has.size( 0 );
 
-					merge( null, fn, fn, fn ).should.be.Object().which.has.size( 0 );
-					merge( undefined, fn, fn, fn ).should.be.Object().which.has.size( 0 );
+					merge( null, [ fn, fn, fn ] ).should.be.Object().which.has.size( 0 );
+					merge( undefined, [ fn, fn, fn ] ).should.be.Object().which.has.size( 0 );
 
-					merge( t, fn, fn, fn ).should.be.equal( t ).which.has.size( 0 );
+					merge( t, [ fn, fn, fn ] ).should.be.equal( t ).which.has.size( 0 );
 				} );
 		} );
 	} );
@@ -146,21 +152,21 @@ describe( "Utility method for deeply merging objects", () => {
 		]
 			.forEach( array => {
 				it( `transferring items of array [${array}] into numeric properties of resulting object`, () => {
-					let merged = merge( {}, array );
+					let merged = merge( {}, [array] );
 					merged.should.be.Object().which.has.size( array.length );
 
 					for ( let i = 0; i < array.length; i++ ) {
 						merged.should.have.property( i ).which.is.equal( array[i] );
 					}
 
-					merged = merge( null, array );
+					merged = merge( null, [array] );
 					merged.should.be.Object().which.has.size( array.length );
 
 					for ( let i = 0; i < array.length; i++ ) {
 						merged.should.have.property( i ).which.is.equal( array[i] );
 					}
 
-					merged = merge( undefined, array );
+					merged = merge( undefined, [array] );
 					merged.should.be.Object().which.has.size( array.length );
 
 					for ( let i = 0; i < array.length; i++ ) {
@@ -175,15 +181,15 @@ describe( "Utility method for deeply merging objects", () => {
 
 	describe( "supports concatenation of scalar values", () => {
 		it( "in same top-level properties of different sources", () => {
-			merge( {}, { propName: "first" }, { propName: "second" }, ( path, strategy ) => {
-				return path === "propName" ? "concat" : strategy;
+			merge( {}, [ { propName: "first" }, { propName: "second" } ], ( path, strategy ) => {
+				return String( path ) === "propName" ? "concat" : strategy;
 			} )
 				.should.have.property( "propName" ).which.is.an.Array().and.deepEqual( [ "first", "second" ] );
 		} );
 
 		it( "in same second-level properties of different sources", () => {
-			merge( {}, { propName: { sub: "first" } }, { propName: { sub: "second" } }, ( path, strategy ) => {
-				return path === "propName|sub" ? "concat" : strategy;
+			merge( {}, [ { propName: { sub: "first" } }, { propName: { sub: "second" } } ], ( path, strategy ) => {
+				return String( path ) === "propName,sub" ? "concat" : strategy;
 			} )
 				.should.have.property( "propName" ).which.has.property( "sub" ).which.is.an.Array().and.deepEqual( [ "first", "second" ] );
 		} );
