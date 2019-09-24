@@ -2,7 +2,7 @@
 
 const options = {
 	projectFolder: "test/projects/merging-routings",
-	debug: true,
+	// debug: true,
 };
 
 const { describe, it, before, after } = require( "mocha" );
