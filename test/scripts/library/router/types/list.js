@@ -508,7 +508,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 			collector.onPrefix.bind( collector, "/" ).should.not.throw();
 
 			let sortedList = collector.onPrefix( "/" );
-			Should( sortedList ).be.Null();
+			sortedList.should.be.Array().which.is.empty();
 
 			collector = new RoutesPerPrefix();
 			collector.append( new TerminalRoute( "/", () => {}, API ) );
