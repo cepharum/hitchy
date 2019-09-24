@@ -31,9 +31,8 @@
 const Path = require( "path" );
 const OS = require( "os" );
 
-const _ = require( "lodash" );
-
 const LibTools = require( "./library" );
+const ObjectTools = require( "./object" );
 
 /**
  * Helps with loading modules for testing purposes providing some mockup API as
@@ -95,7 +94,7 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 	return LibTools.load( Api, Path.resolve( LocalHitchyFolder, "lib" ) )
 		.then( function() {
 			// apply custom overlay provided by caller
-			_.merge( Api, apiOverlay );
+			ObjectTools.deepMerge( Api, apiOverlay );
 
 			// test if caller provided description of modules to load implicitly
 			const targetNames = Object.keys( modules );
