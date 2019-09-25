@@ -74,7 +74,6 @@ During bootstrap every discovered plugin is additionally represented by another 
 * `handle.meta` is providing the plugin's loaded, merged and probably qualified meta information.
 * `handle.api` is finally providing the API exported by the plugin.
 * `handle.config` provides individual configuration of plugin read from its **config** folder in configuration stage.
-:::
 
 
 ### Notifying Plugins on Discovery
