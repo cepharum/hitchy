@@ -196,9 +196,30 @@ The plugin **hitchy-plugin-odem-rest** is declaring to depend on role **odm** wh
 
 ### dependants
 
-A plugin is capable of listing roles depending on it without requiring plugins claiming those roles to declare related dependency on their own. 
+A plugin is capable of listing roles depending on it without requiring plugins claiming those roles as dependency on their own.
 
-Using this property is less common but supported for sake of integrity as it is controlling sorting order of plugins in direction opposite to declaring dependencies as described above.
+This feature is important for controlling order of plugins to assure some plugin is processed between two other ones. 
+
+:::tip Example
+A plugin with role **auth** is working with a model **User** and thus claims to depend on plugin with role **odm** using a beacon file similar to this one:
+
+```json
+{
+    "role": "auth",
+    "dependencies": ["odm"]
+}
+```
+
+A plugin **fast-user** wants to transparently provide a different implementation for that model and thus needs to make sure it is processed after plugin with role **odm** and before plugin with role **auth**. It's achieving that by using a beacon file like this one:
+
+```json
+{
+    "role": "fast-user",
+    "dependencies": ["odm"],
+    "dependants": ["auth"]
+}
+```
+:::
 
 
 ## Common Plugin API
