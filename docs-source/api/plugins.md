@@ -40,11 +40,11 @@ For every plugin a claimed role may be encountered in these situations:
 
    The approved role of a plugin will be exposed as property `$role` of its API.
 
+This pattern is beneficial in plugins dynamically adopting their behaviour to an application's actual context. For example, a plugin may inspect list of available plugins and decide to replace some particular plugin unless application doesn't depend on that plugin at all.
+
 ### Uniquity
 
-A plugin's role must be unique in context of a single application. 
-
-Thus, in a single application you can't have two plugins claiming same role except for one situation: A plugin's dynamic role is accepted over always preferred over some other plugin claiming same role statically, only. This is meant to have a plugin inspecting all the available plugins and deciding to provide a superior implementation to be used in preference.
+A plugin's [approved role](#static-vs-dynamic-vs-approved) must be unique in context of a single application. Thus, in a single application you can't have two plugins claiming same role to be approved.
 
 
 ## Basic File Layout
@@ -344,4 +344,21 @@ A plugin's API is specific to either plugin and thus you should consult the plug
 There are no two kinds of APIs for every plugin. But some properties of a plugin's API are detected and handled by Hitchy on integrating the plugin with an application while the rest of that API is ignored by Hitchy.
 
 The API eventually exposed via Hitchy's API is always covering both parts of a plugin's API.
+:::
+
+:::tip Example
+A plugin named **my-plugin** and claiming role **widgets** exposes an API like this:
+
+**my-plugin/index.js:**
+```javascript
+class Widget {
+}
+
+module.exports = {
+    createWidget( name ) { ... },
+    Widget,
+};
+```
+
+The application is capable of using this API using `api.plugins.widgets.createWidget( name )` or `new api.plugins.widgets.Widget()`.
 :::
