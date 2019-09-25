@@ -114,7 +114,7 @@ Every plugin may provide configuration to be merged into resulting application's
 
 Names of configuration files don't matter as long as they don't start with a full stop `.` and end in **.js**.
 
-Configuration of all plugins and resulting application is exposed via [Hitchy's API](README.md#api-config).
+Either plugin's configuration as merged data of all files loaded here is exposed as [part of plugin's resulting API](#plugin-config-0-3-3). Configuration of all plugins and resulting application is merged and gets eventually exposed via [Hitchy's API](README.md#api-config).
 
 ### Components
 
@@ -279,6 +279,48 @@ This optional method is invoked so the plugin is able to initialise its resource
 
 :::tip
 Returning a promise is supported for deferring bootstrap until promise is settled. On rejecting promise or on throwing the bootstrap fails.
+:::
+
+### plugin.policies
+
+**Signatures:** `policies` or `policies( options, myHandle )`
+
+This optional property or method is used to fetch a plugin's routing declarations for policies during [routing stage of bootstrap](../internals/bootstrap.md#routing). It is either an object with structure equivalent to the one [supported in configuration](README.md#config-policies) or some method invoked in compliance with [common module function pattern](README.md#common-module-function-pattern) to get that set of declarations.
+
+:::tip
+In addition, it is possible to expose this property as a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) which is fulfilled with the actual set of routing declarations.
+:::
+
+:::warning Supporting "Slots"
+In opposition to an application's custom routing declarations, a plugin is capable of choosing virtual routing slots `before` and `after`, only. In opposition to application's support for routing slots those names are used to pick the [block of policies either preceding or succeeding the block of routes](../internals/routing-basics.md#routing-stages). 
+:::
+
+### plugin.routes
+
+**Signatures:** `routes` or `routes( options, myHandle )`
+
+Similar to [`plugin.policies`](#plugin-policies) this optional property or method is used to fetch plugin's routing declarations for (terminal) routes during [routing stage of bootstrap](../internals/bootstrap.md#routing). See its [configuration counterpart](README.md#config-routes) for information on supported syntax.
+
+:::tip
+In addition, it is possible to expose this property as a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) which is fulfilled with the actual set of routing declarations.
+:::
+
+:::warning Supporting "Slots"
+In opposition to an application's custom routing declarations, a plugin is capable of choosing virtual routing slots `before` and `after`, only. In opposition to application's support for routing slots those names are used to pick the [block of routes either preceding or succeeding the block of blueprint routes](../internals/routing-basics.md#focusing-on-routes). 
+:::
+
+### plugin.blueprints
+
+**Signatures:** `routes` or `routes( options, myHandle )`
+
+Similar to [`plugin.routes`](#plugin-routes) this optional property or method is used to fetch plugin's routing declarations for [blueprint routes](../internals/routing-basics.md#focusing-on-routes) during [routing stage of bootstrap](../internals/bootstrap.md#routing). The supported syntax is basically identical to the one supported by `plugin.routes`, though blueprints are limited in multiple ways:
+
+:::tip
+In addition, it is possible to expose this property as a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) which is fulfilled with the actual set of routing declarations.
+:::
+
+:::warning Supporting "Slots"
+When it comes to declaring blueprints there is no support for selecting any kind of _routing slot_. Thus, declarations of blueprint routes don't support sub-divisions like policies or routes.
 :::
 
 ### plugin.shutdown()

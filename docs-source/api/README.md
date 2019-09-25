@@ -102,6 +102,11 @@ Thus, when complying with common module pattern either module is capable of defe
 
 Whenever Hitchy is supporting common module pattern it might intend to pass further information in addition to its API and options. This information will be provided as additional arguments following provided options.
 
+#### Common Module Function Pattern
+
+A similar pattern is supported e.g. when accessing some [elements of a plugin's API](plugins.md#plugin-policies) and it is named _common module function pattern_. Just like common module pattern it is meant to support provision of a function to be invoked for generating some data instead of providing that data immediately. And any such function is invoked with Hitchy's API provided as `this`, Hitchy's options in first argument and any number of additional data provided in further arguments, too.
+
+In opposition to common module pattern this isn't about a whole module to be load but just some property exported there. And for the containing module to be capable of complying with common module pattern using this pattern isn't quite as beneficial and commonly useful except for rare cases.
 
 ### In Request Handlers
 
@@ -276,7 +281,7 @@ By intention, blueprints are supported in plugins, only.
 Reading the [introduction on Hitchy's routing](../internals/routing-basics.md) is highly recommended.
 :::
 
-Declaration of blueprints is equivalent to declaring routes in [`config.routes`](#config-routes).
+Declaration of blueprints is mostly equivalent to declaring routes in [`config.routes`](#config-routes). In opposition to that blueprint declarations don't support separate lists per _routing slot_ for there is only one slot for every plugin to declare its blueprint routes.
 
 ### config.routes
 
@@ -474,7 +479,13 @@ The following description assumes you know [how to gain access on Hitchy's API](
 
 ### api.config <Badge type="info">+0.3.0</Badge>
 
-All configuration of every available plugin as well as the application itself is loaded from Javascript files in either ones' **config** sub-folder and merged into a single configuration object which is exposed here.
+All configuration of every available plugin as well as the application itself is [loaded from Javascript files in either ones' **config** sub-folder](../internals/bootstrap.md#configuration) and merged into a single configuration object which is exposed here.
+
+#### api.config.$appConfig
+
+Configuration provided in `api.config` always includes options exported by available plugins. If you need to access the application's own configuration - which is merged from reading all Javascript files in application's sub-folder **config** - this basically hidden property can be used.
+
+This is the application's counterpart to either plugin's [exposure of its pure configuration](plugins.md#plugin-config-0-3-3).
 
 ### api.runtime
 
@@ -798,7 +809,9 @@ This property exposes object containing all cookies transmitted by client in cur
 This method promises request's body. The optional parameter can be used to control parser used for extracting contained information.
 
 :::warning
-When integrating with ExpressJS it might have parsed request body before thus preventing this function from accessing request body at all. This would result in returned promise never settled.
+When integrating with ExpressJS it might have fetched and parsed request body before exposing it as `req.body`. In this case Hitchy isn't capable of accessing raw request body anymore. This is limiting use of this function.
+
+Supporting this scenario any existing data in `req.body` will be delivered whenever using this function for _fetching_ request's body without regards to some optionally selected parser. 
 :::
  
 * When omitted or set `null` any parser function in configuration is used to commonly parse raw body for contained information. When there is no configured parser some fallback is used supporting JSON and form-encoded request bodies.

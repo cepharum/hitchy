@@ -172,9 +172,22 @@ In initialisation stage configuration and all components are available. Every pl
 [Shutdown stage](#shutdown) is supported as a counterpart to this stage.
 :::
 
+### Initialising Plugins
+
 For every plugin a method `initialize()` exported as part of its API is invoked. The function is invoked with `this` referring to Hitchy's API and Hitchy options as well as either plugin's handle provided as arguments.
 
+### Initialising Application
+
 Application may provide its initialisation code to be invoked after having initialised all plugins. Applications requiring special setup provide a file named **initialize.js** in project folder. This file is invoked in compliance with common module pattern. 
+
+**app/initialize.js**
+```javascript
+module.exports = function( options ) {
+    const api = this;
+
+    // TODO implement your application here, e.g. by setting up caches or similar
+};
+```
 
 ## Routing
 
@@ -182,11 +195,25 @@ Application may provide its initialisation code to be invoked after having initi
 Routing stage is a dedicated stage at end of bootstrap so it is capable of using APIs, components and configuration of existing plugins and the application for eventually declaring routes.
 :::
 
-In routing stage the routing definitions in configuration of every plugin are processed resulting in routes for later dispatch of request. Routes are read from configuration properties `routes`, `policies` and `blueprints`.
+In routing stage every plugin is asked to provide its routing declarations in one of two ways:
 
+1. Using configuration files just like the application either plugin can declare routing of [`policies`](routing-basics.md#policies), (terminal) [`routes`](routing-basics.md#routes) and [`blueprints`](routing-basics.md#focusing-on-routes).
+
+   Those routings will be part of global configuration object exposed via Hitchy's API at runtime, as well. But either plugin's configuration as well as the routing configuration of application is processed independently.
+   
+   :::warning
+   This option has been introduced in v0.3.6.
+   :::
+
+2. The preferred way is to expose either set of declarations as part of a [plugin's API](../api/plugins.md#common-plugin-api). `policies`, `routes` and/or `blueprints` can be exposed as object containing declarations or as function to be invoked in compliance with common module (function) pattern to return either set of declarations there.
+
+   :::tip Hidden Routings
+   This approach is preferred to prevent useless pollution of [configuration object](../api/README.md#configuration).
+   :::
+ 
 After that application's configuration is processed accordingly for `routes` and `policies`.
 
-Routing definitions aren't replacing existing ones on match. For additional information on this rather complex method see the separate [introduction on routing](../internals/routing-basics.md).
+Routing declarations aren't replacing existing ones on match, but might cause some declarations inferior to others to be dropped when optimising routing tables. For additional information on this rather complex method see the separate [introduction on routing](../internals/routing-basics.md).
 
 At the end of routing stage the application's bootstrap has finished.
 
@@ -194,7 +221,20 @@ At the end of routing stage the application's bootstrap has finished.
 
 When gracefully shutting down a Hitchy-based application every plugin gets a chance to shutdown its previously initialised state. The same applies to the application which gets a chance to do so first.
 
+### Shutting Down Application
+
 On behalf of application a file named **shutdown.js** found in its project folder is loaded complying with common module pattern.
+
+**app/shutdown.js**
+```javascript
+module.exports = function( options ) {
+    const api = this;
+
+    // TODO remove caching files of your application or similar here
+};
+```
+
+### Shutting Down Plugins
 
 After that for every plugin is checked for exporting a method `shutdown()` to be invoked now. Either function is invoked with `this` referring to Hitchy's API and Hitchy options as well as either plugin's handle provided as arguments.
 
