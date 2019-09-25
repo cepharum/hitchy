@@ -41,8 +41,6 @@ export interface HitchyLibraryAPI {
      */
     log: HitchyLoggerGenerator;
 
-    bootstrap: HitchyBootstrapAPI;
-
     router: HitchyRouterAPI;
 
     responder: HitchyResponderAPI;
@@ -67,16 +65,14 @@ export interface HitchyLibraryAPI {
 
 export type HitchyCMP = (this: HitchyAPI, options: HitchyOptions, ...customArgs: any[]) => any;
 
-export interface HitchyBootstrapAPI {
-
-}
-
 export interface HitchyRouterAPI {
+    dispatch( context:HitchyRequestContext ): Promise<HitchyRequestContext>;
 
+    client: HitchyRouterClient;
 }
 
 export interface HitchyResponderAPI {
-
+    normalize( context:HitchyRequestContext ): HitchyRequestContext;
 }
 
 export interface HitchyUtilityAPI {
@@ -102,9 +98,10 @@ export interface HitchyUtilityAPI {
          * returning the latter.
          *
          * @param target target object adjusted by merging
-         * @param sources object to be deeply merged into given target
+         * @param source single source object or list of source objects to be deeply merged into given target
+         * @param strategyFn callback invoked to decide strategy for merging particular property
          */
-        merge(target: object, ...sources: object[]): object,
+        merge(target: object, source: (object|object[]), strategyFn: (breadcrumb:string[], strategy:HitchyMergeStrategy, sourceValue:any, targetValue:any) => HitchyMergeStrategy): object,
     },
 
     case: {
@@ -145,6 +142,35 @@ export interface HitchyUtilityAPI {
     },
 
     logger: HitchyLoggerGenerator,
+}
+
+/**
+ * Selects a strategy of merging a particular property when deeply merging to
+ * objects.
+ */
+export enum HitchyMergeStrategy {
+    /**
+     * Demands to skip merging current property.
+     */
+    KeepSource = "keep",
+
+    /**
+     * Demands to deeply merge value of source property into related target
+     * property.
+     */
+    DeepMerge = "merge",
+
+    /**
+     * Demands to replace whole property of target with property provided by
+     * source.
+     */
+    Replace = "replace",
+
+    /**
+     * Demands to create/extend list of values in target property with value(s)
+     * found in source property.
+     */
+    Concat = "concat",
 }
 
 /**
@@ -390,6 +416,12 @@ export type HitchyLoggerFunction = (message: string) => void;
  */
 export interface HitchyConfig {
     /**
+     * Exposes part of global configuration that originate's from current
+     * application's configuration files, only.
+     */
+    $appConfig: HitchyConfig;
+
+    /**
      * Exposes routing declarations for (terminal) routes.
      */
     routes: HitchyRoutingConfig;
@@ -542,21 +574,63 @@ export interface HitchyIncomingMessage extends IncomingMessage {
  * Extends ServerResponse of Node.js in context of a Hitchy-based application.
  */
 export interface HitchyServerResponse extends ServerResponse {
+    /**
+     * Sends response data ending response afterwards.
+     *
+     * @param content response body
+     * @param encoding optional encoding of response body used when providing content as string
+     */
     send(content: (string | Buffer), encoding?: string): HitchyServerResponse;
 
+    /**
+     * Adjusts HTTP response status code.
+     *
+     * @param statusCode HTTP status code, e.g. 200 for OK
+     */
     status(statusCode: number): HitchyServerResponse;
 
+    /**
+     * Adjusts response header indicating type of content in response body.
+     *
+     * @param typeName string selecting type of content, should be MIME identifier, but may be some short alias as well
+     */
     type(typeName: string): HitchyServerResponse;
 
+    /**
+     * Picks one of the provided callbacks according to request's Accept header
+     * for generating the actual response.
+     *
+     * @param handlers set of handlers, each generating response in a different format
+     */
     format(handlers: { [key: string]: HitchyRequestControllerHandler }): HitchyServerResponse;
 
+    /**
+     * Generates JSON-formatted response from provided set of data.
+     *
+     * @param data data to be sent in response
+     */
     json(data: object): HitchyServerResponse;
 
+    /**
+     * Adjusts response header.
+     *
+     * @param headersOrName name of header to adjust or object containing multiple header fields to adjust
+     * @param value value of single named header field to adjust
+     */
     set(headersOrName: ({ [key: string]: string } | string), value: string): HitchyServerResponse;
 
+    /**
+     * Adjusts response headers to demand redirection.
+     *
+     * @param statusCode redirection status code to use, omit to use default 301
+     * @param url redirection URL client is asked to fetch instead
+     */
     redirect(statusCode: number, url: string): HitchyServerResponse;
 }
 
+/**
+ * Implements parser for request body.
+ */
 export type HitchyBodyParser = (raw: Buffer) => (any | Promise<any>);
 
 /**
@@ -566,7 +640,13 @@ export type HitchyBodyParser = (raw: Buffer) => (any | Promise<any>);
 export interface HitchyRequestContext {
     request: HitchyIncomingMessage;
     response: HitchyServerResponse;
+
+    /**
+     * Some request-bound data storage suitable for sharing data between
+     * handlers of same request.
+     */
     local: { [key: string]: any };
+
     api: HitchyAPI;
     config: HitchyConfig;
     runtime: HitchyRuntime;
