@@ -548,8 +548,8 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 			const route1 = new TerminalRoute( "GET /", () => {}, API );
-			const route2 = new TerminalRoute( "GET /", () => {}, API );
-			const route3 = new TerminalRoute( "GET /", () => {}, API );
+			const route2 = new TerminalRoute( "GET /:a/sub", () => {}, API );
+			const route3 = new TerminalRoute( "GET /:a", () => {}, API );
 
 			collector.prefixes.should.be.empty();
 
@@ -565,6 +565,27 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
+	test( "doesn't collect routes using same pattern like a route collected before", function() {
+		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
+			const collector = new RoutesPerPrefix();
+			const route1 = new TerminalRoute( "GET /", () => {}, API );
+			const route2 = new TerminalRoute( "GET /", () => {}, API );
+			const route3 = new TerminalRoute( "GET /", () => {}, API );
+
+			collector.prefixes.should.be.empty();
+
+			collector.append( route1 );
+			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
+			collector.prefixes["/"].should.be.Array().and.eql( [route1] ).and.have.length( 1 );
+			collector.append( route2 );
+			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
+			collector.prefixes["/"].should.be.Array().and.eql( [ route1 ] ).and.have.length( 1 );
+			collector.append( route3 );
+			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
+			collector.prefixes["/"].should.be.Array().and.eql( [ route1 ] ).and.have.length( 1 );
+		} );
+	} );
+
 	test( "creates new group on appending route not matching any existing prefix", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
@@ -574,11 +595,11 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
 			collector.prefixes["/"].should.be.Array().and.have.length( 1 );
 
-			collector.append( new TerminalRoute( "GET /", () => {}, API ) );
+			collector.append( new TerminalRoute( "GET /:a", () => {}, API ) );
 			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
 			collector.prefixes["/"].should.be.Array().and.have.length( 2 );
 
-			collector.append( new TerminalRoute( "POST /", () => {}, API ) );
+			collector.append( new TerminalRoute( "POST /:b", () => {}, API ) );
 			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
 			collector.prefixes["/"].should.be.Array().and.have.length( 3 );
 
@@ -685,7 +706,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 			collector.prefixes["/test1/sub1"].should.be.Array().and.have.length( 1 );
 			collector.prefixes["/test2/sub1"].should.be.Array().and.have.length( 1 );
 
-			collector.append( new TerminalRoute( "/", () => {}, API ) );
+			collector.append( new TerminalRoute( "/:alt", () => {}, API ) );
 			collector.prefixes.should.have.properties( "/", "/test1", "/test1/sub1", "/test2/sub1" ).and.have.size( 4 );
 			collector.prefixes["/"].should.be.Array().and.have.length( 2 );
 			collector.prefixes["/test1"].should.be.Array().and.have.length( 1 );

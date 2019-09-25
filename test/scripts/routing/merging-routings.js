@@ -51,8 +51,8 @@ describe( "Merging policies", function() {
 
 		const scalars = terminals.onMethod( "GET" ).onPrefix( "/scalar" );
 
-		scalars.should.be.Array().which.has.length( 11 );
-		scalars.map( i => i.handler() ).join( "," ).should.be.equal( "early,plugin-a,plugin-c,plugin-b,plugin-d,before,blue-b,after,plugin-d,plugin-b,late" );
+		scalars.should.be.Array().which.has.length( 1 );
+		scalars.map( i => i.handler() ).join( "," ).should.be.equal( "early" );
 
 		const arrays = terminals.onMethod( "GET" ).onPrefix( "/array" );
 
