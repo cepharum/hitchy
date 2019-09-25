@@ -46,7 +46,7 @@ describe( "Merging policies", function() {
 		afterArrays.map( i => i.handler() ).join( "," ).should.be.equal( "after,plugin-d,plugin-b,late" );
 	} );
 
-	it( "should expose routes for either supported stage", () => {
+	it( "should expose subset of routes defined for either supported stage and plugin using actually required routes, only", () => {
 		const { terminals } = node.hitchy.router;
 
 		const scalars = terminals.onMethod( "GET" ).onPrefix( "/scalar" );
