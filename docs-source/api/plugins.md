@@ -256,35 +256,35 @@ A plugin **fast-user** wants to transparently provide a different implementation
 :::
 
 
-### deepComponents <Badge type="info">0.3.7+</Badge>
+### deepComponents <Badge type="info">0.4.0+</Badge>
 
 When loading components of a plugin this boolean property controls whether Hitchy is deeply searching for components in either type of component's sub-folder or not. Deep search is enabled by default.
 
 :::tip Example
-When set or omitted, a file **api/controllers/user/management.js** is discovered and exposed as `api.runtime.controllers.UserManagement`. Otherwise this file isn't discovered and therefore won't be exposed at all as it isn't found in **api/controllers** directly.
+When set or omitted, a file **api/controllers/user/management.js** is discovered and exposed as `api.runtime.controllers.UserManagement`. Otherwise this particular file isn't discovered and therefore won't be exposed at all as it isn't found in **api/controllers** directly.
 :::
 
-:::warning Compatibility Issue
-In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.deepComponents`](README.md#configuration).
+:::warning Compatibility
+In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.deepComponents`](README.md#configuration). Moving it into meta information was in support for swapping exposure and configuration stages of bootstrap.
 
-Versions before v0.3.3 did not support deep searching components at all. Due to enabling it since then by default you need to explicitly set this property `false` to stick with the previous behaviour.
+Versions before v0.3.3 did not support deep searching components at all. Due to enabling it by default now you need to explicitly set this property `false` to keep the previous behaviour.
 :::
 
 :::warning Risk of Conflicts
 When deeply searching components two different files might be exposed under the same name due to the way files in sub-folders are processed.
 
-A file **api/controllers/management/user.js** is discovered as **management/user.js**. The component's name is derived by converting slashes into dashes, dropping extension, reverting order of segments and eventually converting naming style from kebab-case to PascalCase, thus resulting in **UserManagement**.
+A file **api/controllers/management/user.js** is discovered as **management/user.js**. The [derived name](../internals/components.md#derivation-of-component-names) for the component would be **UserManagement**.
 
-A file **api/controllers/user-management.js** will lead to same component name as well, though. There are no slashes to replace and no segments to be reverted, but dashes are used already, extension is dropped and naming style is converted from kebab-case to PascalCase, thus also resulting in **UserManagement**.
+A file **api/controllers/user-management.js** is discovered as **user-management.js**. The resulting component would be named **UserManagement** as well.
 
-Deeply searching for components processes either folder before descending into sub-folders, thus in this example the former would be exposed last and thus replacing the latter.
+Deeply searching for components processes files before sub-folders, so in this example the former would be exposed last and thus replacing the latter.
 :::
 
-### appendFolders <Badge type="info">0.3.7+</Badge>
+### appendFolders <Badge type="info">0.4.0+</Badge>
 
-When deeply searching for components Hitchy is [using the relative path name of every component's module for deriving the resulting component's name](../internals/components.md#derivation-of-component-names). This option is controlling whether names of containing sub-folders are prepended to files' base names or appended to them in reverse order. 
+When deeply searching for components Hitchy is [using the relative path name of every component's module for deriving the resulting component's name](../internals/components.md#derivation-of-component-names). This option is controlling whether names of containing sub-folders are prepended to files' base names in given order or appended to them in reverse order. 
 
-The latter case is used by default so you need to explicitly set this configuration property `false` to achieve the former case.
+The latter case is used by default so you need to explicitly set this property `false` to establish the former case.
 
 :::tip Example
 Consider an application with a **api/services** looking like this:
@@ -311,8 +311,8 @@ When setting `appendFolder` to be false the resulting service components are exp
 * **ManagementRoom**
 :::
 
-:::warning Compatibility Issue
-In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.appendFolders`](README.md#configuration).
+:::warning Compatibility
+In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.appendFolders`](README.md#configuration). It has been moved to support swapping exposure and configuration stages of bootstrap.
 
 Versions before v0.3.3 did not support deep searching components at all. Thus, this option wasn't supported either.
 :::
@@ -351,27 +351,17 @@ When loading configuration files of a plugin a single object merged from informa
 
 ### plugin.onDiscovered()
 
-**Signature:** `onDiscovered( options, pluginHandles, myHandle )`
+**Signature:** `onDiscovered( options, pluginHandles, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
-This optional method is invoked on all eventually integrated plugin's APIs have been loaded. At this point every plugin's API has been loaded and is available as part of provided [handles](../internals/bootstrap.md#a-plugin-s-handle).
+This optional method is invoked on all eventually integrated plugin's APIs have been loaded. At this point every plugin's API has been loaded and is available as part of provided [handles](../internals/bootstrap.md#a-plugin-s-handle) which is a dictionary mapping either plugin's _name_ into its handle. This dictionary includes discovered plugins that are dropped in favour of others.
 
 :::tip
 Plugins may be discovered but fail to be integrated with the application eventually. This is mostly due to [loosing claimed role](../internals/bootstrap.md#validating-claimed-roles) to another plugin.
 :::
 
-### plugin.configure()
-
-**Signature:** `configure( options, myHandle )`
-
-This optional method is invoked at end of configuration stage to request either plugin for fixing any [configuration read from its files](#configuration).
-
-:::tip
-Returning a promise is supported for deferring bootstrap until promise is settled. On rejecting promise or on throwing the bootstrap fails.
-:::
-
 ### plugin.onExposing()
 
-**Signature:** `onExposing( options, myHandle )`
+**Signature:** `onExposing( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
 This optional method is invoked at start of exposure stage right before detecting either plugin's components and exposing them in [Hitchy's API](README.md#api-runtime).
 
@@ -381,7 +371,7 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ### plugin.onExposed()
 
-**Signature:** `onExposed( options, myHandle )`
+**Signature:** `onExposed( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
 This optional method is invoked at end of exposure stage after having detecting and [exposed](README.md#api-runtime) either plugin's components.
 
@@ -389,9 +379,19 @@ This optional method is invoked at end of exposure stage after having detecting 
 Returning a promise is supported for deferring bootstrap until promise is settled. On rejecting promise or on throwing the bootstrap fails.
 :::
 
+### plugin.configure()
+
+**Signature:** `configure( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+
+This optional method is invoked at end of configuration stage to request either plugin for fixing any [configuration read from its files](#configuration).
+
+:::tip
+Returning a promise is supported for deferring bootstrap until promise is settled. On rejecting promise or on throwing the bootstrap fails.
+:::
+
 ### plugin.initialize()
 
-**Signature:** `initialize( options, myHandle )`
+**Signature:** `initialize( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
 This optional method is invoked so the plugin is able to initialise its resources e.g. by connecting to some database.
 
@@ -401,7 +401,7 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ### plugin.policies
 
-**Signatures:** `policies` or `policies( options, myHandle )`
+**Signatures:** `policies` or `policies( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
 This optional property or method is used to fetch a plugin's routing declarations for policies during [routing stage of bootstrap](../internals/bootstrap.md#routing). It is either an object with structure equivalent to the one [supported in configuration](README.md#config-policies) or some method invoked in compliance with [common module function pattern](README.md#common-module-function-pattern) to get that set of declarations.
 
@@ -410,12 +410,12 @@ In addition, it is possible to expose this property as a [Promise](https://devel
 :::
 
 :::warning Supporting "Slots"
-In opposition to an application's custom routing declarations, a plugin is capable of choosing virtual routing slots `before` and `after`, only. In opposition to application's support for routing slots those names are used to pick the [block of policies either preceding or succeeding the block of routes](../internals/routing-basics.md#routing-stages). 
+In opposition to an application's custom routing declarations, a plugin is capable of choosing virtual routing slots `before` and `after`, only. In opposition to application's actual support for routing slots those names are used to pick the [block of policies either preceding or succeeding the block of routes](../internals/routing-basics.md#routing-stages). 
 :::
 
 ### plugin.routes
 
-**Signatures:** `routes` or `routes( options, myHandle )`
+**Signatures:** `routes` or `routes( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
 Similar to [`plugin.policies`](#plugin-policies) this optional property or method is used to fetch plugin's routing declarations for (terminal) routes during [routing stage of bootstrap](../internals/bootstrap.md#routing). See its [configuration counterpart](README.md#config-routes) for information on supported syntax.
 
@@ -424,12 +424,12 @@ In addition, it is possible to expose this property as a [Promise](https://devel
 :::
 
 :::warning Supporting "Slots"
-In opposition to an application's custom routing declarations, a plugin is capable of choosing virtual routing slots `before` and `after`, only. In opposition to application's support for routing slots those names are used to pick the [block of routes either preceding or succeeding the block of blueprint routes](../internals/routing-basics.md#focusing-on-routes). 
+In opposition to an application's custom routing declarations, a plugin is capable of choosing virtual routing slots `before` and `after`, only. In opposition to application's actual support for routing slots those names are used to pick the [block of routes either preceding or succeeding the block of blueprint routes](../internals/routing-basics.md#focusing-on-routes). 
 :::
 
 ### plugin.blueprints
 
-**Signatures:** `routes` or `routes( options, myHandle )`
+**Signatures:** `routes` or `routes( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
 Similar to [`plugin.routes`](#plugin-routes) this optional property or method is used to fetch plugin's routing declarations for [blueprint routes](../internals/routing-basics.md#focusing-on-routes) during [routing stage of bootstrap](../internals/bootstrap.md#routing). The supported syntax is basically identical to the one supported by `plugin.routes`, though blueprints are limited in multiple ways:
 
@@ -443,9 +443,9 @@ When it comes to declaring blueprints there is no support for selecting any kind
 
 ### plugin.shutdown()
 
-**Signature:** `shutdown( options, myHandle )`
+**Signature:** `shutdown( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
 
-This optional method is invoked on gracefully shutting down Hitchy-based application. it is meant to enable a plugin to release its resources e.g. by disconnecting from some database.
+This optional method is invoked on gracefully shutting down Hitchy-based application. It is meant to enable a plugin to release its resources e.g. by disconnecting from some database.
 
 :::tip
 Returning a promise is supported for deferring bootstrap until promise is settled.

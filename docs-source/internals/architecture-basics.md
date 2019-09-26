@@ -39,9 +39,13 @@ Plugins are discovered when starting Hitchy. There is bootstrap code which is pa
 
 2. The **discovery** stage is used to search folders of a project for [plugins](#plugins) suitable for integrating with Hitchy-based application. This results in a sequence of discovered plugins sorted in order of plugins relying on each other. Plugins depending on other plugins are listed late in this sequence.
 
-3. In **configuration** stage every plugin is asked for its contribution to application's configuration. This includes processing the custom configuration provided as part of the current application itself as well.
+3. **Exposure** stage is loading [components](#components) provided by either plugin as well as the application for exposing them in context of a resulting, commonly available [Hitchy API](../api).
 
-4. **Exposure** stage is loading [components](#components) provided by either plugin for exposing them in context of a resulting, commonly available [Hitchy API](../api).
+   :::warning Compatibility
+   In versions before 0.4.0 exposure stage was processed after configuration stage. Order has been swapped to support services in configuration. 
+   :::
+
+4. In **configuration** stage every plugin is asked for its contribution to application's configuration. This includes processing the custom configuration provided as part of the current application itself as well.
 
 5. The **initialisation** stage is used to let every plugin initialise its state.
 

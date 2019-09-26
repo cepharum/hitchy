@@ -62,7 +62,7 @@ A plugin may be included to claim a role unless some other plugin is doing so. I
 In a different scenario a plugin might detect another plugin it basically depends on for deriving from its API. The former plugin would claim same role as the latter one. This dynamic claim to take a role is replacing any plugin's static claim for the same role.
 :::
 
-#### A Plugin's Handle
+### A Plugin's Handle
 
 Every plugin is exporting an API mostly used for integrating the plugin with a Hitchy-based application. It is thus essential in upcoming stages of bootstrap.
 
@@ -78,16 +78,18 @@ During bootstrap every discovered plugin is additionally represented by another 
 
 ### Notifying Plugins on Discovery
 
-Next, every plugin with an approved role which is exporting a method called `onDiscovered()` as part of its API is notified on being discovered by invoking that function. This notification handler is invoked with `this` referring to Hitchy's still rudimentary API. Arguments passed are
+Next, every plugin with an approved role which is exporting a method called `onDiscovered()` as part of its API gets notified on being discovered by invoking that function. This _notification handler_ is assumed to comply with [common module function pattern](../api/README.md#common-module-function-pattern) and thus is invoked with `this` referring to Hitchy's still rudimentary API and with
  
-* Hitchy options,
+* [Hitchy's options](../api/README.md#options),
 * a dictionary mapping either discovered plugin's name into its [handle](#a-plugins-handle) and
-* the handle of current plugin exporting the function invoked.
+* the [handle](#a-plugins-handle) of current plugin exporting the notification handler
 
-This notification is meant to indicate the moment when all plugins' handles have been populated with either plugin's API. At this point a plugin may rely on plugin handles it has cached before when replacing another plugin by dynamically claiming same role.
+as function arguments.
 
-:::warning Risks
-Notifying plugins is still happening in arbitrary order here.
+This notification is meant to provide APIs and meta information of all basically discovered plugins to those plugins with approved roles. The latter ones are assumed to cache references on APIs they intend to use prior to Hitchy dropping them.
+
+:::warning Don't rely on sorting order!
+Plugins are notified in arbitrary order here. All succeeding notifications are processed in a certain order, though.
 :::
 
 ### Dropping Plugins
@@ -103,34 +105,19 @@ Any follow-up action regarding _every plugin_ is obeying this sorting order now.
 :::
 
 
-## Configuration
-
-In configuration stage the application's configuration is compiled from every plugin and the application itself. 
-
-### Collecting & Compiling
-
-Every plugin as well as the application is assumed to provide zero or more non-hidden configuration files implemented as Javascript modules in sub-folder **config**. Every file in that sub-folder that does not start with a full stop `.` and ends with **.js** is assumed to export another part of eventual configuration.
-
-Hitchy is reading all those files merging them into a single configuration object which is exposed as part of Hitchy's API at `api.runtime.config`.
-
-:::tip Special Case: local.js
-Every plugin as well as the application may use a file **config/local.js** which is always processed after having processed all the other configuration files in a folder. This helps with safely declaring defaults prior to providing a custom configuration for the current installation which might be deviating from those defaults.
-:::
-
-### Final Notification
-
-After having compiled this object every plugin is notified by invoking method `configure()` optionally available in either plugin's API. The function is invoked with `this` referring to Hitchy's partially compiled API and Hitchy options as well as the notified plugin's handle as arguments.
-
-
 ## Exposure
 
-Exposure stage is meant to compile components listed in section `api.runtime` of Hitchy's API.
+:::warning Compatibility
+Starting with version 0.4.0 this stage has swapped its position with [configuration stage](#configuration).
+:::
+
+Exposure stage is meant to compile and expose components in section [`api.runtime` of Hitchy's API](../api/README.md#api-runtime).
 
 ### Early Notification
 
-This stage starts with a notification called `onExposing()`. This notification is useful for accessing final configuration for the first time. 
+This stage starts with another notification called [`onExposing()`](../api/plugins.md#plugin-onexposing). It is giving first opportunity to inspect the final list of actually available plugins as some of the initially discovered ones might have been replaced by [others claiming the same role dynamically](../api/plugins.md#roles).
 
-Every interested plugin must export a method called `onExposing()` in its API. Just like before, the function is invoked with `this` referring to still partial Hitchy API and Hitchy options as well as the notified plugin's handle as arguments.
+Every interested plugin must export a method called `onExposing()` as part of its API. Just like before, the function is invoked with `this` referring to still partial Hitchy API and Hitchy options as well as the notified plugin's handle as arguments.
 
 ### Collecting, Deriving, Replacing
 
@@ -139,7 +126,7 @@ Components of every plugin are processed before processing components of applica
 In either case components are processed [type](architecture-basics.md#components) by type. For every component another Javascript file is expected in either type of component's sub-folder **api/controllers**, **api/policies** etc. 
 
 :::tip
-Starting with v0.3.3 Hitchy is deeply searching in either folder. [Configuration](../api/README.md#config-hitchy-deepcomponents-0-3-3) is read to keep the previous behaviour.
+Starting with v0.3.3 Hitchy is deeply searching in either folder. Providing special meta information [per plugin](../api/plugins.md#deepcomponents-badge-0-4-0) or [application](components.md#exposure-at-runtime) the previous behaviour can be restored for either plugin or application.
 :::
 
 Every found Javascript file is loaded to export the component's API. This might be any kind of data. Usually, it is a class or an object of functions. It is exposed as part of [Hitchy's API](../api/README.md#api-runtime) at runtime using a [name that is derived from found file's name](components.md#derivation-of-component-names). 
@@ -162,6 +149,30 @@ module.exports = function( options, ExistingCryptoService ) {
 ### Final Notification
 
 Just like in previous stages a notification is dispatched by invoking method `onExposed()` for every plugin that's exporting this function as part of its API. Its signature is equivalent to that one of `onExposing()` described before.
+
+
+## Configuration
+
+:::warning Compatibility
+Starting with version 0.4.0 this stage has swapped its position with [exposure stage](#exposure).
+:::
+
+In configuration stage the application's configuration is compiled from every plugin and the application itself. 
+
+### Collecting & Compiling
+
+Every plugin as well as the application is assumed to provide zero or more non-hidden configuration files implemented as Javascript modules in sub-folder **config**. Every file in that sub-folder that does not start with a full stop `.` and ends with **.js** is assumed to export another part of eventual configuration.
+
+Hitchy is reading all those files merging them into a single configuration object which is exposed as part of Hitchy's API at `api.runtime.config`.
+
+:::tip Special Case: local.js
+Every plugin as well as the application may use a file **config/local.js** which is always processed after having processed all the other configuration files in a folder. This helps with safely declaring defaults prior to providing a custom configuration for the current installation which might be deviating from those defaults.
+:::
+
+### Final Notification
+
+After having compiled this object every plugin is notified by invoking method `configure()` optionally available in either plugin's API. The function is invoked with `this` referring to Hitchy's partially compiled API and Hitchy options as well as the notified plugin's handle as arguments.
+
 
 ## Initialisation
 

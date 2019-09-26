@@ -128,14 +128,14 @@ For the sake of convenience and integrity either collection can be addressed usi
 
 ### Derivation of Component Names
 
-When exposing components Hitchy is deriving either component's resulting name from path name of module that was providing its implementation relative to the type of component's folder following this process:
+When exposing components Hitchy is deriving either component's resulting name from path name of Javascript file providing its implementation relative to the type of component's folder following this process:
 
 1. The file's extension **.js** is dropped.
 2. Leading digits optionally separated by a dash or underscore are stripped off.
 
    Leading digits can be used to optionally control the order of loading available modules during bootstrap e.g. to assure that some component is capable of accessing its previously loaded parent class.
 3. The segments of path name 
-   * [are reversed](../api/README.md#config-hitchy-appendfolders-0-3-3) and
+   * [are reversed](#customizing-exposure) and
    * joined by dashes instead of slashes.
 4. The resulting name 
    * is converted to all lowercase letters and eventually 
@@ -157,6 +157,17 @@ Thus the component implemented in assumed file would be exposed as `api.runtime.
 :::
 
 
+### Customizing Exposure
+
+Starting with version 0.3.3 every plugin as well as the application may customize the way Hitchy is discovering and exposing their individual components.
+
+* A plugin may use options [`deepComponents`](../api/plugins.md#deepcomponents-0-4-0) and [`appendFolder`](../api/plugins.md#appendfolders-0-4-0) of its [meta information](../api/plugins.md#meta-information).
+
+* The application can provide the same options as part of [its own meta information](../api/README.md#api-meta-0-4-0).
+
+Starting with version 0.4.0 this support for customizing exposure has been moved from [configuration](../api/README.md#configuration) to meta information.
+
+
 ### Accessing Components
 
 For example, the following request handler is accessing a service component named `FileZipper` which is discovered in file **api/service/file-zipper.js**:
@@ -169,7 +180,7 @@ function someRequestHandler( req, res ) {
 }
 ```
 
-In methods of controllers and policies Hitchy's API is exposed as property `hitchy` of provided request descriptor as well:
+Optionally, Hitchy's API is available via property `hitchy` of provided request descriptor:
 
 ```javascript
 function someRequestHandler( req, res ) {
@@ -179,9 +190,9 @@ function someRequestHandler( req, res ) {
 }
 ```
 
-In either example [`req.hitchy`](../api/README.md#req-hitchy-0-2-0) and [`this.api`](../api/README.md#this-api) are referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
+Basically, [`req.hitchy`](../api/README.md#req-hitchy-0-2-0) and [`this.api`](../api/README.md#this-api) are both referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
 
-In those functions using alias provided in its context looks like this:
+Last but not least aliases are provided in context of request handlers for accessing either type of component more conveniently:
 
 ```javascript
 function someRequestHandler( req, res ) {

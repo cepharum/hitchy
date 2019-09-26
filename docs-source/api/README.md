@@ -104,7 +104,7 @@ Whenever Hitchy is supporting common module pattern it might intend to pass furt
 
 #### Common Module Function Pattern
 
-A similar pattern is supported e.g. when accessing some [elements of a plugin's API](plugins.md#plugin-policies) and it is named _common module function pattern_. Just like common module pattern it is meant to support provision of a function to be invoked for generating some data instead of providing that data immediately. And any such function is invoked with Hitchy's API provided as `this`, Hitchy's options in first argument and any number of additional data provided in further arguments, too.
+A similar pattern is supported e.g. when accessing some [elements of a plugin's API](plugins.md#common-plugin-api) and it is named _common module function pattern_. Just like common module pattern it is meant to support provision of a function to be invoked for generating some data instead of providing that data immediately. And any such function is invoked with Hitchy's API provided as `this`, Hitchy's options in first argument and any number of additional data provided in further arguments, too.
 
 In opposition to common module pattern this isn't about a whole module to be load but just some property exported there. And for the containing module to be capable of complying with common module pattern using this pattern isn't quite as beneficial and commonly useful except for rare cases.
 
@@ -427,6 +427,55 @@ All configuration of every available plugin as well as the application itself is
 Configuration provided in `api.config` always includes options exported by available plugins. If you need to access the application's own configuration - which is merged from reading all Javascript files in application's sub-folder **config** - this basically hidden property can be used.
 
 This is the application's counterpart to either plugin's [exposure of its pure configuration](plugins.md#plugin-config-0-3-3).
+
+### api.meta <Badge type="info">0.4.0+</Badge>
+
+This property is exposing application's meta information which is similar [meta information](plugins.md#meta-information) attached to every plugin. In both cases meta information can be considered another set of configuration. It can be distinguished, though, for
+
+* it is available very early in Hitchy's [bootstrap process](../internals/bootstrap.md) and thus capable of customizing its [early stages](../internals/architecture-basics.md#discovering-plugins).
+
+  Meta information becomes available at the beginning of [second stage discovering plugins](../internals/bootstrap.md#discovery). That's why it is already available in processing [exposure stage](../internals/bootstrap.md#exposure) preceding [configuration stage](../internals/bootstrap.md#configuration) since version 0.4.0.
+
+* it is meant to control more technical aspects of processing a plugin or the application without supporting different behaviour per installation of same plugin or application.
+
+  Controlling the [order of plugin processing](plugins.md#dependencies) or the way of [deriving component names from their implementing files' names](plugins.md#appendfolders-0-4-0) isn't meant to be customized per installation.
+
+* it isn't polluting configuration object which is intended for more frequent use at runtime.
+
+Application's meta information is read from two probable sources and merged into single set of data exposed here.
+
+1. An application may have its own **hitchy.json** file in its root folder.
+
+   :::tip Example
+   Assume to have a file named **hitchy.json** with following content:
+   ```json
+   {
+       "appendFolders": false
+   }
+   ```
+   :::
+
+2. In addition its **package.json** file may provide meta information in special property **hitchy**.
+
+   :::tip Example
+   The same information given in example above could be provided via application's **package.json** file like this:
+   
+   ```json
+   {
+       "name": "my-app",
+       "version": "1.0.0",
+       ...
+       "hitchy": {
+           "appendFolders": false
+       }
+   }
+   ```
+   :::
+
+Data found in **hitchy.json** file is preferred over data found in **package.json**. Most [meta information elements supported for plugins](plugins.md#meta-information) are ignored in context of application except for these:
+
+* [`deepComponents`](plugins.md#deepcomponents-0-4-0)
+* [`appendFolders`](plugins.md#appendfolders-0-4-0)
 
 ### api.runtime
 
