@@ -409,65 +409,6 @@ exports.routes = {
 
 This property is exposing a function invoked with a buffer representing a request's raw body. It is invoked to parse this buffer for some contained information provided on invoking [`req.fetchBody()`](#req-fetchbody-parser) without any parameter. The function may return promise to deferredly deliver parsed content.
 
-### config.hitchy.deepComponents <Badge type="info">0.3.3+</Badge>
-
-This boolean property controls whether Hitchy is deeply searching for components in either type's sub-folder or not. Deep search is enabled by default.
-
-:::tip Example
-When set or omitted, a file **api/controllers/user/management.js** is discovered and exposed as `api.runtime.controllers.UserManagement`. Otherwise this file isn't discovered and therefore won't be exposed at all as it isn't found in **api/controllers** directly.
-:::
-
-:::warning
-This property is commonly merged into global configuration object, but exposure of components relies on either plugin's as well as application's individual configuration, only.
-:::
-
-:::warning Compatibility
-Versions before v0.3.3 did not support deep searching components at all. Due to enabling it since then by default you need to explicitly set this property `false` to stick with the previous behaviour.
-:::
-
-:::warning Risk of Conflicts
-When deeply searching components two different files might be exposed under the same name due to the way files in sub-folders are processed.
-
-A file **api/controllers/management/user.js** is discovered as **management/user.js**. The component's name is derived by converting slashes into dashes, dropping extension, reverting order of segments and eventually converting naming style from kebab-case to PascalCase, thus resulting in **UserManagement**.
-
-A file **api/controllers/user-management.js** will lead to same component name as well, though. There are no slashes to replace and no segments to be reverted, but dashes are used already, extension is dropped and naming style is converted from kebab-case to PascalCase, thus also resulting in **UserManagement**.
-
-Deeply searching for components processes either folder before descending into sub-folders, thus in this example the former would be exposed last and thus replacing the latter.
-:::
-
-### config.hitchy.appendFolders <Badge type="info">0.3.3+</Badge>
-
-When using sub-folders per type of component for organising components this option is controlling whether names of containing sub-folders are prepended to files' names or appended to them in reverse order. The latter case is used by default so you need to explicitly set this configuration property `false` to achieve the former case.
-
-:::tip Example
-Consider an application with a **api/services** looking like this:
-
-```
-+ api/services
-  + management
-    + user
-        system-admin.js
-        guest.js
-      room.js  
-```
-
-By default this results in exposing these service components:
-
-* **SystemAdminUserManagement**
-* **GuestUserManagement**
-* **RoomManagement**
-
-When setting `config.hitchy.appendFolder` to be false the resulting service components are exposed like this:
-
-* **ManagementUserSystemAdmin**
-* **ManagementUserGuest**
-* **ManagementRoom**
-:::
-
-:::warning
-This property is commonly merged into global configuration object, but exposure of components relies on either plugin's as well as application's individual configuration, only.
-:::
-
 
 ## API Elements
 
@@ -654,7 +595,7 @@ This client simulates _most_ parts of [ClientRequest](https://nodejs.org/dist/la
 
 ### api.plugins
 
-All discovered and loaded plugins are listed in this property. It is an object mapping a [plugin's role](plugins.md#roles) (which might be different from its name!) into either plugin's API. 
+All discovered and loaded plugins are listed in this property. It is an object mapping a [plugin's role](plugins.md#roles) (which might be different from its name!) into either [plugin's API](plugins.md#common-plugin-api). 
 
 ### api.cmp
 

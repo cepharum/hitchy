@@ -148,29 +148,63 @@ Discovered components are exposed via [Hitchy's API](README.md#api-runtime).
 
 ## The Beacon File
 
-Every folder or package meant to be discovered as a Hitchy plugin must contain a file named **hitchy.json**. This file doesn't have to contain any information and thus could be as simple as this:
+Every folder or package meant to be discovered as a Hitchy plugin must contain a file named **hitchy.json**. It does not have to contain any information and thus could be as simple as this:
 
 ```json
 {}
 ```
 
-The file is used as a _beacon_ indicating its folder to contain a plugin for Hitchy. By relying on its presence discovering plugins is pretty fast resulting in shorter startup times.
+The file is used as a _beacon_ indicating its folder to contain a plugin for Hitchy. By relying on its presence discovery of plugins is pretty fast resulting in shorter startup times.
 
-There may be actual content in the file, though. 
+There may be actual content in the file, though, which is used to compile the plugin's [meta information](#meta-information). 
 
-* The content is playing an essential part in integrating either plugin as it might describe a plugin's slight deviation from API assumed by Hitchy. 
+## Meta Information
 
-* It may give explicit values for defaults assumed otherwise. 
+Every plugin has meta information attached. It may be explicitly provided in one of two sources:
 
-* Another option is declaring other plugins either plugin depends on. This is resulting in a certain dependency graph which is used to create a properly sorted list of plugins obeyed while integrating them with an application as well as on routing requests through routes exposed by either plugin.
+* The [beacon file](#the-beacon-file) is providing a plugin's _static meta information_.
 
-Last but not least there may be custom information which is [exposed as part of either plugin's API](#plugin-meta).
+* The plugin's API exported from its [**index.js** file](#basic-file-layout) may expose its _dynamic meta information_.
+
+Both sources are merged into single set of meta information with data found in latter source replacing data found in former one.
+
+There are elements of meta information Hitchy is using while integrating discovered plugins. These are described below. Hitchy is assuming defaults or deriving values e.g. from a plugin's name when meta information lacks either element.
+
+In addition a plugin's meta information may contain custom data which isn't used by Hitchy for integrating the plugin. It might be used by plugins or the application at runtime [using Hitchy's API](README.md#api-plugins).
+
+:::tip
+Due to being processed in [discovery stage of bootstrap](../internals/bootstrap.md#discovery) meta information is available early and thus may be used to customize upcoming [stages of bootstrap](../internals/architecture-basics.md#discovering-plugins).
+:::
 
 ### role
 
-This property of **hitchy.json** file is statically claiming a certain [role](#roles) by name. It defaults to the plugin's name which in turn is equivalent to the filename of folder containing the **hitchy.json** file.
+Every plugin has to claim a certain [role](#roles) by name. It defaults to the plugin's name which in turn is equivalent to the filename of folder containing the plugin's **hitchy.json** file.
 
-In opposition to that either plugin gets a chance to claim a different role dynamically e.g. after inspecting whole list of actually discovered plugins.
+:::tip
+Read more about [roles of plugins](#roles).
+:::
+
+:::tip Example
+The plugin **hitchy-plugin-odem** claims to take role **odm** in an application. It can do so in its **hitchy.json** file:
+
+**hitchy-plugin-odem/hitchy.json:**
+```json
+{
+    "role": "odm"
+}
+```
+
+It can do so via its exported API as well:
+
+**hitchy-plugin-odem/index.js:**
+```javascript
+module.exports = {
+    $meta: {
+        role: "odm",
+    },
+};
+```
+:::
 
 ### dependencies
 
@@ -222,6 +256,69 @@ A plugin **fast-user** wants to transparently provide a different implementation
 :::
 
 
+### deepComponents <Badge type="info">0.3.7+</Badge>
+
+When loading components of a plugin this boolean property controls whether Hitchy is deeply searching for components in either type of component's sub-folder or not. Deep search is enabled by default.
+
+:::tip Example
+When set or omitted, a file **api/controllers/user/management.js** is discovered and exposed as `api.runtime.controllers.UserManagement`. Otherwise this file isn't discovered and therefore won't be exposed at all as it isn't found in **api/controllers** directly.
+:::
+
+:::warning Compatibility Issue
+In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.deepComponents`](README.md#configuration).
+
+Versions before v0.3.3 did not support deep searching components at all. Due to enabling it since then by default you need to explicitly set this property `false` to stick with the previous behaviour.
+:::
+
+:::warning Risk of Conflicts
+When deeply searching components two different files might be exposed under the same name due to the way files in sub-folders are processed.
+
+A file **api/controllers/management/user.js** is discovered as **management/user.js**. The component's name is derived by converting slashes into dashes, dropping extension, reverting order of segments and eventually converting naming style from kebab-case to PascalCase, thus resulting in **UserManagement**.
+
+A file **api/controllers/user-management.js** will lead to same component name as well, though. There are no slashes to replace and no segments to be reverted, but dashes are used already, extension is dropped and naming style is converted from kebab-case to PascalCase, thus also resulting in **UserManagement**.
+
+Deeply searching for components processes either folder before descending into sub-folders, thus in this example the former would be exposed last and thus replacing the latter.
+:::
+
+### appendFolders <Badge type="info">0.3.7+</Badge>
+
+When deeply searching for components Hitchy is [using the relative path name of every component's module for deriving the resulting component's name](../internals/components.md#derivation-of-component-names). This option is controlling whether names of containing sub-folders are prepended to files' base names or appended to them in reverse order. 
+
+The latter case is used by default so you need to explicitly set this configuration property `false` to achieve the former case.
+
+:::tip Example
+Consider an application with a **api/services** looking like this:
+
+```
++ api/services
+  + management
+    + user
+        system-admin.js
+        guest.js
+      room.js  
+```
+
+By default this results in exposing these service components:
+
+* **SystemAdminUserManagement**
+* **GuestUserManagement**
+* **RoomManagement**
+
+When setting `appendFolder` to be false the resulting service components are exposed like this:
+
+* **ManagementUserSystemAdmin**
+* **ManagementUserGuest**
+* **ManagementRoom**
+:::
+
+:::warning Compatibility Issue
+In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.appendFolders`](README.md#configuration).
+
+Versions before v0.3.3 did not support deep searching components at all. Thus, this option wasn't supported either.
+:::
+
+
+
 ## Common Plugin API
 
 This is a summary of properties and methods in a plugin's API supported by Hitchy for integrating the plugin with an application. See the [description of process integrating plugins](../internals/bootstrap.md) for additional information.
@@ -240,7 +337,7 @@ This property names the role claimed by plugin exposing this API. Since accessin
 
 ### plugin.$meta
 
-When exported by [a plugin's **index.js** file](#basic-file-layout) this property is meant to provide information extending and/or replacing related information found in plugin's beacon file.
+When exported by [a plugin's **index.js** file](#basic-file-layout) this property is meant to provide information extending and/or replacing related information found in plugin's [beacon file](#the-beacon-file).
 
 After [loading plugin in discovery stage](../internals/bootstrap.md#loading-plugins) exported information is merged with any information found in beacon file. Thus, this object is eventually providing final state of a plugin's meta information.
 
