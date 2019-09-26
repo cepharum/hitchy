@@ -1,16 +1,21 @@
+import { IncomingMessage, ServerResponse } from "http";
+
+
 /**
  * Provides all Hitchy-related information available in modules and functions of
  * a Hitchy-based application.
  */
-
-import { IncomingMessage, ServerResponse } from "http";
-
-
 export interface HitchyAPI extends HitchyLibraryAPI {
     /**
      * Exposes application's current runtime configuration.
      */
     config: HitchyConfig;
+
+    /**
+     * Exposes application's meta information read from files package.json
+     * and/or hitchy.json in application's root folder.
+     */
+    meta: object;
 
     /**
      * Exposes available components grouped by type of component.
@@ -319,15 +324,6 @@ export interface HitchyPluginAPI {
     onDiscovered?(this: HitchyAPI, options: HitchyOptions, plugins: HitchyPluginHandles, handle: HitchyPluginHandle): void;
 
     /**
-     * Gets invoked after global configuration has been compiled from either
-     * plugin's as well as application's particular configuration.
-     *
-     * @param options options used on invoking application
-     * @param handle current plugin's handle
-     */
-    configure?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
-
-    /**
      * Gets invoked before loading and exposing components of plugin.
      *
      * @param options options used on invoking application
@@ -344,6 +340,15 @@ export interface HitchyPluginAPI {
     onExposed?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
 
     /**
+     * Gets invoked after global configuration has been compiled from either
+     * plugin's as well as application's particular configuration.
+     *
+     * @param options options used on invoking application
+     * @param handle current plugin's handle
+     */
+    configure?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
+
+    /**
      * Gets invoked after having exposed all components of every available
      * plugin as well as application itself.
      *
@@ -354,6 +359,21 @@ export interface HitchyPluginAPI {
      * @param handle current plugin's handle
      */
     initialize?(this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle): void;
+
+    /**
+     * Provides plugin's routing declarations of policies.
+     */
+    policies?: HitchyPluginRoutingDeclaration;
+
+    /**
+     * Provides plugin's routing declarations of terminal routes.
+     */
+    routes?: HitchyPluginRoutingDeclaration;
+
+    /**
+     * Provides plugin's routing declarations of blueprint routes.
+     */
+    blueprints?: HitchyPluginRoutingDeclaration;
 
     /**
      * Gets invoked on gracefully shutting down Hitchy-based application.
@@ -491,6 +511,9 @@ export interface HitchyRoutingSlotDeclaration {
 export interface HitchyRoutingDeclaration {
     [key: string]: HitchyRoutingTargetDeclaration;
 }
+
+export type HitchyRoutingDeclarationProvider = (this: HitchyAPI, options: HitchyOptions, handle: HitchyPluginHandle) => ( HitchyRoutingDeclaration | Promise<HitchyRoutingDeclaration> );
+export type HitchyPluginRoutingDeclaration = HitchyRoutingDeclarationProvider | HitchyRoutingDeclaration | Promise<HitchyRoutingDeclaration>;
 
 export type HitchyRoutingTargetDeclaration =
     HitchyRoutingTargetFunction
