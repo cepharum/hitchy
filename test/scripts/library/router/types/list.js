@@ -579,10 +579,10 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 			collector.prefixes["/"].should.be.Array().and.eql( [route1] ).and.have.length( 1 );
 			collector.append( route2 );
 			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
-			collector.prefixes["/"].should.be.Array().and.eql( [ route1 ] ).and.have.length( 1 );
+			collector.prefixes["/"].should.be.Array().and.eql( [route1] ).and.have.length( 1 );
 			collector.append( route3 );
 			collector.prefixes.should.have.properties( "/" ).and.have.size( 1 );
-			collector.prefixes["/"].should.be.Array().and.eql( [ route1 ] ).and.have.length( 1 );
+			collector.prefixes["/"].should.be.Array().and.eql( [route1] ).and.have.length( 1 );
 		} );
 	} );
 
