@@ -29,7 +29,7 @@
 "use strict";
 
 const options = {
-	projectFolder: "test/projects/configuration/extension-file",
+	projectFolder: "test/projects/configuration/plugin-file",
 	// debug: true,
 };
 
@@ -50,7 +50,7 @@ suite( "Hitchy", function() {
 	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
 	suiteTeardown( () => server && server.stop() );
 
-	test( "is reading configuration files provided by discovered extension", function() {
+	test( "is reading configuration files provided by discovered plugin", function() {
 		return hitchy.onStarted.then( () => {
 			hitchy.hitchy.config.should.be.Object();
 			hitchy.hitchy.config.should.have.property( "custom" ).which.is.an.Object().which.has.property( "visible" ).which.is.true();

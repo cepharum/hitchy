@@ -135,7 +135,7 @@ When talking about common module pattern before there was an argument passed pro
 Basically this is a set of parameters provided on invoking Hitchy. Usually this is done via Hitchy's CLI script. Thus, provided options are related to parameters provided on running CLI script. However, when testing Hitchy and its plugins it is possible to pass options from testing scripts as well.
 
 ```bash
-hitchy /app --extensionFolder /some/different/path --debug
+hitchy /app --pluginFolder /some/different/path --debug
 ```
 
 There are options recognized by Hitchy and some of those get qualified during [bootstrap](../internals/architecture-basics.md#discovering-plugins). 
@@ -156,7 +156,7 @@ This option is qualified during triangulation stage of bootstrap. It is addressi
 
 This option is defined by Hitchy during triangulation stage of bootstrap. It is addressing folder containing Hitchy installation used to manage currently running application.
 
-### options.extensionsFolder
+### options.pluginsFolder
 
 This option is optionally addressing different folder assumed to contain all plugins to be discovered. The project folder is used in case of omitting this option.
 

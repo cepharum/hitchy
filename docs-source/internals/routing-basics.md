@@ -2,7 +2,7 @@
 
 Hitchy's core essentially features two jobs:
 
-* discovering extensions and
+* discovering plugins and
 * routing requests to its designated handler
 
 This chapter is about the latter job and understanding it is essential for properly building applications with Hitchy. We will introduce the essential terms _routes_ and _policies_ you definitely need to become familiar with.  

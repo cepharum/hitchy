@@ -54,8 +54,8 @@ if ( Args.help || Args.h ) {
 		options.projectFolder = Args.project;
 	}
 
-	if ( Args.extensions ) {
-		options.extensionsFolder = Args.extensions;
+	if ( Args.plugins || Args.extensions ) {
+		options.pluginsFolder = Args.plugins || Args.extensions;
 	}
 
 	require( "../tools/triangulate" )( options, process.cwd() )
@@ -97,8 +97,8 @@ Common options are:
 
  --project=path    Selects directory containing hitchy-based project to control.
                    Defaults to current working directory.
- --extensions=path Selects directory containing node_modules folder with hitchy
-                   extensions to discover. Defaults to project's directory.
+ --plugins=path    Selects directory containing node_modules folder with Hitchy
+                   plugins to discover. Defaults to project's directory.
  --debug           Enables noisy logging for debugging purposes.
  --log-level=names Selects active logging facilities (see npm package "debug").
  

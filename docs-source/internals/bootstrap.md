@@ -30,9 +30,9 @@ In discovery stage Hitchy is searching local filesystem for folders containing *
 :::tip Folders Searched For Plugins
 By default, Hitchy is starting at application's folder. There it is deeply searching for any sub-folder in **./node_modules** containing a file named **hitchy.json**. It is ignoring folders marked as hidden by name with leading period.
 
-It is possible to explicitly select different folder to start from using option **extensionFolder**.
+It is possible to explicitly select different folder to start from using option **pluginsFolder**.
 
-Mostly for testing purposes it is possible provide a list of folders to be considered plugin folders explicitly using option **explicitExtensions**. It is also possible to prevent Hitchy from searching folder mentioned before by setting option **explicitFoldersOnly**. Neither option is supported by Hitchy's CLI script, though.
+Mostly for testing purposes it is possible provide a list of folders to be considered plugin folders explicitly using option **explicitPlugins**. It is also possible to prevent Hitchy from searching folder mentioned before by setting option **explicitFoldersOnly**. Neither option is supported by Hitchy's CLI script, though.
 :::
 
 ### Loading Plugins

@@ -1,7 +1,7 @@
 "use strict";
 
 const options = {
-	projectFolder: "test/projects/empty-extensions",
+	projectFolder: "test/projects/empty-plugins",
 	// debug: true,
 };
 
@@ -36,7 +36,7 @@ suite( "Serving project w/ empty plugins", function() {
 				response.data.should.not.have.property( "strong-role" );// due to filling differently named role
 				response.data.should.not.have.property( "weak-role" );  // due to filling differently named role
 				response.data.should.have.property( "important" );      // role filled by either of the two
-				response.data.should.not.have.property( "non-extension" );
+				response.data.should.not.have.property( "non-plugin" );
 
 				response.data["final-c"].index.should.be.above( response.data["b"].index );
 				response.data["final-c"].index.should.be.above( response.data["important"].index );

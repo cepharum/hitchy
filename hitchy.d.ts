@@ -239,10 +239,10 @@ export interface HitchyOptions {
     hitchyFolder: string;
 
     /**
-     * Selects separate folder containing node_modules/ subfolder w/ hitchy
-     * extensions to be discovered. Omit to use same folder as `projectFolder`.
+     * Selects separate folder containing node_modules/ subfolder w/ Hitchy
+     * plugins to be discovered. Omit to use same folder as `projectFolder`.
      */
-    extensionsFolder?: string;
+    pluginsFolder?: string;
 
     /**
      * Set true to enable very noisy debugging by enabling any existing
@@ -257,14 +257,14 @@ export interface HitchyOptions {
     handleErrors?: boolean;
 
     /**
-     * lists folders of extensions to be loaded explicitly.
+     * Lists folders of plugins to be loaded explicitly.
      */
-    explicitExtensions?: String[];
+    explicitPlugins?: String[];
 
     /**
-     * Set true for loading explicitly provided extension folders, only.
+     * Set true for loading explicitly provided plugin folders, only.
      */
-    explicitExtensionsOnly?: boolean;
+    explicitPluginsOnly?: boolean;
 
     /**
      * Lists dependencies to enable for current project.

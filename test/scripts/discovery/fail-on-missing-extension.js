@@ -1,7 +1,7 @@
 "use strict";
 
 const options = {
-	projectFolder: "test/projects/empty-extensions",
+	projectFolder: "test/projects/empty-plugins",
 	dependencies: [ "important", "supporting" ],
 	// debug: true,
 };
