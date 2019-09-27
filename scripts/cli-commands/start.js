@@ -44,6 +44,23 @@ const Debug = require( "debug" )( "hitchy:debug" );
  * @returns {Promise} promises action finished processing
  */
 module.exports = function( options, args ) {
+	if ( args.plugins || args.extensions ) {
+		options.pluginsFolder = args.plugins || args.extensions;
+	}
+
+	if ( args.plugin ) {
+		options.explicitPlugins = Array.isArray( args.plugin ) ? args.plugin : [args.plugin];
+	}
+
+	if ( args["explicit-only"] ) {
+		options.explicitPluginsOnly = true;
+	}
+
+	if ( args["depend-on"] ) {
+		options.dependencies = Array.isArray( args["depend-on"] ) ? args["depend-on"] : [args["depend-on"]];
+	}
+
+
 	if ( args.injector ) {
 		return start();
 	}

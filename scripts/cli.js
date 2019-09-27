@@ -43,8 +43,7 @@ if ( Args.help || Args.h ) {
 	process.on( "uncaughtException", _unhandledException );
 
 	/**
-	 * @alias HitchyOptions
-	 * @type {object}
+	 * @type {HitchyOptions}
 	 */
 	const options = {
 		debug: Boolean( Args.debug ),
@@ -52,10 +51,6 @@ if ( Args.help || Args.h ) {
 
 	if ( Args.project ) {
 		options.projectFolder = Args.project;
-	}
-
-	if ( Args.plugins || Args.extensions ) {
-		options.pluginsFolder = Args.plugins || Args.extensions;
 	}
 
 	require( "../tools/triangulate" )( options, process.cwd() )
@@ -86,31 +81,32 @@ Usage: hitchy <action> [ options ]
 Supported actions are:
 
  start    Start presentation application in current folder.
- stop     tba: Stop presentation of application in current folder.
- lock     tba: Shutdown request processing but keep service running (site down).
- unlock   tba: Re-enable request processing.
- open     tba: Open browser requesting homepage of application.
  
 Default action is "start".
 
 Common options are:
 
- --project=path    Selects directory containing hitchy-based project to control.
-                   Defaults to current working directory.
- --plugins=path    Selects directory containing node_modules folder with Hitchy
-                   plugins to discover. Defaults to project's directory.
- --debug           Enables noisy logging for debugging purposes.
- --log-level=names Selects active logging facilities (see npm package "debug").
+ --project=path       Selects directory containing hitchy-based project to 
+                      control. Defaults to current working directory.
+ --debug              Enables noisy logging for debugging purposes.
+ --log-level=names    Controls logging facilities (see npm package "debug").
  
- Action "start" supports additional options:
+Action "start" supports additional options:
  
- --injector=name   Chooses injector to use (default: "node", may be "express").
- --port=number     Chooses port to listen on for incoming requests.
- --ip=address      Chooses IP address to listen on for incoming requests.
- --quiet           Suppresses output regarding successful start of service.
- --sslKey=file     Names file containing SSL key for serving over HTTPS.
- --sslCert=file    Names file containing SSL certificate for serving over HTTPS.
- --sslCaCert=file  Names file containing SSL chain certificates.
+ --plugins=path       Selects directory containing node_modules folder with 
+                      Hitchy plugins to discover. Defaults to project's folder.
+ --plugin=path        Requests to discover plugin in provided folder explicitly.
+                      This option can be used multiple times.
+ --explicit-only      Limits discovered plugins to those provided via --plugin.
+ --depend-on=role     Selects plugin role to depend on explicitly. This option
+                      can be used multiple times.
+ --injector=name      Picks injector to use (default: "node", may be "express").
+ --port=number        Chooses port to listen on for incoming requests.
+ --ip=address         Chooses IP address to listen on for incoming requests.
+ --quiet              Suppresses output regarding successful start of service.
+ --sslKey=file        Selects file with SSL key for serving over HTTPS.
+ --sslCert=file       Selects file with SSL certificate for serving over HTTPS.
+ --sslCaCert=file     Selects file with SSL chain certificates.
 
 ` );
 }
