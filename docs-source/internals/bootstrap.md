@@ -28,11 +28,11 @@ This stage is very important for finding all available plugins and settle any "d
 In discovery stage Hitchy is searching local filesystem for folders containing **hitchy.json** file. On every match the containing folder is considered an available Hitchy plugin. The **hitchy.json** file is read providing _static_ meta information on either plugin.
 
 :::tip Folders Searched For Plugins
-By default, Hitchy is starting at application's folder. There it is deeply searching for any sub-folder in **./node_modules** containing a file named **hitchy.json**. It is ignoring folders marked as hidden by name with leading period.
+By default, Hitchy is starting at application's folder. There it is deeply searching for any sub-folder in **./node_modules** containing a file named **hitchy.json**. It is ignoring folders marked as hidden by name starting with a period.
 
-It is possible to explicitly select different folder to start from using option **pluginsFolder**.
+It is possible to explicitly select different folder to start searching as described before using option [**pluginsFolder**](../api/README.md#options-pluginsfolder).
 
-Mostly for testing purposes it is possible provide a list of folders to be considered plugin folders explicitly using option **explicitPlugins**. It is also possible to prevent Hitchy from searching folder mentioned before by setting option **explicitFoldersOnly**. Neither option is supported by Hitchy's CLI script, though.
+It is possible to provide an explicit list of folders containing plugins and their dependencies to be discovered using option [**explicitPlugins**](../api/README.md#options-explicitplugins-0-4-0). Plugins discovery can be limited to those explicitly provided plugins using option [**explicitPluginsOnly**](../api/README.md#options-explicitpluginsonly-0-4-0).
 :::
 
 ### Loading Plugins
@@ -95,6 +95,10 @@ Plugins are notified in arbitrary order here. All succeeding notifications are p
 ### Dropping Plugins
 
 Next, plugins with their static roles dropped as described before are dropped. They won't make it into Hitchy's API and thus won't be available at runtime directly, but still might be used internally by some of the other plugins.
+
+:::tip
+Even though explicitly selecting additional folders to contain plugins using option [**explicitPlugins**](../api/README.md#options-explicitplugins-0-4-0) either of these plugins may be dropped for claiming a role neither application nor any of its plugins depend on. You may claim roles explicitly using option [**dependencies**](../api/README.md#options-dependencies).
+:::
 
 ### Sorting Plugins
 

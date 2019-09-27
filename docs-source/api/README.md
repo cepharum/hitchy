@@ -150,24 +150,61 @@ These are options recognized and/or managed by Hitchy:
 
 ### options.projectFolder
 
-This option is qualified during triangulation stage of bootstrap. It is addressing folder containing currently running application.
+This option is qualified during triangulation stage of bootstrap. It is addressing folder containing currently running application. When omitted current working directory is used by default.
+
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--project`.
+:::
 
 ### options.hitchyFolder
 
 This option is defined by Hitchy during triangulation stage of bootstrap. It is addressing folder containing Hitchy installation used to manage currently running application.
 
+:::tip CLI Parameter
+There is no related CLI parameter for using Hitchy's CLI script already requires to pick its installation folder.
+:::
+
 ### options.pluginsFolder
 
-This option is optionally addressing different folder assumed to contain all plugins to be discovered. The project folder is used in case of omitting this option.
+This option is picking different folder containing all available plugins in a **node_modules** sub-folder. The [project folder](#options-projectfolder) is used in case of omitting this option.
+
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--plugins`.
+:::
+
+### options.explicitPlugins <Badge type="info">0.4.0+</Badge>
+
+This option is explicitly listing folders containing plugins and their local dependencies. 
+
+In opposition to more commonly useful option [**pluginsFolder**](#options-pluginsfolder) this option is also checking the provided folder itself for implementing some plugin.
+
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--plugin`. It can be provided multiple times.
+:::
+
+### options.explicitPluginsOnly <Badge type="info">0.4.0+</Badge>
+
+This boolean option can be set to limit discovery of plugins to those folders listed explicitly using option [**explicitPlugins**](#options-explicitplugins-0-4-0).
+
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--explicit-only`.
+:::
 
 ### options.debug
 
 This boolean option is controlling whether debug output is desired or not. Basically this option affects Hitchy to always enable any [logging facility](#api-log).
 
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--debug`.
+:::
+
 ### options.dependencies
 
 This option is supported to select plugins current application depends on. It is replacing any such list of plugins read from application's own **hitchy.json** file. In addition it is limiting set of eventually available plugins.
 
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--depend-on`. It can be provided multiple times.
+:::
 
 ## Configuration
 
