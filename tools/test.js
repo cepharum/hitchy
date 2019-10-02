@@ -174,6 +174,8 @@ module.exports = {
 						return onStopped;
 					};
 
+					server.$hitchy = hitchy;
+
 					server.listen( 0, "0.0.0.0", 10240, () => {
 						resolve( server );
 					} );
