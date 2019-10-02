@@ -23,8 +23,11 @@ module.exports = {
 			] },
 			{ text: "Hitchy", items: [
 					{ text: "Core", link: "/" },
-					{ text: "Odem", link: "https://hitchyjs.github.io/plugin-odem/" },
-			] },
+					{ text: "", items: [
+							{ text: "Odem", link: "https://hitchyjs.github.io/plugin-odem/" },
+							{ text: "Auth", link: "https://hitchyjs.github.io/plugin-auth/" },
+						]}
+				] },
 		],
 	},
 };
