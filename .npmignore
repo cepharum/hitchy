@@ -5,3 +5,4 @@ docs
 docs-source
 test
 .travis.yml
+.nyc_output
