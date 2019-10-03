@@ -11,6 +11,7 @@
     "start": "node scripts/server.js",
     "lint": "eslint .",
     "test": "mocha --ui tdd --recursive test/scripts",
+    "coverage": "nyc mocha --ui tdd --recursive test/scripts",
     "doc:serve": "vuepress dev docs-source",
     "doc:build": "vuepress build docs-source"
   },
@@ -33,6 +34,7 @@
     "eslint-config-cepharum": "^1.0.10",
     "eslint-plugin-promise": "^4.2.1",
     "mocha": "^6.2.1",
+    "nyc": "^14.1.1",
     "should": "^13.2.3",
     "should-http": "^0.1.1",
     "vuepress": "^1.1.0"
