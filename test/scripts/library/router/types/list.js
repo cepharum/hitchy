@@ -728,7 +728,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 			collector.append( new PolicyRoute( "/te(st)+", () => {}, API ) );
 			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 3 );
 
-			collector.append( new PolicyRoute( "/test*", () => {}, API ) );
+			collector.append( new PolicyRoute( "/tes(t)*", () => {}, API ) );
 			collector.prefixes.should.have.property( "/test/sub" ).and.be.Array().and.have.length( 4 );
 
 			collector.append( new PolicyRoute( "/:major/sub", () => {}, API ) );
