@@ -207,7 +207,7 @@ module.exports = {
  * @returns {Promise} promises response
  */
 function request( method, url, data = null, headers = {} ) {
-	return new Promise( function( resolve, reject ) {
+	const promise = new Promise( function( resolve, reject ) {
 		const server = recentlyStartedServers[0];
 		if ( !server ) {
 			throw new Error( "server not started yet" );
@@ -262,6 +262,8 @@ function request( method, url, data = null, headers = {} ) {
 			} );
 		} );
 
+		process.nextTick( () => { promise.request = handle; } );
+
 		handle.on( "error", reject );
 
 		if ( body != null ) {
@@ -270,4 +272,6 @@ function request( method, url, data = null, headers = {} ) {
 
 		handle.end();
 	} );
+
+	return promise;
 }
