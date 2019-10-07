@@ -146,6 +146,17 @@ export interface HitchyUtilityAPI {
         camelToPascal(input: string): string,
     },
 
+    value: {
+        /**
+         * Detects boolean keyword in provided string returning related boolean
+         * value or provided string if detection fails.
+         *
+         * @param input string to be inspected
+         * @returns boolean value detected in provided string
+         */
+        asBoolean(input: string): boolean|string,
+    },
+
     logger: HitchyLoggerGenerator,
 }
 
