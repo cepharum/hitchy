@@ -167,7 +167,7 @@ In configuration stage the application's configuration is compiled from every pl
 
 Every plugin as well as the application is assumed to provide zero or more non-hidden configuration files implemented as Javascript modules in sub-folder **config**. Every file in that sub-folder that does not start with a full stop `.` and ends with **.js** is assumed to export another part of eventual configuration.
 
-Hitchy is reading all those files merging them into a single configuration object which is exposed as part of Hitchy's API at `api.runtime.config`.
+Hitchy is reading all those files merging them into a single configuration object which is exposed as part of Hitchy's API at `api.config`.
 
 :::tip Special Case: local.js
 Every plugin as well as the application may use a file **config/local.js** which is always processed after having processed all the other configuration files in a folder. This helps with safely declaring defaults prior to providing a custom configuration for the current installation which might be deviating from those defaults.
