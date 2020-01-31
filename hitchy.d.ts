@@ -66,6 +66,16 @@ export interface HitchyLibraryAPI {
     cmfp: (fn: HitchyCMP, customArgs?: any[]) => any;
 
     Client: HitchyRouterClient;
+
+    /**
+     * Resolves provided folder in relation to current project's folder.
+     *
+     * The provided name may start with `@hitchy/` to be resolved in relation to
+     * folder containing currently used hitchy instance.
+     *
+     * @param folder name to be resolved
+     */
+    folder: (folder: string) => string;
 }
 
 export type HitchyCMP = (this: HitchyAPI, options: HitchyOptions, ...customArgs: any[]) => any;

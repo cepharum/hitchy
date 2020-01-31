@@ -72,6 +72,9 @@ function _toolLibraryCreateAPI( options = {} ) {
 		plugins: {},
 		loader: _nop,
 		data: {},
+		folder( name ) {
+			return Path.resolve( options.projectFolder, String( name || "" ).replace( /^@(hitchy|project)/, ( _, key ) => options[`${key}Folder`] ) );
+		},
 	};
 
 	// support singular names of either group of components as well
