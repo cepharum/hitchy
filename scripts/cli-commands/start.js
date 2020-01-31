@@ -60,7 +60,6 @@ module.exports = function( options, args ) {
 		options.dependencies = Array.isArray( args["depend-on"] ) ? args["depend-on"] : [args["depend-on"]];
 	}
 
-
 	if ( args.injector ) {
 		return start();
 	}
@@ -163,7 +162,7 @@ module.exports = function( options, args ) {
 						}
 					} )
 					.catch( error => {
-						console.error( `Starting hitchy failed: ${error.message}` );
+						console.error( `Starting hitchy failed: ${error.stack}` );
 
 						process.exitCode = 3;
 						_handleCancel.call( {}, server, hitchy );
