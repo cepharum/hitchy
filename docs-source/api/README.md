@@ -514,6 +514,15 @@ Data found in **hitchy.json** file is preferred over data found in **package.jso
 * [`deepComponents`](plugins.md#deepcomponents-0-4-0)
 * [`appendFolders`](plugins.md#appendfolders-0-4-0)
 
+### api.folder
+
+This function takes a relative path name of a file or folder and qualifies it in context of current hitchy-based project, which is your application.
+
+The provided relative path name may start with special markers to select one of several supported base folders:
+
+* `@project/some/file.ext` is selecting **some/file.ext** in context of your current project's folder. This is the default behaviour when providing just `some/file.ext`, too.
+* `@hitchy/some/file.ext` is selecting **some/file.ext** in context of [folder containing currently used core implementation of Hitchy](#optionshitchyfolder). Usually, this folder is located in **node_modules/hitchy** of your project's folder, but using command line arguments it is possible to pick a different location. 
+
 ### api.runtime
 
 This section of Hitchy's API is exposing a compilation of all components exposed by discovered plugins as well as current application itself. They are grouped by component type.
