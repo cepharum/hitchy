@@ -59,7 +59,7 @@ module.exports = {
  * @private
  */
 function _toolLibraryCreateAPI( options = {} ) {
-	const api = {
+	const _api = {
 		config: {
 			hitchy: {},
 		},
@@ -78,16 +78,16 @@ function _toolLibraryCreateAPI( options = {} ) {
 	};
 
 	// support singular names of either group of components as well
-	api.runtime.model = api.runtime.models;
-	api.runtime.controller = api.runtime.controllers;
-	api.runtime.service = api.runtime.services;
-	api.runtime.policy = api.runtime.policies;
+	_api.runtime.model = _api.runtime.models;
+	_api.runtime.controller = _api.runtime.controllers;
+	_api.runtime.service = _api.runtime.services;
+	_api.runtime.policy = _api.runtime.policies;
 
 	// inject tools for supporting common-module (function) pattern
-	api.cmp = _toolLibraryCMP.bind( api, api, options );
-	api.cmfp = _toolLibraryCMFP.bind( api, api, options );
+	_api.cmp = _toolLibraryCMP.bind( _api, _api, options );
+	_api.cmfp = _toolLibraryCMFP.bind( _api, _api, options );
 
-	return api;
+	return _api;
 }
 
 /**
@@ -100,18 +100,18 @@ function _nop() {} // eslint-disable-line no-empty-function
 /**
  * Loads library contained in given folder.
  *
- * @param {HitchyAPI} api reference on Hitchy API to be used by loaded components of library
+ * @param {HitchyAPI} _api reference on Hitchy API to be used by loaded components of library
  * @param {string} libFolder path name of folder containing Hitchy library
  * @param {HitchyOptions=} options options for customizing hitchy
  * @returns {Promise.<HitchyAPI>} promises provided reference on Hitchy API qualified with loaded library
  */
-function _toolLibraryLoad( api, libFolder, options = {} ) {
-	api.loader = _toolLibraryCommonModulePatternLoader;
+function _toolLibraryLoad( _api, libFolder, options = {} ) {
+	_api.loader = _toolLibraryCommonModulePatternLoader;
 
 	return Promises.each( LibraryComponents, moduleName => {
-		return Promise.resolve( require( Path.join( libFolder, moduleName ) ).call( api, options ) )
+		return Promise.resolve( require( Path.join( libFolder, moduleName ) ).call( _api, options ) )
 			.then( moduleApi => {
-				Object.defineProperty( api, moduleName, {
+				Object.defineProperty( _api, moduleName, {
 					value: Object.seal( moduleApi ),
 					enumerable: true,
 				} );
@@ -120,14 +120,14 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 				switch ( moduleName ) {
 					case "utility" :
 						// provide shortcut for accessing logger factory
-						Object.defineProperties( api, {
+						Object.defineProperties( _api, {
 							/**
 							 * @name HitchyLibraryAPI.log
 							 * @property {function(prefix:string):function(message:string)}
 							 * @readonly
 							 */
 							log: {
-								value: api.utility.logger.get,
+								value: _api.utility.logger.get,
 								enumerable: true,
 							},
 						} );
@@ -135,14 +135,14 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 
 					case "router" :
 						// provide shortcut for accessing router client
-						Object.defineProperties( api, {
+						Object.defineProperties( _api, {
 							/**
 							 * @name HitchyLibraryAPI.Client
 							 * @property {class<HitchyClientRequest>}
 							 * @readonly
 							 */
 							Client: {
-								value: api.router.client,
+								value: _api.router.client,
 								enumerable: true,
 							},
 						} );
@@ -150,7 +150,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 				}
 			} );
 	} )
-		.then( () => api );
+		.then( () => _api );
 
 
 	/**
@@ -168,7 +168,7 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
 			let moduleApi = require( Path.resolve( options.projectFolder, pathname ) );
 
 			if ( typeof moduleApi === "function" ) {
-				moduleApi = moduleApi.apply( api, [options].concat( moduleArguments ) );
+				moduleApi = moduleApi.apply( _api, [options].concat( moduleArguments ) );
 			}
 
 			resolve( moduleApi );
@@ -184,17 +184,17 @@ function _toolLibraryLoad( api, libFolder, options = {} ) {
  * and globally provided options and waiting for any promise e.g. returned by
  * that function to provide the API of selected module eventually.
  *
- * @param {HitchyAPI} api compiled API exposing library and runtime configuration
+ * @param {HitchyAPI} _api compiled API exposing library and runtime configuration
  * @param {HitchyOptions} options global options customizing Hitchy
  * @param {string} modulePathname pathname of module to load (is forwarded to `require()`)
  * @param {Array} moduleArguments list of arguments passed into module additionally
  * @returns {Promise<object>} promises API of loaded module
  * @private
  */
-function _toolLibraryCMP( api, options = {}, modulePathname, moduleArguments = [] ) {
+function _toolLibraryCMP( _api, options = {}, modulePathname, moduleArguments = [] ) {
 	let module = require( modulePathname );
 	if ( typeof module === "function" ) {
-		module = module.call( api, options, ...moduleArguments );
+		module = module.call( _api, options, ...moduleArguments );
 	}
 
 	return module instanceof Promise ? module : Promise.resolve( module );
@@ -209,13 +209,13 @@ function _toolLibraryCMP( api, options = {}, modulePathname, moduleArguments = [
  * provided here. It waits for any promise e.g. returned by that function to
  * provide the API of selected module eventually.
  *
- * @param {HitchyAPI} api compiled API exposing library and runtime configuration
+ * @param {HitchyAPI} _api compiled API exposing library and runtime configuration
  * @param {HitchyOptions} options global options customizing Hitchy
  * @param {function} fn function to invoke
  * @param {Array} fnArguments additional arguments passed on invoking provided function
  * @returns {*} result of invoked function
  * @private
  */
-function _toolLibraryCMFP( api, options = {}, fn, fnArguments = [] ) {
-	return fn.call( api, options, ...fnArguments );
+function _toolLibraryCMFP( _api, options = {}, fn, fnArguments = [] ) {
+	return fn.call( _api, options, ...fnArguments );
 }

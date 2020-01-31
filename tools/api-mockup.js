@@ -77,12 +77,12 @@ module.exports = function _apiMockUpGenerator( { projectFolder = OS.tmpdir(), op
 			projectFolder,
 		};
 
-		const api = require( Path.relative( __dirname, Path.resolve( _options.hitchyFolder, name ) ) );
-		if ( typeof api === "function" ) {
-			return api.apply( Api, [_options].concat( moduleArguments ) );
+		const _api = require( Path.relative( __dirname, Path.resolve( _options.hitchyFolder, name ) ) );
+		if ( typeof _api === "function" ) {
+			return _api.apply( Api, [_options].concat( moduleArguments ) );
 		}
 
-		return api;
+		return _api;
 	}
 
 	Object.defineProperty( _apiMockUpLoader, "mockedApi", { value: Api } );
