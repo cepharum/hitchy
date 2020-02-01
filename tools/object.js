@@ -49,7 +49,7 @@ module.exports = {
  * @returns {object} reference on provided object, now deeply sealed
  */
 function _toolObjectDeepSeal( object, testFn = null, _path = [] ) {
-	if ( object && typeof object === "object" ) {
+	if ( object && typeof object === "object" && !object.$$doNotSeal$$ ) {
 		const fn = testFn && typeof testFn === "function" ? testFn : null;
 		const props = Object.keys( object );
 		const numProps = props.length;
@@ -81,7 +81,7 @@ function _toolObjectDeepSeal( object, testFn = null, _path = [] ) {
  * @returns {object} reference on provided object, now deeply frozen
  */
 function _toolObjectDeepFreeze( object, testFn = null, _path = [] ) {
-	if ( object && typeof object === "object" ) {
+	if ( object && typeof object === "object" && !object.$$doNotFreeze$$ ) {
 		const fn = testFn && typeof testFn === "function" ? testFn : null;
 		const props = Object.keys( object );
 		const numProps = props.length;
