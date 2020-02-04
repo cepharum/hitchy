@@ -19,7 +19,7 @@
     "hitchy": "./hitchy-ctl.sh"
   },
   "engines": {
-    "node": ">=6.9.2",
+    "node": ">=10.0.0",
     "npm": ">=3.0.0"
   },
   "dependencies": {
