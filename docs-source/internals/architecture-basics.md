@@ -12,7 +12,7 @@ Hitchy consists of a very rudimentary core that's basically capable of these fea
 
 ## Integrating With Services
 
-Currently there are two _injectors_: one is available for integrating a Hitchy-based application with an Express.js based service as a middleware. A second one is attaching a Hitchy-based application with a purely Node.js based HTTP service. 
+Currently there are two _injectors_: one is available for integrating a Hitchy-based application with an Express.js based service as a middleware. A second one is attaching a Hitchy-based application to a purely Node.js based HTTP service. 
 
 Integrating with ExpressJS application is as simple as this:
 

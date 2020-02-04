@@ -12,8 +12,9 @@ module.exports = {
 			{ text: "Home", link: "/" },
 			{ text: "Tutorials", link: "/tutorials/" },
 			{ text: "API", items: [
-					{ text: "Hitchy's API", link: "/api/index" },
-					{ text: "Plugin API", link: "/api/plugins" },
+					{ text: "Hitchy's API", link: "/api/hitchy" },
+					{ text: "Plugins API", link: "/api/plugins" },
+					{ text: "Core Components", link: "/api/components/" },
 			] },
 			{ text: "Internals", items: [
 					{ text: "Architecture", link: "/internals/architecture-basics.html" },
@@ -26,7 +27,7 @@ module.exports = {
 					{ text: "", items: [
 							{ text: "Odem", link: "https://hitchyjs.github.io/plugin-odem/" },
 							{ text: "Auth", link: "https://hitchyjs.github.io/plugin-auth/" },
-						]}
+						] }
 				] },
 		],
 	},
