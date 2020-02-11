@@ -28,8 +28,9 @@
 
 "use strict";
 
-module.exports = {
+const EventEmitter = require( "events" );
 
+module.exports = {
 	/** @borrows _toolObjectDeepSeal as deepSeal */
 	deepSeal: _toolObjectDeepSeal,
 
@@ -49,15 +50,33 @@ module.exports = {
  * @returns {object} reference on provided object, now deeply sealed
  */
 function _toolObjectDeepSeal( object, testFn = null, _path = [] ) {
-	if ( object && typeof object === "object" && !object.$$doNotSeal$$ ) {
+	if ( object && typeof object === "object" && !object.$$doNotSeal$$ && !Object.isSealed( object ) ) {
+		const isEventEmitter = object instanceof EventEmitter;
+
+		if ( isEventEmitter ) {
+			// prevent properties managed for event handling from being sealed implicitly
+			// see [_addEventListener() of events.js](https://github.com/nodejs/node/blob/master/lib/events.js#L349)
+			if ( !Object.prototype.hasOwnProperty.call( object, "_events" ) ) {
+				object._events = Object.create( null );
+			}
+
+			let counter = object._eventsCount || 0;
+
+			Object.defineProperty( object, "_eventsCount", {
+				get: () => counter,
+				set: value => { counter = value; },
+			} );
+		}
+
 		const fn = testFn && typeof testFn === "function" ? testFn : null;
 		const props = Object.keys( object );
 		const numProps = props.length;
 
 		for ( let i = 0; i < numProps; i++ ) {
-			const prop = object[props[i]];
+			const name = props[i];
+			const prop = object[name];
 
-			if ( prop && typeof prop === "object" ) {
+			if ( prop && typeof prop === "object" && !prop.$$doNotSeal$$ && !( isEventEmitter && name === "_events" ) ) {
 				_path.push( prop );
 				_toolObjectDeepSeal( prop, fn, _path );
 				_path.pop();
@@ -81,15 +100,33 @@ function _toolObjectDeepSeal( object, testFn = null, _path = [] ) {
  * @returns {object} reference on provided object, now deeply frozen
  */
 function _toolObjectDeepFreeze( object, testFn = null, _path = [] ) {
-	if ( object && typeof object === "object" && !object.$$doNotFreeze$$ ) {
+	if ( object && typeof object === "object" && !object.$$doNotFreeze$$ && !Object.isFrozen( object ) ) {
+		const isEventEmitter = object instanceof EventEmitter;
+
+		if ( isEventEmitter ) {
+			// prevent properties managed for event handling from being sealed implicitly
+			// see [_addEventListener() of events.js](https://github.com/nodejs/node/blob/master/lib/events.js#L349)
+			if ( !Object.prototype.hasOwnProperty.call( object, "_events" ) ) {
+				object._events = Object.create( null );
+			}
+
+			let counter = object._eventsCount || 0;
+
+			Object.defineProperty( object, "_eventsCount", {
+				get: () => counter,
+				set: value => { counter = value; },
+			} );
+		}
+
 		const fn = testFn && typeof testFn === "function" ? testFn : null;
 		const props = Object.keys( object );
 		const numProps = props.length;
 
 		for ( let i = 0; i < numProps; i++ ) {
-			const prop = object[props[i]];
+			const name = props[i];
+			const prop = object[name];
 
-			if ( prop && typeof prop === "object" ) {
+			if ( prop && typeof prop === "object" && !prop.$$doNotFreeze$$ && !( isEventEmitter && name === "_events" ) ) {
 				_path.push( prop );
 				_toolObjectDeepFreeze( prop, fn, _path );
 				_path.pop();
