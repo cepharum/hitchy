@@ -29,6 +29,7 @@
 "use strict";
 
 const Path = require( "path" );
+const EventEmitter = require( "events" );
 
 const Promises = require( "./promise" );
 
@@ -59,33 +60,46 @@ module.exports = {
  * @private
  */
 function _toolLibraryCreateAPI( options = {} ) {
-	const _api = {
-		config: {
-			hitchy: {},
-		},
-		runtime: {
-			models: {},
-			controllers: {},
-			services: {},
-			policies: {}
-		},
-		plugins: {},
-		loader: _nop,
-		data: {},
-		folder( name ) {
-			return Path.resolve( options.projectFolder, String( name || "" ).replace( /^@(hitchy|project)/, ( _, key ) => options[`${key}Folder`] ) );
-		},
+	/**
+	 * Implements Hitchy's API based on EventEmitter.
+	 */
+	class HitchyAPI extends EventEmitter {}
+
+	const _api = new HitchyAPI();
+
+	_api.config = {
+		hitchy: {},
 	};
 
-	// support singular names of either group of components as well
-	_api.runtime.model = _api.runtime.models;
-	_api.runtime.controller = _api.runtime.controllers;
-	_api.runtime.service = _api.runtime.services;
-	_api.runtime.policy = _api.runtime.policies;
+	_api.runtime = {
+		models: {},
+		controllers: {},
+		services: {},
+		policies: {}
+	};
 
-	// inject tools for supporting common-module (function) pattern
+	_api.plugins = {};
+	_api.loader = _nop;
+	_api.data = {};
+
+	_api.folder = name => {
+		return Path.resolve( options.projectFolder, String( name || "" )
+			.replace( /^@(hitchy|project)(?=$|[/\\])/i, ( _, key ) => options[`${key}Folder`] ) );
+	};
+
 	_api.cmp = _toolLibraryCMP.bind( _api, _api, options );
 	_api.cmfp = _toolLibraryCMFP.bind( _api, _api, options );
+
+	// support singular names of either group of components as well
+	Object.defineProperties( _api.runtime, {
+		model: { value: _api.runtime.models },
+		controller: { value: _api.runtime.controllers },
+		policy: { value: _api.runtime.policies },
+		service: { value: _api.runtime.services },
+	} );
+
+	_api.crash = cause => { _api.emit( "crash", cause ); };
+	_api.shutdown = () => { _api.emit( "shutdown" ); };
 
 	return _api;
 }
@@ -168,7 +182,7 @@ function _toolLibraryLoad( _api, libFolder, options = {} ) {
 			let moduleApi = require( Path.resolve( options.projectFolder, pathname ) );
 
 			if ( typeof moduleApi === "function" ) {
-				moduleApi = moduleApi.apply( _api, [options].concat( moduleArguments ) );
+				moduleApi = moduleApi.apply( _api, [ options ].concat( moduleArguments ) );
 			}
 
 			resolve( moduleApi );

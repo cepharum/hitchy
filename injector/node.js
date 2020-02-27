@@ -45,11 +45,13 @@ module.exports = function( options ) {
 
 	const starter = require( "../lib" )( options )
 		.then( api => {
-			middleware.hitchy = Object.seal( hitchy = api );
+			middleware.hitchy = middleware.api = Object.seal( hitchy = api );
+
+			return api;
 		}, cause => {
 			error = cause;
 
-			require( "debug" )( "bootstrap" )( "ERROR: starting hitchy failed", cause );
+			require( "debug" )( "bootstrap" )( "FATAL: starting hitchy failed: %s", cause.stack );
 
 			// keep rejecting promise
 			throw cause;
@@ -61,7 +63,7 @@ module.exports = function( options ) {
 		 * Promises hitchy node has been started successfully.
 		 *
 		 * @name HitchyNodeInstance#onStarted
-		 * @property {Promise}
+		 * @property {Promise<HitchyAPI>}
 		 * @readonly
 		 */
 		onStarted: { value: starter },
@@ -104,7 +106,7 @@ module.exports = function( options ) {
 			response: res,
 			done: _error => {
 				if ( _error ) {
-					console.error( `got error on dispatching ${req.method} ${req.url}: ${_error.message}` );
+					console.error( `got error on dispatching ${req.method} ${req.url}: ${_error.statusCode ? _error.message : _error.stack}` );
 				}
 			},
 			local: {},
@@ -147,6 +149,9 @@ module.exports = function( options ) {
  * @typedef {object} HitchyInstance
  * @property {Promise} onStarted settled on starting hitchy instance succeeded or failed
  * @property {function:Promise} stop shuts down hitchy instance
+ * @property {string} injector name of injector used to create the instance
+ * @property {HitchyAPI} api API of hitchy for use by instance
+ * @property {HitchyAPI} hitchy API of hitchy for use by instance, aliasing `api`
  */
 
 /**

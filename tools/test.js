@@ -35,26 +35,52 @@
 const Http = require( "http" );
 const Url = require( "url" );
 
+const { BasicServer } = require( "../lib/server" );
 
-const recentlyStartedServers = [];
+const DefaultArguments = {
+	quiet: true,
+};
+
+/**
+ * @typedef {function(url:string, body:(Buffer|string|object), headers:object):Promise<ServerResponse>} HitchyTestBoundClient
+ */
+
+/**
+ * @typedef {function(method:string, url:string, body:(Buffer|string|object), headers:object):Promise<ServerResponse>} HitchyTestUnboundClient
+ */
+
+/**
+ * @typedef {object} HitchyTestContext
+ * @property {HitchyInstance} hitchy instance of Hitchy to be tested
+ * @property {Server} server HTTP service dispatching incoming requests into Hitchy instance
+ * @property {function(url:string, body:(Buffer|string|object), headers:object):Promise<ServerResponse>} get sends GET request to running Hitchy instance
+ * @property {HitchyTestBoundClient} get sends GET request to running Hitchy instance
+ * @property {HitchyTestBoundClient} post sends POST request to running Hitchy instance
+ * @property {HitchyTestBoundClient} put sends PUT request to running Hitchy instance
+ * @property {HitchyTestBoundClient} patch sends PATCH request to running Hitchy instance
+ * @property {HitchyTestBoundClient} delete sends DELETE request to running Hitchy instance
+ * @property {HitchyTestBoundClient} head sends HEAD request to running Hitchy instance
+ * @property {HitchyTestBoundClient} options sends OPTIONS request to running Hitchy instance
+ * @property {HitchyTestBoundClient} trace sends TRACE request to running Hitchy instance
+ * @property {HitchyTestUnboundClient} request sends custom request to running Hitchy instance
+ */
 
 module.exports = {
-
 	/**
 	 * Starts hitchy service using node's http server.
 	 *
-	 * @param {HitchyNodeInstance} hitchy instance of hitchy
 	 * @param {object} options global options
-	 * @returns {Promise<Server>} promises running server exposing hitchy instance
+	 * @param {object} args arguments as supported by hitchy's CLI tool
+	 * @returns {Promise<{server:Server, hitchy:Hitchy}>} promises running server exposing hitchy instance
 	 */
-	startServer( hitchy, options = {} ) {
-		switch ( hitchy.injector || process.env.HITCHY_MODE || "node" ) {
-			case "node" :
-				return _createHTTP( hitchy );
+	startServer( options = {}, args = {} ) {
+		let promise;
 
+		switch ( args.injector || process.env.HITCHY_MODE || "node" ) {
 			case "connect" :
 			case "express" :
-				return new Promise( ( resolve, reject ) => {
+				// make sure express is installed, at least temporarily
+				promise = new Promise( ( resolve, reject ) => {
 					try {
 						resolve( require( "express" ) );
 						return;
@@ -76,111 +102,96 @@ module.exports = {
 							}
 						}
 					} );
-				} )
-					.then( Express => {
-						const app = Express();
-
-						const notFound = new Error( "Page not found." );
-						notFound.code = 404;
-
-						if ( options.prefix ) {
-							app.use( options.prefix, hitchy, _fakeError.bind( undefined, notFound ), _fakeError );
-						} else {
-							app.use( hitchy, _fakeError.bind( undefined, notFound ), _fakeError );
-						}
-
-						return _createHTTP( app );
-
-
-						/**
-						 * Implements fallback error handler.
-						 *
-						 * @param {Error} err error to describe
-						 * @param {IncomingMessage} req request descriptor
-						 * @param {ServerResponse} res response manager
-						 * @param {function} next callback to invoke when done
-						 * @returns {void}
-						 * @private
-						 */
-						function _fakeError( err, req, res, next ) { // eslint-disable-line no-unused-vars
-							res
-								.status( err.statusCode || err.code || 500 )
-								.format( {
-									html() {
-										res.send( `<html lang="en"><body><p>${err.message}</p></body></html>` );
-									},
-									json() {
-										res.send( {
-											error: err.message,
-											code: err.statusCode || err.code || 404,
-										} );
-									},
-									text() {
-										res.send( err.message );
-									}
-								} );
-						}
-					} );
+				} );
+				break;
 
 			default :
-				throw new Error( "invalid Hitchy injection mode" );
+				promise = Promise.resolve();
 		}
+
+		const _args = Object.assign( {}, DefaultArguments, args );
+
+		if ( options.debug ) {
+			_args.quiet = false;
+		}
+
+		return promise
+			.then( () => BasicServer( options, _args, () => {
+				if ( !_args.quiet ) {
+					console.error( "Hitchy has been shut down." );
+
+					dumpHandles();
+				}
+			} ) );
 
 		/**
-		 * Creates HTTP server instance.
+		 * Dumps active handles of current Node.js process to stderr.
 		 *
-		 * @param {function} listener function invoked per incoming request
-		 * @returns {Promise<Server>} promises running and listening HTTP server instance
-		 * @private
+		 * @returns {void}
 		 */
-		function _createHTTP( listener ) {
-			return hitchy.onStarted
-				.then( () => new Promise( ( resolve, reject ) => {
-					const server = Http.createServer( listener );
-					let stopResolve = null;
-					let stopReject = null;
+		function dumpHandles() {
+			const handles = process._getActiveHandles();
 
-					const onStopped = new Promise( ( _resolve, _reject ) => {
-						stopResolve = _resolve;
-						stopReject = _reject;
-					} );
+			if ( handles.length < 1 ) {
+				return;
+			}
 
+			console.error( `${new Date().toISOString()}: dump of active handles:` );
 
-					recentlyStartedServers.unshift( server );
+			handles.forEach( handle => {
+				if ( handle && handle._events ) {
+					Object.keys( handle._events )
+						.map( name => {
+							const handlers = handle._events[name];
+							const _handlers = Array.isArray( handlers ) ? handlers : [handlers];
+							const num = _handlers.filter( handler => typeof handler === "function" ).length;
 
-					server.once( "error", reject );
-					server.once( "close", () => {
-						let numServers = recentlyStartedServers.length;
-
-						for ( let i = 0; i < numServers; i++ ) {
-							if ( recentlyStartedServers[i] === server ) {
-								recentlyStartedServers.splice( i, 1 );
-
-								i--;
-								numServers--;
+							if ( num > 0 ) {
+								console.error( `${num} handler(s) listening for ${name} event of ${( handle.constructor || {} ).name} %j`, handle );
 							}
-						}
-
-						hitchy.stop()
-							.then( stopResolve )
-							.catch( stopReject );
-					} );
-
-					server.stop = () => {
-						server.once( "error", error => stopReject( error ) );
-
-						server.close();
-
-						return onStopped;
-					};
-
-					server.$hitchy = hitchy;
-
-					server.listen( 0, "0.0.0.0", 10240, () => {
-						resolve( server );
-					} );
-				} ) );
+						} );
+				}
+			} );
 		}
+	},
+
+	/**
+	 * Generates function for setting up Hitchy for testing.
+	 *
+	 * @param {HitchyTestContext} ctx test context to be established
+	 * @param {HitchyOptions} options mock of options for customizing Hitchy behaviour
+	 * @param {HitchyCLIArguments} args mock of parsed CLI arguments for testing Hitchy
+	 * @returns {function(): Promise<{server: Server, hitchy: Hitchy}>} function for use with test runner to set up Hitchy for testing
+	 */
+	before( ctx, options = {}, args = {} ) {
+		ctx.hitchy = null;
+		ctx.server = null;
+
+		return () => module.exports.startServer( options, args ).then( ( { hitchy, server } ) => {
+			ctx.hitchy = hitchy;
+			ctx.server = server;
+
+			ctx.get = request.bind( ctx, "GET" );
+			ctx.post = request.bind( ctx, "POST" );
+			ctx.put = request.bind( ctx, "PUT" );
+			ctx.patch = request.bind( ctx, "PATCH" );
+			ctx.delete = request.bind( ctx, "DELETE" );
+			ctx.head = request.bind( ctx, "HEAD" );
+			ctx.options = request.bind( ctx, "OPTIONS" );
+			ctx.trace = request.bind( ctx, "TRACE" );
+
+			ctx.request = request.bind( ctx );
+		} );
+	},
+
+	/**
+	 * Generates function for tearing down some Hitchy previously set up for testing.
+	 *
+	 * @param {HitchyTestContext} ctx test context to be established
+	 * @returns {function(): Promise} function for use with test runner to tear down Hitchy after testing
+	 */
+	after( ctx ) {
+		return () => ( ctx.server ? ctx.server.stop() : undefined );
 	},
 
 	get: request.bind( undefined, "GET" ),
@@ -193,7 +204,7 @@ module.exports = {
 	trace: request.bind( undefined, "TRACE" ),
 
 	/** @borrows request as request */
-	request: request,
+	request,
 };
 
 /**
@@ -208,7 +219,8 @@ module.exports = {
  */
 function request( method, url, data = null, headers = {} ) {
 	const promise = new Promise( function( resolve, reject ) {
-		const server = recentlyStartedServers[0];
+		// eslint-disable-next-line no-mixed-operators
+		const server = this && this.server;
 		if ( !server ) {
 			throw new Error( "server not started yet" );
 		}
@@ -243,7 +255,7 @@ function request( method, url, data = null, headers = {} ) {
 			const buffers = [];
 
 			response.on( "data", chunk => buffers.push( chunk ) );
-			response.on( "end", () => {
+			response.once( "end", () => {
 				response.body = Buffer.concat( buffers );
 
 				const type = response.headers["content-type"] || "";

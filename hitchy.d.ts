@@ -1,5 +1,47 @@
 import { IncomingMessage, ServerResponse } from "http";
+import { EventEmitter } from "events";
 
+
+/**
+ * Describes instance of Hitchy suitable for injecting into some server.
+ */
+export interface HitchyInstance {
+    /**
+     * Exposes name of injector used to create this instance of Hitchy.
+     */
+    injector: string;
+
+    /**
+     * Promises Hitchy instance being ready for handling requests.
+     */
+    onStarted: Promise<HitchyAPI>;
+
+    /**
+     * Provides callback for shutting down Hitchy instance.
+     */
+    stop(): Promise<any>;
+
+    /**
+     * Exposes instance of Hitchy API as used by this Hitchy instance.
+     */
+    api: HitchyAPI;
+
+    /**
+     * Exposes instance of Hitchy API as used by this Hitchy instance.
+     */
+    hitchy: HitchyAPI;
+}
+
+/**
+ * Describes instance of Hitchy suitable for injecting into Node.js HTTP server.
+ */
+export interface HitchyNodeInstance extends HitchyInstance {}
+
+/**
+ * Describes instance of Hitchy suitable for injecting into Connect/Express
+ * application as middleware.
+ */
+export interface HitchyConnectInstance extends HitchyInstance {}
 
 /**
  * Provides all Hitchy-related information available in modules and functions of
@@ -32,13 +74,28 @@ export interface HitchyAPI extends HitchyLibraryAPI {
      * application runtime exceeding lifetime of single requests.
      */
     data: object;
+
+    /**
+     * Intentionally crashes Hitchy-based service.
+     *
+     * @param cause cause of crash
+     * @return promises Hitchy instance and request listener being torn down
+     */
+    crash( cause: Error ): Promise<any>;
+
+    /**
+     * Intentionally shuts down Hitchy-based service.
+     *
+     * @return promises Hitchy instance and request listener being torn down
+     */
+    shutdown(): Promise<any>;
 }
 
 /**
  * Provides elements of Hitchy's API distributed as part of its core and thus
  * instantly available at start of bootstrap.
  */
-export interface HitchyLibraryAPI {
+export interface HitchyLibraryAPI extends EventEmitter {
     /**
      * Generates logger functions.
      *

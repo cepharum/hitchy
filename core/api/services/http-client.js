@@ -157,7 +157,7 @@ module.exports = function() {
 
 									response.once( "error", _reject );
 									response.on( "data", chunk => chunks.push( chunk ) );
-									response.on( "end", () => _resolve( Buffer.concat( chunks ) ) );
+									response.once( "end", () => _resolve( Buffer.concat( chunks ) ) );
 								} );
 							}
 
