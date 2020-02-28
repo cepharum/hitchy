@@ -73,7 +73,7 @@ function _splash( options ) { // eslint-disable-line no-unused-vars
 </head>
 <body>
 <h1>Welcome!</h1>
-<body>This service isn't available, yet.</body>
+<p>This service isn't available, yet.</p>
 </body>
 </html>` );
 		},
@@ -123,7 +123,7 @@ function _showError( options, error ) {
 </head>
 <body>
 <h1>An error occurred!</h1>
-<body>${_error.message}</body>
+<p>${_error.message}</p>
 </body>
 </html>` );
 		},
