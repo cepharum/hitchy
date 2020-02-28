@@ -82,13 +82,17 @@ module.exports = {
 				// make sure express is installed, at least temporarily
 				promise = new Promise( ( resolve, reject ) => {
 					try {
-						resolve( require( "express" ) );
+						require( "express" );
+						resolve();
 						return;
 					} catch ( error ) {
 						if ( error.code !== "MODULE_NOT_FOUND" ) {
 							reject( error );
+							return;
 						}
 					}
+
+					console.log( "`express` is missing, thus will be installed now" );
 
 					// need to install expressjs first
 					require( "child_process" ).exec( "npm install --no-save express", error => {
@@ -96,7 +100,8 @@ module.exports = {
 							reject( error );
 						} else {
 							try {
-								resolve( require( "express" ) );
+								require( "express" );
+								resolve();
 							} catch ( _error ) {
 								reject( _error );
 							}
