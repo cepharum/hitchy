@@ -167,21 +167,22 @@ module.exports = {
 		ctx.hitchy = null;
 		ctx.server = null;
 
-		return () => module.exports.startServer( options, args ).then( ( { hitchy, server } ) => {
-			ctx.hitchy = hitchy;
-			ctx.server = server;
+		return () => module.exports.startServer( options, args )
+			.then( ( { hitchy, server } ) => {
+				ctx.hitchy = hitchy;
+				ctx.server = server;
 
-			ctx.get = request.bind( ctx, "GET" );
-			ctx.post = request.bind( ctx, "POST" );
-			ctx.put = request.bind( ctx, "PUT" );
-			ctx.patch = request.bind( ctx, "PATCH" );
-			ctx.delete = request.bind( ctx, "DELETE" );
-			ctx.head = request.bind( ctx, "HEAD" );
-			ctx.options = request.bind( ctx, "OPTIONS" );
-			ctx.trace = request.bind( ctx, "TRACE" );
+				ctx.get = request.bind( ctx, "GET" );
+				ctx.post = request.bind( ctx, "POST" );
+				ctx.put = request.bind( ctx, "PUT" );
+				ctx.patch = request.bind( ctx, "PATCH" );
+				ctx.delete = request.bind( ctx, "DELETE" );
+				ctx.head = request.bind( ctx, "HEAD" );
+				ctx.options = request.bind( ctx, "OPTIONS" );
+				ctx.trace = request.bind( ctx, "TRACE" );
 
-			ctx.request = request.bind( ctx );
-		} );
+				ctx.request = request.bind( ctx );
+			} );
 	},
 
 	/**
@@ -191,17 +192,8 @@ module.exports = {
 	 * @returns {function(): Promise} function for use with test runner to tear down Hitchy after testing
 	 */
 	after( ctx ) {
-		return () => ( ctx.server ? ctx.server.stop() : undefined );
+		return () => ( ctx.hitchy ? ctx.hitchy.api.shutdown() : null );
 	},
-
-	get: request.bind( undefined, "GET" ),
-	post: request.bind( undefined, "POST" ),
-	put: request.bind( undefined, "PUT" ),
-	patch: request.bind( undefined, "PATCH" ),
-	delete: request.bind( undefined, "DELETE" ),
-	head: request.bind( undefined, "HEAD" ),
-	options: request.bind( undefined, "OPTIONS" ),
-	trace: request.bind( undefined, "TRACE" ),
 
 	/** @borrows request as request */
 	request,
@@ -218,7 +210,7 @@ module.exports = {
  * @returns {Promise} promises response
  */
 function request( method, url, data = null, headers = {} ) {
-	const promise = new Promise( function( resolve, reject ) {
+	const promise = new Promise( ( resolve, reject ) => {
 		// eslint-disable-next-line no-mixed-operators
 		const server = this && this.server;
 		if ( !server ) {
@@ -251,7 +243,7 @@ function request( method, url, data = null, headers = {} ) {
 
 		req.agent = false;
 
-		const handle = Http.request( req, function( response ) {
+		const handle = Http.request( req, ( response ) => {
 			const buffers = [];
 
 			response.on( "data", chunk => buffers.push( chunk ) );
