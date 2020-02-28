@@ -42,7 +42,7 @@ module.exports = function( options ) {
 	let hitchy = null;
 
 	/** @type Error */
-	let error = null;
+	let startupError = null;
 
 	const starter = require( "../lib" )( options )
 		.then( api => {
@@ -55,7 +55,7 @@ module.exports = function( options ) {
 
 			return api;
 		}, cause => {
-			error = cause;
+			startupError = cause;
 
 			require( "debug" )( "bootstrap" )( "FATAL: starting Hitchy failed", cause.stack );
 
@@ -130,9 +130,9 @@ module.exports = function( options ) {
 					}
 				} )
 				.catch( Common.errorHandler.bind( context, options ) );
-		} else if ( error ) {
-			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up", error );
-			Common.errorHandler.call( context, options, error );
+		} else if ( startupError ) {
+			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up" );
+			Common.errorHandler.call( context, options, startupError );
 		} else {
 			hitchy.log( "hitchy:debug" )( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
