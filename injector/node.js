@@ -45,7 +45,12 @@ module.exports = function( options ) {
 
 	const starter = require( "../lib" )( options )
 		.then( api => {
-			middleware.hitchy = middleware.api = Object.seal( hitchy = api );
+			hitchy = Object.seal( api );
+
+			Object.defineProperties( middleware, {
+				hitchy: { value: hitchy, enumerable: true },
+				api: { value: hitchy, enumerable: true },
+			} );
 
 			return api;
 		}, cause => {

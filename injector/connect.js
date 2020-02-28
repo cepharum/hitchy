@@ -46,13 +46,18 @@ module.exports = function( options ) {
 
 	const starter = require( "../lib" )( options )
 		.then( api => {
-			middleware.hitchy = middleware.api = Object.seal( hitchy = api );
+			hitchy = Object.seal( api );
+
+			Object.defineProperties( middleware, {
+				hitchy: { value: hitchy, enumerable: true },
+				api: { value: hitchy, enumerable: true },
+			} );
 
 			return api;
 		}, cause => {
 			error = cause;
 
-			require( "debug" )( "bootstrap" )( "FATAL: starting hitchy failed", cause.stack );
+			require( "debug" )( "bootstrap" )( "FATAL: starting Hitchy failed", cause.stack );
 
 			// keep rejecting promise
 			throw cause;
