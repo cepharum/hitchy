@@ -31,7 +31,7 @@
 const Common = require( "./common" );
 
 /**
- * Provides API for injecting hitchy into expressjs/connectjs-based application
+ * Provides API for injecting Hitchy into express/connect-based application
  * as middleware.
  *
  * @param {HitchyOptions=} options global options customizing Hitchy
@@ -48,7 +48,7 @@ module.exports = function( options ) {
 		.then( api => {
 			hitchy = Object.seal( api );
 
-			Object.defineProperties( middleware, {
+			Object.defineProperties( hitchyRequestHandler, {
 				hitchy: { value: hitchy, enumerable: true },
 				api: { value: hitchy, enumerable: true },
 			} );
@@ -64,7 +64,7 @@ module.exports = function( options ) {
 		} );
 
 
-	Object.defineProperties( middleware, {
+	Object.defineProperties( hitchyRequestHandler, {
 		/**
 		 * Promises Hitchy application having started.
 		 *
@@ -89,7 +89,7 @@ module.exports = function( options ) {
 		injector: { value: "connect" },
 	} );
 
-	return middleware;
+	return hitchyRequestHandler;
 
 
 	/**
@@ -100,7 +100,7 @@ module.exports = function( options ) {
 	 * @param {function} next callback to invoke for passing request to next available handler
 	 * @returns {void}
 	 */
-	function middleware( req, res, next ) {
+	function hitchyRequestHandler( req, res, next ) {
 		/** @type HitchyRequestContext */
 		const context = {
 			context: "express",

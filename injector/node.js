@@ -47,7 +47,7 @@ module.exports = function( options ) {
 		.then( api => {
 			hitchy = Object.seal( api );
 
-			Object.defineProperties( middleware, {
+			Object.defineProperties( hitchyRequestHandler, {
 				hitchy: { value: hitchy, enumerable: true },
 				api: { value: hitchy, enumerable: true },
 			} );
@@ -63,7 +63,7 @@ module.exports = function( options ) {
 		} );
 
 
-	Object.defineProperties( middleware, {
+	Object.defineProperties( hitchyRequestHandler, {
 		/**
 		 * Promises hitchy node has been started successfully.
 		 *
@@ -92,7 +92,7 @@ module.exports = function( options ) {
 		injector: { value: "node" },
 	} );
 
-	return middleware;
+	return hitchyRequestHandler;
 
 
 	/**
@@ -103,7 +103,7 @@ module.exports = function( options ) {
 	 * @param {ServerResponse} res response manager
 	 * @returns {void}
 	 */
-	function middleware( req, res ) {
+	function hitchyRequestHandler( req, res ) {
 		/** @type HitchyRequestContext */
 		const context = {
 			context: "standalone",
