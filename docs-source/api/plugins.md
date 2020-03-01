@@ -114,7 +114,7 @@ Every plugin may provide configuration to be merged into resulting application's
 
 Names of configuration files don't matter as long as they don't start with a full stop `.` and end in **.js**.
 
-Either plugin's configuration as merged data of all files loaded here is exposed as [part of plugin's resulting API](#plugin-config-0-3-3). Configuration of all plugins and resulting application is merged and gets eventually exposed via [Hitchy's API](README.md#api-config).
+Either plugin's configuration as merged data of all files loaded here is exposed as [part of plugin's resulting API](#plugin-config). Configuration of all plugins and resulting application is merged and gets eventually exposed via [Hitchy's API](README.md#api-config).
 
 ### Components
 
@@ -256,7 +256,7 @@ A plugin **fast-user** wants to transparently provide a different implementation
 :::
 
 
-### deepComponents <Badge type="info">0.4.0+</Badge>
+### deepComponents <Badge type="info" text="0.4.0"></Badge>
 
 When loading components of a plugin this boolean property controls whether Hitchy is deeply searching for components in either type of component's sub-folder or not. Deep search is enabled by default.
 
@@ -280,7 +280,7 @@ A file **api/controllers/user-management.js** is discovered as **user-management
 Deeply searching for components processes files before sub-folders, so in this example the former would be exposed last and thus replacing the latter.
 :::
 
-### appendFolders <Badge type="info">0.4.0+</Badge>
+### appendFolders <Badge type="info" text="0.4.0"></Badge>
 
 When deeply searching for components Hitchy is [using the relative path name of every component's module for deriving the resulting component's name](../internals/components.md#derivation-of-component-names). This option is controlling whether names of containing sub-folders are prepended to files' base names in given order or appended to them in reverse order. 
 
@@ -345,9 +345,9 @@ After [loading plugin in discovery stage](../internals/bootstrap.md#loading-plug
 
 Due to sorting plugins for sequential processing either plugin has an index into that list which is exposed in this property mostly for testing purposes.
 
-### plugin.$config <Badge type="info">0.3.3+</Badge>
+### plugin.$config <Badge type="info" text="0.3.3"></Badge>
 
-When loading configuration files of a plugin a single object merged from information exported by either found file is exposed as part of plugin's API. The information is also merged with related configuration objects of all other plugins and the application itself into one [global configuration object](README.md#api-config-0-3-0).
+When loading configuration files of a plugin a single object merged from information exported by either found file is exposed as part of plugin's API. The information is also merged with related configuration objects of all other plugins and the application itself into one [global configuration object](README.md#api-config).
 
 ### plugin.onDiscovered()
 

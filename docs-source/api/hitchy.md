@@ -177,7 +177,7 @@ This option is picking different folder containing all available plugins in a **
 When using Hitchy's CLI the related parameter is called `--plugins`.
 :::
 
-### options.explicitPlugins <Badge type="info">0.4.0+</Badge>
+### options.explicitPlugins <Badge type="info" text="0.4.0"></Badge>
 
 This option is explicitly listing folders containing plugins and their local dependencies. 
 
@@ -187,9 +187,9 @@ In opposition to more commonly useful option [**pluginsFolder**](#options-plugin
 When using Hitchy's CLI the related parameter is called `--plugin`. It can be provided multiple times.
 :::
 
-### options.explicitPluginsOnly <Badge type="info">0.4.0+</Badge>
+### options.explicitPluginsOnly <Badge type="info" text="0.4.0"></Badge>
 
-This boolean option can be set to limit discovery of plugins to those folders listed explicitly using option [**explicitPlugins**](#options-explicitplugins-0-4-0).
+This boolean option can be set to limit discovery of plugins to those folders listed explicitly using option [**explicitPlugins**](#options-explicitplugins).
 
 :::tip CLI Parameter
 When using Hitchy's CLI the related parameter is called `--explicit-only`.
@@ -234,7 +234,7 @@ module.exports = function( options ) {
 };
 ```
 
-All files' exports are merged into one configuration object which is exposed at runtime as [`api.config`](#api-config-0-3-0) in modules complying with [common module pattern](#using-common-module-pattern) and as [`this.config`](#this-config-0-3-0) in request handlers.
+All files' exports are merged into one configuration object which is exposed at runtime as [`api.config`](#api-config) in modules complying with [common module pattern](#using-common-module-pattern) and as [`this.config`](#this-config) in request handlers.
 
 :::tip Rules For Naming Files
 A configuration file's name 
@@ -460,7 +460,7 @@ Hitchy's API can be divided into several sections to be described here.
 The following description assumes you know [how to gain access on Hitchy's API](#gaining-access) in either situation, thus referring to it using just `api`. 
 :::
 
-### api.config <Badge type="info">+0.3.0</Badge>
+### api.config <Badge type="info" text="0.3.0"></Badge>
 
 All configuration of every available plugin as well as the application itself is [loaded from Javascript files in either ones' **config** sub-folder](../internals/bootstrap.md#configuration) and merged into a single configuration object which is exposed here.
 
@@ -468,9 +468,9 @@ All configuration of every available plugin as well as the application itself is
 
 Configuration provided in `api.config` always includes options exported by available plugins. If you need to access the application's own configuration - which is merged from reading all Javascript files in application's sub-folder **config** - this basically hidden property can be used.
 
-This is the application's counterpart to either plugin's [exposure of its pure configuration](plugins.md#plugin-config-0-3-3).
+This is the application's counterpart to either plugin's [exposure of its pure configuration](plugins.md#plugin-config).
 
-### api.meta <Badge type="info">0.4.0+</Badge>
+### api.meta <Badge type="info" text="0.4.0"></Badge>
 
 This property is exposing application's meta information which is similar [meta information](plugins.md#meta-information) attached to every plugin. In both cases meta information can be considered another set of configuration. It can be distinguished, though, for
 
@@ -480,7 +480,7 @@ This property is exposing application's meta information which is similar [meta 
 
 * it is meant to control more technical aspects of processing a plugin or the application without supporting different behaviour per installation of same plugin or application.
 
-  Controlling the [order of plugin processing](plugins.md#dependencies) or the way of [deriving component names from their implementing files' names](plugins.md#appendfolders-0-4-0) isn't meant to be customized per installation.
+  Controlling the [order of plugin processing](plugins.md#dependencies) or the way of [deriving component names from their implementing files' names](plugins.md#appendfolders) isn't meant to be customized per installation.
 
 * it isn't polluting configuration object which is intended for more frequent use at runtime.
 
@@ -516,8 +516,8 @@ Application's meta information is read from two probable sources and merged into
 
 Data found in **hitchy.json** file is preferred over data found in **package.json**. Most [meta information elements supported for plugins](plugins.md#meta-information) are ignored in context of application except for these:
 
-* [`deepComponents`](plugins.md#deepcomponents-0-4-0)
-* [`appendFolders`](plugins.md#appendfolders-0-4-0)
+* [`deepComponents`](plugins.md#deepcomponents)
+* [`appendFolders`](plugins.md#appendfolders)
 
 ### api.folder
 
@@ -549,7 +549,7 @@ Hitchy's API gets sealed after bootstrap has finished to prevent intended or acc
 
 This property is excluded in particular to provide a common space multiple components can use for saving and sharing data that's exceeding the lifetime of a single request.
 
-### api.log
+### api.log()
 
 This function is a generator for logging facilities. It is invoked with the name of a logging facility and returns another function which can be used to actually generate log messages on behalf of either facility.
 
@@ -764,7 +764,7 @@ This object is provided for sharing volatile information between handlers involv
 
 [Hitchy's API](#api-elements) is provided in request context for simplified access.
 
-### this.config <Badge type="info">+0.3.0</Badge>
+### this.config <Badge type="info" text="0.3.0"></Badge>
 
 This property is an alias for simplified access on [`api.config`](#api-config) of Hitchy's API exposing current runtime configuration.
 
@@ -772,7 +772,7 @@ This property is an alias for simplified access on [`api.config`](#api-config) o
 
 This property is an alias for simplified access on [`api.runtime`](#api-runtime) of Hitchy's API exposing available components.
 
-### this.controllers <Badge type="info">+0.3.0</Badge>
+### this.controllers <Badge type="info" text="0.3.0"></Badge>
 
 This is another alias for simplifying access on collection of available controllers.
 
@@ -780,7 +780,7 @@ This is another alias for simplifying access on collection of available controll
 Using `this.controller` is supported as well.
 :::
 
-### this.policies <Badge type="info">+0.3.0</Badge>
+### this.policies <Badge type="info" text="0.3.0"></Badge>
 
 This alias is simplifying access on collection of available policies.
 
@@ -788,7 +788,7 @@ This alias is simplifying access on collection of available policies.
 Using `this.policy` is supported as well.
 :::
 
-### this.services <Badge type="info">+0.3.0</Badge>
+### this.services <Badge type="info" text="0.3.0"></Badge>
 
 This alias is simplifying access on collection of available services.
 
@@ -796,7 +796,7 @@ This alias is simplifying access on collection of available services.
 Using `this.service` is supported as well.
 :::
 
-### this.models <Badge type="info">+0.3.0</Badge>
+### this.models <Badge type="info" text="0.3.0"></Badge>
 
 This alias is simplifying access on collection of available models.
 
@@ -808,7 +808,7 @@ Using `this.model` is supported as well.
 
 This property is exposing the time of handling current request has started as number of milliseconds since midnight of January 1st, 1970.
 
-### this.context <Badge type="info">+0.3.0</Badge>
+### this.context <Badge type="info" text="0.3.0"></Badge>
 
 This property is a string naming the service hitchy is integrated with. Currently supported values are:
 
@@ -886,7 +886,7 @@ This method is caching any previously extracted body data in association with pr
 When providing custom function make sure to provide the same instance of that function to benefit from this caching. As an option assign a global body parser function in configuration as `config.bodyParser`.
 :::
 
-### `req.hitchy` <Badge type="info">0.2.0+</Badge>
+### `req.hitchy` <Badge type="info" text="0.2.0"></Badge>
 
 This property is exposing [Hitchy's API](#hitchys-api).
 
@@ -964,7 +964,7 @@ res.status( 400 ).set( "content-type", "text/json" ).send( { ... } );
 However, signatures of methods natively provided as part of [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) aren't adjusted.
 :::
 
-:::tip Preventing Response on HEAD Requests <Badge type="info">0.2.2+</Badge>
+:::tip Preventing Response on HEAD Requests <Badge type="info" text="0.2.2"></Badge>
 Requests using HTTP method HEAD must not provide a response. Disobeying this usually results in exceptions thrown e.g. on trying to send some JSON-formatted response.
 
 Hitchy is designed to detect any such request limiting capabilities of response manager's methods related to describing some actual content. That's why you don't need to take care of omitting response content in handlers supported HEAD requests as well.

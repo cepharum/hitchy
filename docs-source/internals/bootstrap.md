@@ -32,7 +32,7 @@ By default, Hitchy is starting at application's folder. There it is deeply searc
 
 It is possible to explicitly select different folder to start searching as described before using option [**pluginsFolder**](../api/README.md#options-pluginsfolder).
 
-It is possible to provide an explicit list of folders containing plugins and their dependencies to be discovered using option [**explicitPlugins**](../api/README.md#options-explicitplugins-0-4-0). Plugins discovery can be limited to those explicitly provided plugins using option [**explicitPluginsOnly**](../api/README.md#options-explicitpluginsonly-0-4-0).
+It is possible to provide an explicit list of folders containing plugins and their dependencies to be discovered using option [**explicitPlugins**](../api/README.md#options-explicitplugins). Plugins discovery can be limited to those explicitly provided plugins using option [**explicitPluginsOnly**](../api/README.md#options-explicitpluginsonly).
 :::
 
 ### Loading Plugins
@@ -97,7 +97,7 @@ Plugins are notified in arbitrary order here. All succeeding notifications are p
 Next, plugins with their static roles dropped as described before are dropped. They won't make it into Hitchy's API and thus won't be available at runtime directly, but still might be used internally by some of the other plugins.
 
 :::tip
-Even though explicitly selecting additional folders to contain plugins using option [**explicitPlugins**](../api/README.md#options-explicitplugins-0-4-0) either of these plugins may be dropped for claiming a role neither application nor any of its plugins depend on. You may claim roles explicitly using option [**dependencies**](../api/README.md#options-dependencies).
+Even though explicitly selecting additional folders to contain plugins using option [**explicitPlugins**](../api/README.md#options-explicitplugins) either of these plugins may be dropped for claiming a role neither application nor any of its plugins depend on. You may claim roles explicitly using option [**dependencies**](../api/README.md#options-dependencies).
 :::
 
 ### Sorting Plugins
@@ -130,7 +130,7 @@ Components of every plugin are processed before processing components of applica
 In either case components are processed [type](architecture-basics.md#components) by type. For every component another Javascript file is expected in either type of component's sub-folder **api/controllers**, **api/policies** etc. 
 
 :::tip
-Starting with v0.3.3 Hitchy is deeply searching in either folder. Providing special meta information [per plugin](../api/plugins.md#deepcomponents-badge-0-4-0) or [application](components.md#exposure-at-runtime) the previous behaviour can be restored for either plugin or application.
+Starting with v0.3.3 Hitchy is deeply searching in either folder. Providing special meta information [per plugin](../api/plugins.md#deepcomponents-badge) or [application](components.md#exposure-at-runtime) the previous behaviour can be restored for either plugin or application.
 :::
 
 Every found Javascript file is loaded to export the component's API. This might be any kind of data. Usually, it is a class or an object of functions. It is exposed as part of [Hitchy's API](../api/README.md#api-runtime) at runtime using a [name that is derived from found file's name](components.md#derivation-of-component-names). 

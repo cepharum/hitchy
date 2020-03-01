@@ -161,9 +161,9 @@ Thus the component implemented in assumed file would be exposed as `api.runtime.
 
 Starting with version 0.3.3 every plugin as well as the application may customize the way Hitchy is discovering and exposing their individual components.
 
-* A plugin may use options [`deepComponents`](../api/plugins.md#deepcomponents-0-4-0) and [`appendFolder`](../api/plugins.md#appendfolders-0-4-0) of its [meta information](../api/plugins.md#meta-information).
+* A plugin may use options [`deepComponents`](../api/plugins.md#deepcomponents) and [`appendFolder`](../api/plugins.md#appendfolders) of its [meta information](../api/plugins.md#meta-information).
 
-* The application can provide the same options as part of [its own meta information](../api/README.md#api-meta-0-4-0).
+* The application can provide the same options as part of [its own meta information](../api/README.md#api-meta).
 
 Starting with version 0.4.0 this support for customizing exposure has been moved from [configuration](../api/README.md#configuration) to meta information.
 
@@ -190,7 +190,7 @@ function someRequestHandler( req, res ) {
 }
 ```
 
-Basically, [`req.hitchy`](../api/README.md#req-hitchy-0-2-0) and [`this.api`](../api/README.md#this-api) are both referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
+Basically, [`req.hitchy`](../api/README.md#req-hitchy) and [`this.api`](../api/README.md#this-api) are both referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
 
 Last but not least aliases are provided in context of request handlers for accessing either type of component more conveniently:
 
