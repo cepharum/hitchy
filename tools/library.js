@@ -98,8 +98,21 @@ function _toolLibraryCreateAPI( options = {} ) {
 		service: { value: _api.runtime.services },
 	} );
 
+	_api.onShutdown = null;
+
 	_api.crash = cause => { _api.emit( "crash", cause ); };
-	_api.shutdown = () => { _api.emit( "shutdown" ); };
+	_api.shutdown = () => {
+		if ( _api.onShutdown == null ) {
+			_api.onShutdown = new Promise( ( resolve, reject ) => {
+				_api.once( "close", resolve );
+				_api.once( "error", reject );
+			} );
+
+			_api.emit( "shutdown" );
+		}
+
+		return _api.onShutdown;
+	};
 
 	return _api;
 }

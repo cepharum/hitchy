@@ -79,35 +79,7 @@ module.exports = {
 		switch ( args.injector || process.env.HITCHY_MODE || "node" ) {
 			case "connect" :
 			case "express" :
-				// make sure express is installed, at least temporarily
-				promise = new Promise( ( resolve, reject ) => {
-					try {
-						require( "express" );
-						resolve();
-						return;
-					} catch ( error ) {
-						if ( error.code !== "MODULE_NOT_FOUND" ) {
-							reject( error );
-							return;
-						}
-					}
-
-					console.log( "`express` is missing, thus will be installed now" );
-
-					// need to install expressjs first
-					require( "child_process" ).exec( "npm install --no-save express", error => {
-						if ( error ) {
-							reject( error );
-						} else {
-							try {
-								require( "express" );
-								resolve();
-							} catch ( _error ) {
-								reject( _error );
-							}
-						}
-					} );
-				} );
+				promise = module.exports.checkExpress();
 				break;
 
 			default :
@@ -172,6 +144,13 @@ module.exports = {
 		ctx.hitchy = null;
 		ctx.server = null;
 
+		if ( options._logger ) {
+			ctx.logger = console.error;
+			ctx.logged = [];
+
+			console.error = typeof options._logger === "function" ? options._logger : ( ...chunks ) => { ctx.logged.push( chunks ); };
+		}
+
 		return () => module.exports.startServer( options, args )
 			.then( ( { hitchy, server } ) => {
 				ctx.hitchy = hitchy;
@@ -197,11 +176,52 @@ module.exports = {
 	 * @returns {function(): Promise} function for use with test runner to tear down Hitchy after testing
 	 */
 	after( ctx ) {
-		return () => ( ctx.hitchy ? ctx.hitchy.api.shutdown() : null );
+		return () => ( ctx.hitchy ? ctx.hitchy.api.shutdown() : Promise.resolve() )
+			.finally( () => {
+				if ( ctx.logger ) {
+					console.error = ctx.logger;
+				}
+			} );
 	},
 
 	/** @borrows request as request */
 	request,
+
+	/**
+	 * Assures [express](https://expressjs.com/) to be available.
+	 *
+	 * @returns {Promise} promises express being installed
+	 */
+	checkExpress() {
+		return new Promise( ( resolve, reject ) => {
+			try {
+				require( "express" );
+				resolve();
+				return;
+			} catch ( error ) {
+				if ( error.code !== "MODULE_NOT_FOUND" ) {
+					reject( error );
+					return;
+				}
+			}
+
+			console.log( "`express` is missing, thus will be installed now" );
+
+			// need to install expressjs first
+			require( "child_process" ).exec( "npm install --no-save express", error => {
+				if ( error ) {
+					reject( error );
+				} else {
+					try {
+						require( "express" );
+						resolve();
+					} catch ( _error ) {
+						reject( _error );
+					}
+				}
+			} );
+		} );
+	}
 };
 
 /**
