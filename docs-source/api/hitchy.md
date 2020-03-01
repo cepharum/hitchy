@@ -848,7 +848,7 @@ function( req, res ) {
 the _request helpers_ are available as part of object provided as `req`.
 :::
 
-### `req.accept`
+### req.accept
 
 A properly sorted list of MIME type ranges is provided in this property according to any current request's [Accept](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept) header field. There is always a list of MIME ranges and either item is provided without optional parameters.
 
@@ -856,7 +856,7 @@ A properly sorted list of MIME type ranges is provided in this property accordin
 When handling request with header `Accept: text/*;q=0.5, text/json` this property will expose sorted list of given MIME ranges `[ "text/json", "text/*" ]`.
 :::
 
-### `req.cookies`
+### req.cookies
 
 :::warning Requires Plugin
 This property requires installation of plugin [hitchy-plugin-cookies](https://www.npmjs.com/package/hitchy-plugin-cookies) as a dependency of your project.
@@ -864,7 +864,7 @@ This property requires installation of plugin [hitchy-plugin-cookies](https://ww
 
 This property exposes object containing all cookies transmitted by client in current request.
 
-### `req.fetchBody( parser )`
+### req.fetchBody( parser )
 
 This method promises request's body. The optional parameter can be used to control parser used for extracting contained information.
 
@@ -886,11 +886,11 @@ This method is caching any previously extracted body data in association with pr
 When providing custom function make sure to provide the same instance of that function to benefit from this caching. As an option assign a global body parser function in configuration as `config.bodyParser`.
 :::
 
-### `req.hitchy` <Badge type="info" text="0.2.0"></Badge>
+### req.hitchy <Badge type="info" text="0.2.0"></Badge>
 
 This property is exposing [Hitchy's API](#hitchys-api).
 
-### `req.params`
+### req.params
 
 This object is populated with named segments of currently dispatched route. 
 
@@ -905,7 +905,7 @@ If your handler is bound to handle a route like `GET /api/:model/:item` and clie
 ```
 :::
 
-### `req.path`
+### req.path
 
 This property conveniently provides current request's path which is the requested URL without any appended query string or hash.
 
@@ -913,7 +913,7 @@ This property conveniently provides current request's path which is the requeste
 On requesting `/some/path/name?with=arg` this property will provide `/some/path/name`.
 :::
 
-### `req.query`
+### req.query
 
 This property is an object exposing all query parameters.
 
@@ -928,7 +928,7 @@ On requesting `/some/path/name?with=arg&another=one` this property will provide 
 ```
 :::
 
-### `req.session`
+### req.session
 
 :::warning Requires Plugin
 This property requires installation of plugin [hitchy-plugin-session](https://www.npmjs.com/package/hitchy-plugin-session) as a dependency of your project.
@@ -987,7 +987,7 @@ the _response helpers_ are available as part of object provided as `res`.
 :::
 
 
-### `res.format( handlers )`
+### res.format( handlers )
 
 This method provides different handlers for generating response with each handler bound to one particular type or format of response data. According to current request's [Accept](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept) header the best matching handler is picked to eventually create a response.
 
@@ -1015,7 +1015,7 @@ res.format( {
 the response is provided as JSON when requesting with `Accept: text/json` and as an HTML document when requesting with `Accept: text/html`.
 :::
 
-### `res.json( data )`
+### res.json( data )
 
 This method generates a JSON-formatted response and sends it to the client. It is ending current response implicitly.
 
@@ -1025,7 +1025,7 @@ res.json( { some: "data" } );
 ```
 :::
 
-### `res.redirect( statusCode, url )`
+### res.redirect( statusCode, url )
 
 Use this helper to instantly generate and send response requesting user to fetch different URL for some desired information.
 
@@ -1035,7 +1035,7 @@ res.redirect( 301, "https://example.com/" );
 ```
 :::
 
-### `res.send( content )`
+### res.send( content )
 
 This method is sending provided content to the client implicitly ending response to current request. The response's type of content depends on type of value provided as `content` here:
 
@@ -1055,7 +1055,7 @@ res.send( Buffer.from( "..." ) );
 ```
 :::
 
-### `res.set( name, value )`
+### res.set( name, value )
 
 Adjusts single field of response header. Internally this function is invoking `res.setHeader()`.
 
@@ -1069,7 +1069,7 @@ res.set( "x-api-level", "3" );
 ```
 :::
 
-### `res.set( fields )`
+### res.set( fields )
 
 Adjusts multiple fields of response header at once. Internally this function is invoking `res.setHeader()` for every listed header field.
 
@@ -1082,7 +1082,7 @@ res.set( {
 ```
 :::
 
-### `res.status( code )`
+### res.status( code )
 
 Adjusts HTTP response status code.
 
@@ -1092,7 +1092,7 @@ res.status( 404 ).json( { error: "no such data" } )
 ```
 :::
 
-### `res.type( mime )`
+### res.type( mime )
 
 Adjusts `content-type` header field of response supporting several aliases for simplified selection of response type.
 
