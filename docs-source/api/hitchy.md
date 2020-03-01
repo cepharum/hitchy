@@ -4,6 +4,11 @@ In this topic you learn [how to access Hitchy's API](#gaining-access) in compone
 
 Regarding request handling, there is an introduction of special [context for every request handler](#request-context) and additional properties and methods provided as part of [request](#request-helpers) and [response](#response-helpers) descriptors provided as arguments there.
 
+
+:::tip Event Support
+Starting with v0.5.0 Hitchy's API is derived from [EventEmitter](https://nodejs.org/dist/latest/docs/api/events.html#events_class_eventemitter) and thus capable of emitting and dispatching events accordingly.
+:::
+
 ## Gaining Access
 
 In a fully running application Hitchy's API is available
@@ -580,6 +585,25 @@ Facility names should represent a hierarchy of facilities by extending the name 
 
 Sticking to this pattern is beneficial on using asterisk `*` in logging control.
 ::: 
+
+### api.shutdown() <Badge type="info" text="0.5.0"></Badge>
+
+**Signature:** `api.shutdown() : Promise`
+
+Application may intentionally shut down itself by invoking this function. It is returning a promise which is controlled by events emitted on API. This promise is
+
+* fulfilled on next [close](#close) event and
+* rejected on next [error](#error) event.
+
+### api.crash() <Badge type="info" text="0.5.0"></Badge>
+
+**Signature:** `api.crash( Error ) : void`
+
+Using this function an application may _crash_ itself by intention. The provided error is logged before shutting down application and its request listener.
+
+This function may be useful when running a Hitchy application in a container. Consider your application has entered some failed state it might want to recover from the easy way by simply restarting on purpose. This is possible by invoking this function.
+
+This function is different from [api.shutdown()](#api-shutdown) by writing provided error to log file and exit process with non-zero status code eventually.
 
 ### api.utility.file
 
