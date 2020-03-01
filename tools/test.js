@@ -261,7 +261,7 @@ function request( method, url, data = null, headers = {} ) {
 		let body = data;
 		if ( typeof body !== "string" && !Buffer.isBuffer( body ) && body != null ) {
 			body = JSON.stringify( body );
-			headers["content-type"] = "application/json";
+			headers["content-type"] = "application/json; charset=UTF-8";
 		}
 
 		Object.keys( headers || {} )
@@ -271,7 +271,7 @@ function request( method, url, data = null, headers = {} ) {
 
 		req.agent = false;
 
-		const handle = Http.request( req, ( response ) => {
+		const handle = Http.request( req, response => {
 			const buffers = [];
 
 			response.on( "data", chunk => buffers.push( chunk ) );

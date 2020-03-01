@@ -102,7 +102,7 @@ module.exports = function() {
 				function sendRequest() {
 					const hasContentType = Object.keys( headers ).some( name => name.toLowerCase() === "content-type" );
 					if ( !hasContentType && body && body.constructor === Object ) {
-						headers["content-type"] = "application/json";
+						headers["content-type"] = "application/json; charset=UTF-8";
 					}
 
 					const protocolName = _url.protocol === "https:" ? "https" : "http";

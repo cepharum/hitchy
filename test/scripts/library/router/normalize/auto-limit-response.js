@@ -56,7 +56,7 @@ describe( "Serving project w/ controller using response API", () => {
 							res.should.be.json();
 							res.data.should.be.Object().which.has.property( "success" ).which.is.true();
 						} else if ( type === "text" ) {
-							res.headers["content-type"].should.be.equal( "text/plain" );
+							res.headers["content-type"].should.match( /^text\/plain\b/ );
 							res.text.should.be.String().which.is.equal( "success" );
 						} else if ( type === "binary" ) {
 							res.body.should.be.instanceOf( Buffer );
