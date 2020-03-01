@@ -144,29 +144,31 @@ module.exports = {
 		ctx.hitchy = null;
 		ctx.server = null;
 
-		if ( options._logger ) {
-			ctx.logger = console.error;
-			ctx.logged = [];
+		return () => {
+			if ( options._logger ) {
+				ctx.logger = console.error;
+				ctx.logged = [];
 
-			console.error = typeof options._logger === "function" ? options._logger : ( ...chunks ) => { ctx.logged.push( chunks ); };
-		}
+				console.error = typeof options._logger === "function" ? options._logger : ( ...chunks ) => { ctx.logged.push( chunks ); };
+			}
 
-		return () => module.exports.startServer( options, args )
-			.then( ( { hitchy, server } ) => {
-				ctx.hitchy = hitchy;
-				ctx.server = server;
+			return module.exports.startServer( options, args )
+				.then( ( { hitchy, server } ) => {
+					ctx.hitchy = hitchy;
+					ctx.server = server;
 
-				ctx.get = request.bind( ctx, "GET" );
-				ctx.post = request.bind( ctx, "POST" );
-				ctx.put = request.bind( ctx, "PUT" );
-				ctx.patch = request.bind( ctx, "PATCH" );
-				ctx.delete = request.bind( ctx, "DELETE" );
-				ctx.head = request.bind( ctx, "HEAD" );
-				ctx.options = request.bind( ctx, "OPTIONS" );
-				ctx.trace = request.bind( ctx, "TRACE" );
+					ctx.get = request.bind( ctx, "GET" );
+					ctx.post = request.bind( ctx, "POST" );
+					ctx.put = request.bind( ctx, "PUT" );
+					ctx.patch = request.bind( ctx, "PATCH" );
+					ctx.delete = request.bind( ctx, "DELETE" );
+					ctx.head = request.bind( ctx, "HEAD" );
+					ctx.options = request.bind( ctx, "OPTIONS" );
+					ctx.trace = request.bind( ctx, "TRACE" );
 
-				ctx.request = request.bind( ctx );
-			} );
+					ctx.request = request.bind( ctx );
+				} );
+		};
 	},
 
 	/**
@@ -180,6 +182,7 @@ module.exports = {
 			.finally( () => {
 				if ( ctx.logger ) {
 					console.error = ctx.logger;
+					ctx.logger = null;
 				}
 			} );
 	},
