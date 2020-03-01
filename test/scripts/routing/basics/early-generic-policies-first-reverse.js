@@ -6,29 +6,27 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../../tools/index" ).test;
-const Hitchy = require( "../../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project in basic-routing-core w/ declaring lists of policies with decreasing specificity", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project in basic-routing-core w/ declaring lists of policies with decreasing specificity", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
-	test( "passes early policies in proper order from generic policies to specific ones", function() {
-		return hitchy.onStarted.then( () => Test.get( "/prefix/check" )
-			.then( function( response ) {
+	it( "passes early policies in proper order from generic policies to specific ones", function() {
+		return ctx.get( "/prefix/check" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
-			} ) );
+			} );
 	} );
 } );
 

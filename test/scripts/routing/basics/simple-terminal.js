@@ -6,26 +6,24 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../../tools/index" ).test;
-const Hitchy = require( "../../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project in basic-routing-core w/ most simple terminal route", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project in basic-routing-core w/ most simple terminal route", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
-	test( "GETs /instant", function() {
-		return hitchy.onStarted.then( () => Test.get( "/instant" )
-			.then( function( response ) {
+	it( "GETs /instant", function() {
+		return ctx.get( "/instant" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.method.should.equal( "GET" );
@@ -33,12 +31,12 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 				response.data.query.should.be.empty();
 				response.data.args.should.be.empty();
 				response.data.type.should.be.equal( "instant" );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /partial/deferred", function() {
-		return hitchy.onStarted.then( () => Test.get( "/partial/deferred" )
-			.then( function( response ) {
+	it( "GETs /partial/deferred", function() {
+		return ctx.get( "/partial/deferred" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.method.should.equal( "GET" );
@@ -46,12 +44,12 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 				response.data.query.should.be.empty();
 				response.data.args.should.be.empty();
 				response.data.type.should.be.equal( "deferred" );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /full/deferred", function() {
-		return hitchy.onStarted.then( () => Test.get( "/full/deferred" )
-			.then( function( response ) {
+	it( "GETs /full/deferred", function() {
+		return ctx.get( "/full/deferred" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.method.should.equal( "GET" );
@@ -59,7 +57,7 @@ suite( "Serving project in basic-routing-core w/ most simple terminal route", fu
 				response.data.query.should.be.empty();
 				response.data.args.should.be.empty();
 				response.data.type.should.be.equal( "deferred" );
-			} ) );
+			} );
 	} );
 } );
 

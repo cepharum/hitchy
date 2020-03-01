@@ -6,35 +6,33 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../../tools/index" ).test;
-const Hitchy = require( "../../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project in basic-routing-core w/ declaring lists of policies with decreasing specificity", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project in basic-routing-core w/ declaring lists of policies with decreasing specificity", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
-	test( "passes late policies in proper order from specific policies to generic ones", function() {
+	it( "passes late policies in proper order from specific policies to generic ones", function() {
 		// request once to trigger some processing in late policies
-		return hitchy.onStarted.then( () => Test.get( "/prefix/check", null, {
+		return ctx.get( "/prefix/check", null, {
 			"x-start": 10,
-		} ) )
+		} )
 			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.success.should.be.true();
 
 				// request again to get the result of late policies processing previous request
-				return Test.get( "/prefix/check", null, {
+				return ctx.get( "/prefix/check", null, {
 					"x-start": 10,
 				} );
 			} )

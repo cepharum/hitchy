@@ -41,14 +41,14 @@ const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
-const { suite, test } = require( "mocha" );
+const { describe, it } = require( "mocha" );
 
 require( "should" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Library.Utility", function() {
-	test( "exports collection of submodules", function() {
+describe( "Library.Utility", function() {
+	it( "exports collection of submodules", function() {
 		return ApiMockUp.then( function( { Utility, FileUtility, IntroduceUtility, LoggerUtility, ParserUtility, PromiseUtility } ) {
 			// NOTE This test compares provision of APIs using different ways
 			//      for accessing parts of it ... due to CMP providing code

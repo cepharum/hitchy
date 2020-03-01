@@ -1,5 +1,10 @@
 "use strict";
 
+const options = {
+	projectFolder: "test/projects/empty",
+	// debug: true,
+};
+
 const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
@@ -12,11 +17,8 @@ const Test = require( "../../../tools" ).test;
 describe( "Hitchy node running empty project folder", () => {
 	const ctx = {};
 
+	before( Test.before( ctx, options ) );
 	after( Test.after( ctx ) );
-	before( Test.before( ctx, {
-		projectFolder: "test/projects/empty",
-		// debug: true,
-	} ) );
 
 	it( "has access on Hitchy API", () => {
 		ctx.hitchy.api.should.be.ok();

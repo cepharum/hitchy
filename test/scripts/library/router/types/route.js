@@ -49,7 +49,7 @@ const modules = {
 	RouteModule: "lib/router/types/route",
 };
 
-const { suite, test } = require( "mocha" );
+const { describe, it } = require( "mocha" );
 
 const Should = require( "should" );
 require( "should-http" );
@@ -58,8 +58,8 @@ const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, mod
 
 // ----------------------------------------------------------------------------
 
-suite( "Library.Router.Types.Route", function() {
-	test( "is exposed properly", function() {
+describe( "Library.Router.Types.Route", function() {
+	it( "is exposed properly", function() {
 		return ApiMockUp.then( function( { RouterModule, TypesModule, RouteModule } ) {
 			Should.exist( RouterModule );
 			Should.exist( RouterModule.types );
@@ -78,32 +78,32 @@ suite( "Library.Router.Types.Route", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.Route#Route", function() {
-	test( "exists", function() {
+describe( "Library.Router.Types.Route#Route", function() {
+	it( "exists", function() {
 		return ApiMockUp.then( function( { RouteModule } ) {
 			RouteModule.Route.should.be.ok().and.should.be.Object();
 		} );
 	} );
 
-	test( "can be instantiated", function() {
+	it( "can be instantiated", function() {
 		return ApiMockUp.then( function( { API, RouteModule } ) {
 			( () => { new RouteModule.Route( "/", () => {}, API ); } ).should.not.throw();
 		} );
 	} );
 
-	test( "provides static method for parsing routing source definitions", function() {
+	it( "provides static method for parsing routing source definitions", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource.should.be.Function();
 		} );
 	} );
 
-	test( "provides static method for parsing routing target definitions", function() {
+	it( "provides static method for parsing routing target definitions", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseTarget.should.be.Function();
 		} );
 	} );
 
-	test( "exposes pattern for matching and normalizing names of components containing route targets", function() {
+	it( "exposes pattern for matching and normalizing names of components containing route targets", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.tailPattern.should.be.instanceof( RegExp );
 
@@ -112,14 +112,14 @@ suite( "Library.Router.Types.Route#Route", function() {
 		} );
 	} );
 
-	test( "exposes singular name of collection to contain code addressable by routes", function() {
+	it( "exposes singular name of collection to contain code addressable by routes", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.collectionSingularName.should.be.String();
 			Route.collectionSingularName.should.be.empty();
 		} );
 	} );
 
-	test( "exposes plural name of collection to contain code addressable by routes", function() {
+	it( "exposes plural name of collection to contain code addressable by routes", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.collectionPluralName.should.be.String();
 			Route.collectionPluralName.should.be.empty();
@@ -127,14 +127,14 @@ suite( "Library.Router.Types.Route#Route", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.Route#PolicyRoute", function() {
-	test( "can be instantiated", function() {
+describe( "Library.Router.Types.Route#PolicyRoute", function() {
+	it( "can be instantiated", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
 			( () => { new PolicyRoute( "/", () => {}, API ); } ).should.not.throw();
 		} );
 	} );
 
-	test( "is class inheriting from Route", function() {
+	it( "is class inheriting from Route", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute, Route } } ) {
 			const route = new PolicyRoute( "/", () => {}, API );
 			route.should.be.instanceof( PolicyRoute );
@@ -142,14 +142,14 @@ suite( "Library.Router.Types.Route#PolicyRoute", function() {
 		} );
 	} );
 
-	test( "does not use custom parser function", function() {
+	it( "does not use custom parser function", function() {
 		return ApiMockUp.then( function( { RouteModule: { PolicyRoute, Route } } ) {
 			PolicyRoute.parseSource.should.be.equal( Route.parseSource );
 			PolicyRoute.parseTarget.should.be.equal( Route.parseTarget );
 		} );
 	} );
 
-	test( "exposes pattern for matching and normalizing names of components containing route targets", function() {
+	it( "exposes pattern for matching and normalizing names of components containing route targets", function() {
 		return ApiMockUp.then( function( { RouteModule: { PolicyRoute } } ) {
 			PolicyRoute.tailPattern.should.be.instanceof( RegExp );
 
@@ -158,14 +158,14 @@ suite( "Library.Router.Types.Route#PolicyRoute", function() {
 		} );
 	} );
 
-	test( "exposes singular name of collection to contain code addressable by routes", function() {
+	it( "exposes singular name of collection to contain code addressable by routes", function() {
 		return ApiMockUp.then( function( { RouteModule: { PolicyRoute } } ) {
 			PolicyRoute.collectionSingularName.should.be.String();
 			PolicyRoute.collectionSingularName.should.equal( "policy" );
 		} );
 	} );
 
-	test( "exposes plural name of collection to contain code addressable by routes", function() {
+	it( "exposes plural name of collection to contain code addressable by routes", function() {
 		return ApiMockUp.then( function( { RouteModule: { PolicyRoute } } ) {
 			PolicyRoute.collectionPluralName.should.be.String();
 			PolicyRoute.collectionPluralName.should.equal( "policies" );
@@ -173,14 +173,14 @@ suite( "Library.Router.Types.Route#PolicyRoute", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.Route#TerminalRoute", function() {
-	test( "can be instantiated", function() {
+describe( "Library.Router.Types.Route#TerminalRoute", function() {
+	it( "can be instantiated", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
 			( () => { new TerminalRoute( "/", () => {}, API ); } ).should.not.throw();
 		} );
 	} );
 
-	test( "is class inheriting from Route", function() {
+	it( "is class inheriting from Route", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute, Route } } ) {
 			const route = new TerminalRoute( "/", () => {}, API );
 			route.should.be.instanceof( TerminalRoute );
@@ -188,14 +188,14 @@ suite( "Library.Router.Types.Route#TerminalRoute", function() {
 		} );
 	} );
 
-	test( "does not use custom parser function", function() {
+	it( "does not use custom parser function", function() {
 		return ApiMockUp.then( function( { RouteModule: { TerminalRoute, Route } } ) {
 			TerminalRoute.parseSource.should.be.equal( Route.parseSource );
 			TerminalRoute.parseTarget.should.be.equal( Route.parseTarget );
 		} );
 	} );
 
-	test( "exposes pattern for matching and normalizing names of components containing route targets", function() {
+	it( "exposes pattern for matching and normalizing names of components containing route targets", function() {
 		return ApiMockUp.then( function( { RouteModule: { TerminalRoute } } ) {
 			TerminalRoute.tailPattern.should.be.instanceof( RegExp );
 
@@ -204,14 +204,14 @@ suite( "Library.Router.Types.Route#TerminalRoute", function() {
 		} );
 	} );
 
-	test( "exposes singular name of collection to contain code addressable by routes", function() {
+	it( "exposes singular name of collection to contain code addressable by routes", function() {
 		return ApiMockUp.then( function( { RouteModule: { TerminalRoute } } ) {
 			TerminalRoute.collectionSingularName.should.be.String();
 			TerminalRoute.collectionSingularName.should.equal( "controller" );
 		} );
 	} );
 
-	test( "exposes plural name of collection to contain code addressable by routes", function() {
+	it( "exposes plural name of collection to contain code addressable by routes", function() {
 		return ApiMockUp.then( function( { RouteModule: { TerminalRoute } } ) {
 			TerminalRoute.collectionPluralName.should.be.String();
 			TerminalRoute.collectionPluralName.should.equal( "controllers" );
@@ -219,8 +219,8 @@ suite( "Library.Router.Types.Route#TerminalRoute", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.Route.Route#parseSource", function() {
-	test( "rejects invalid types of values for defining source of routing", function() {
+describe( "Library.Router.Types.Route.Route#parseSource", function() {
+	it( "rejects invalid types of values for defining source of routing", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource.bind( Route ).should.throw();
 			Route.parseSource.bind( Route, null ).should.throw();
@@ -234,7 +234,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "accepts well-formed strings for defining source of routing", function() {
+	it( "accepts well-formed strings for defining source of routing", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource.bind( Route, "" ).should.throw();
 
@@ -243,7 +243,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "accepts objects containing certaing properties for defining source of routing", function() {
+	it( "accepts objects containing certaing properties for defining source of routing", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource.bind( Route, {} ).should.throw();
 			Route.parseSource.bind( Route, { method: "GET", path: "/" } ).should.throw();
@@ -254,7 +254,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "provides all information on parsed source of defined route", function() {
+	it( "provides all information on parsed source of defined route", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const source = Route.parseSource( "/" );
 
@@ -269,7 +269,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "provides uppercase name of HTTP method route is bound to", function() {
+	it( "provides uppercase name of HTTP method route is bound to", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const tests = {
 				"/": "ALL",
@@ -291,7 +291,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "maps defined HTTP method * to ALL", function() {
+	it( "maps defined HTTP method * to ALL", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const tests = {
 				"* /": "ALL",
@@ -308,7 +308,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "rejects definitions declaring invalid HTTP method", function() {
+	it( "rejects definitions declaring invalid HTTP method", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const tests = [ "+", "-", ".", "1", "23", "A1", "ANY_TYPE", "-LESS" ];
 
@@ -318,7 +318,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "accepts valid pathes", function() {
+	it( "accepts valid pathes", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const pathes = [
 				// w/o parameters and globbing
@@ -333,7 +333,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "rejects invalid pathes", function() {
+	it( "rejects invalid pathes", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const pathes = [
 				// w/o parameters and globbing
@@ -348,7 +348,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "extract static prefix from route's declared path", function() {
+	it( "extract static prefix from route's declared path", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource( "/" ).prefix.should.equal( "/" );
 			Route.parseSource( "/test" ).prefix.should.equal( "/test" );
@@ -363,7 +363,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "extracts ordered list of parameter names used in path declaration", function() {
+	it( "extracts ordered list of parameter names used in path declaration", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			Route.parseSource( "/" ).parameters.should.have.length( 0 );
 			Route.parseSource( "/test" ).parameters.should.have.length( 0 );
@@ -400,7 +400,7 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 		} );
 	} );
 
-	test( "extracts ordered list positional parameters defined as sub-matches in path declaration", function() {
+	it( "extracts ordered list positional parameters defined as sub-matches in path declaration", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			let parameters = Route.parseSource( "/test/more/(var)" ).parameters;
 			parameters.should.have.length( 1 );
@@ -435,8 +435,8 @@ suite( "Library.Router.Types.Route.Route#parseSource", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.Route.Route#parseTarget", function() {
-	test( "rejects any target definition w/o API as context of route", function() {
+describe( "Library.Router.Types.Route.Route#parseTarget", function() {
+	it( "rejects any target definition w/o API as context of route", function() {
 		return ApiMockUp.then( function( { RouteModule: { PolicyRoute, Route } } ) {
 			Route.parseTarget.bind( Route ).should.throw();
 			Route.parseTarget.bind( Route, null ).should.throw();
@@ -471,7 +471,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "rejects invalid types of values for defining target of routing", function() {
+	it( "rejects invalid types of values for defining target of routing", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			Route.parseTarget.bind( Route, null, API ).should.throw();
 			Route.parseTarget.bind( Route, undefined, API ).should.throw();
@@ -486,7 +486,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "accepts policy target definitions as string", function() {
+	it( "accepts policy target definitions as string", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
 			let target = PolicyRoute.parseTarget( "Filter::myImplementation", API );
 			Should.exist( target );
@@ -505,7 +505,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "rejects multiple policy target definitions provided as array (even though supporting lists of targets per policy route)", function() {
+	it( "rejects multiple policy target definitions provided as array (even though supporting lists of targets per policy route)", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
 			PolicyRoute.parseTarget.bind( PolicyRoute, [], API ).should.throw();
 			PolicyRoute.parseTarget.bind( PolicyRoute, [function() {}], API ).should.throw();
@@ -518,7 +518,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "rejects multiple route target definitions provided as array", function() {
+	it( "rejects multiple route target definitions provided as array", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			Route.parseTarget.bind( Route, [], API ).should.throw();
 			Route.parseTarget.bind( Route, [function() {}], API ).should.throw();
@@ -531,7 +531,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "rejects policy target definitions addressing actions in wrong collection", function() {
+	it( "rejects policy target definitions addressing actions in wrong collection", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute } } ) {
 			let target = PolicyRoute.parseTarget( "Custom::myHandler", API );
 			Should.exist( target );
@@ -550,7 +550,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "accepts terminal target definitions as string", function() {
+	it( "accepts terminal target definitions as string", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
 			let target = TerminalRoute.parseTarget( "Custom::myHandler", API );
 			Should.exist( target );
@@ -569,7 +569,7 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 		} );
 	} );
 
-	test( "rejects policy target definitions addressing actions in wrong collection", function() {
+	it( "rejects policy target definitions addressing actions in wrong collection", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
 			let target = TerminalRoute.parseTarget( "Filter::myImplementation", API );
 			Should.exist( target );
@@ -589,8 +589,8 @@ suite( "Library.Router.Types.Route.Route#parseTarget", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.Route.Route#generateExamples", function() {
-	test( "provides given 'pattern' as example on a route bound to fully static path", function() {
+describe( "Library.Router.Types.Route.Route#generateExamples", function() {
+	it( "provides given 'pattern' as example on a route bound to fully static path", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			let path = "/";
 			let route = new Route( path, () => {}, API );
@@ -608,7 +608,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example on a route bound to path including single mandatory named parameter", function() {
+	it( "generates single example on a route bound to path including single mandatory named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param/more-static";
 			const route = new Route( path, () => {}, API );
@@ -622,7 +622,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example on a route bound to path including multiple mandatory named parameter", function() {
+	it( "generates single example on a route bound to path including multiple mandatory named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param/:info/:id/more-static";
 			const route = new Route( path, () => {}, API );
@@ -636,7 +636,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates two examples on a route bound to path including single optional named parameter", function() {
+	it( "generates two examples on a route bound to path including single optional named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param?/more-static";
 			const route = new Route( path, () => {}, API );
@@ -655,7 +655,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example on a route bound to path including single optional named parameter due to providing custom value", function() {
+	it( "generates single example on a route bound to path including single optional named parameter due to providing custom value", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param?/more-static";
 			const route = new Route( path, () => {}, API );
@@ -669,7 +669,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "requires provision of custom value matching name of parameter explicitly", function() {
+	it( "requires provision of custom value matching name of parameter explicitly", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param?/:item?/more-static";
 			const route = new Route( path, () => {}, API );
@@ -688,7 +688,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates three examples with up to three elements per repeatable mandatory named parameter", function() {
+	it( "generates three examples with up to three elements per repeatable mandatory named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param+/more-static";
 			const route = new Route( path, () => {}, API );
@@ -710,7 +710,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates four examples with up to three elements per repeatable optional named parameter", function() {
+	it( "generates four examples with up to three elements per repeatable optional named parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param*/more-static";
 			const route = new Route( path, () => {}, API );
@@ -736,7 +736,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "doubles number of generated examples per optional named parameter in path", function() {
+	it( "doubles number of generated examples per optional named parameter in path", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			let route = new Route( "/myPrefix/:param?/more-static", () => {}, API );
 			let examples = route.generateExamples();
@@ -760,7 +760,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "multiplies number of generated examples by three per mandatory repeatable named parameter in path", function() {
+	it( "multiplies number of generated examples by three per mandatory repeatable named parameter in path", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			let route = new Route( "/myPrefix/:param+/more-static", () => {}, API );
 			let examples = route.generateExamples();
@@ -784,7 +784,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "multiplies number of generated examples by four per optional repeatable named parameter in path", function() {
+	it( "multiplies number of generated examples by four per optional repeatable named parameter in path", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			let route = new Route( "/myPrefix/:param*/more-static", () => {}, API );
 			let examples = route.generateExamples();
@@ -808,7 +808,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "multiplies accordingly on combining different kinds of parameter options in path", function() {
+	it( "multiplies accordingly on combining different kinds of parameter options in path", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			let route = new Route( "/myPrefix/:param*/more-static", () => {}, API );
 			let examples = route.generateExamples();
@@ -832,7 +832,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example on a route with all its parameters mandatorily bound to fixed value", function() {
+	it( "generates single example on a route with all its parameters mandatorily bound to fixed value", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param/:test/more-static";
 			const route = new Route( path, () => {}, API );
@@ -849,7 +849,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example with minimum use of parameters ignoring usual number of probable use cases", function() {
+	it( "generates single example with minimum use of parameters ignoring usual number of probable use cases", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param?/:item?/:id?/more-static";
 			const route = new Route( path, () => {}, API );
@@ -866,7 +866,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example with maximum use of parameters ignoring usual number of probable use cases", function() {
+	it( "generates single example with maximum use of parameters ignoring usual number of probable use cases", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param?/:item?/:id?/more-static";
 			const route = new Route( path, () => {}, API );
@@ -883,7 +883,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example with provided set of data on a repeating parameter", function() {
+	it( "generates single example with provided set of data on a repeating parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param*/more-static";
 			const route = new Route( path, () => {}, API );
@@ -900,7 +900,7 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 		} );
 	} );
 
-	test( "generates single example of maximum size with at most three random values on a repeating parameter", function() {
+	it( "generates single example of maximum size with at most three random values on a repeating parameter", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route } } ) {
 			const path = "/myPrefix/:param*/more-static";
 			const route = new Route( path, () => {}, API );
@@ -924,8 +924,8 @@ suite( "Library.Router.Types.Route.Route#generateExamples", function() {
 
 } );
 
-suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", function() {
-	test( "requires list of prefixes to be filtered", function() {
+describe( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", function() {
+	it( "requires list of prefixes to be filtered", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { PolicyRoute, TerminalRoute } } ) {
 			let route = new TerminalRoute( "/", () => {}, API );
 
@@ -969,7 +969,7 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 		} );
 	} );
 
-	test( "considers some generic route probably covering some specific prefix", function() {
+	it( "considers some generic route probably covering some specific prefix", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { Route, TerminalRoute } } ) {
 			[
 				{ generic: "/", specific: "/test/name/sub" },
@@ -1030,7 +1030,7 @@ suite( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", functio
 		} );
 	} );
 
-	test( "considers some generic but divergent route never covering some specific prefix", function() {
+	it( "considers some generic but divergent route never covering some specific prefix", function() {
 		return ApiMockUp.then( function( { API, RouteModule: { TerminalRoute } } ) {
 			[
 				{ generic: "/test/name/sub/item", specific: "/test/name/sub" },

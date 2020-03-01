@@ -28,19 +28,19 @@
 
 "use strict";
 
-const { suite, test, setup } = require( "mocha" );
+const { describe, it, beforeEach } = require( "mocha" );
 const Should = require( "should" );
 
 const OrderedQueue = require( "../../../../lib/utility/ordered-queue" );
 
 
-suite( "OrderedQueue", function() {
-	test( "can be instantiated", function() {
+describe( "OrderedQueue", function() {
+	it( "can be instantiated", function() {
 		Should.exist( OrderedQueue );
 		( function() { new OrderedQueue( 10 ); } ).should.not.throw();
 	} );
 
-	test( "requires positive number of plugins to support on instantiating", function() {
+	it( "requires positive number of plugins to support on instantiating", function() {
 		Should.exist( OrderedQueue );
 		( function() { new OrderedQueue(); } ).should.throw();
 		( function() { new OrderedQueue( undefined ); } ).should.throw();
@@ -65,20 +65,20 @@ suite( "OrderedQueue", function() {
 	} );
 } );
 
-suite( "An instance of OrderedQueue", function() {
+describe( "An instance of OrderedQueue", function() {
 	let queue;
 	const pluginNumber = 10;
 
-	setup( function() {
+	beforeEach( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
-	test( "exposes number of supported plugins as defined on instantiating queue", function() {
+	it( "exposes number of supported plugins as defined on instantiating queue", function() {
 		queue.should.have.property( "pluginSlotCount" );
 		queue.pluginSlotCount.should.be.greaterThanOrEqual( 0 );
 	} );
 
-	test( "exposes two separate list of slots", function() {
+	it( "exposes two separate list of slots", function() {
 		queue.should.have.properties( "before", "after" );
 
 		queue.before.should.be.Array();
@@ -90,15 +90,15 @@ suite( "An instance of OrderedQueue", function() {
 		queue.before.should.not.equal( queue.after );
 	} );
 
-	test( "exposes flag indicating whether queue is still capable of accessing slots for reading/writing", function() {
+	it( "exposes flag indicating whether queue is still capable of accessing slots for reading/writing", function() {
 		queue.should.have.property( "isAdjustable" );
 	} );
 
-	test( "is flagged 'adjustable' initially", function() {
+	it( "is flagged 'adjustable' initially", function() {
 		queue.isAdjustable.should.be.equal( true );
 	} );
 
-	test( "exposes method for compacting managed lists making them non-adjustable", function() {
+	it( "exposes method for compacting managed lists making them non-adjustable", function() {
 		queue.should.have.property( "compact" );
 		queue.compact.should.be.Function();
 
@@ -107,7 +107,7 @@ suite( "An instance of OrderedQueue", function() {
 		queue.isAdjustable.should.be.equal( false );
 	} );
 
-	test( "exposes method for compacting managed lists making them non-adjustable", function() {
+	it( "exposes method for compacting managed lists making them non-adjustable", function() {
 		let i = 0;
 
 		const countThree = () => i++ < 3;
@@ -122,27 +122,27 @@ suite( "An instance of OrderedQueue", function() {
 		queue.after.length.should.be.equal( 0 );
 	} );
 
-	test( "initially consists of unset slots, only (to be removed on compacting)", function() {
+	it( "initially consists of unset slots, only (to be removed on compacting)", function() {
 		Should( queue.before.length + queue.after.length ).be.greaterThanOrEqual( 2 * pluginNumber );
 		queue.compact();
 		Should( queue.before.length + queue.after.length ).be.equal( 0 );
 	} );
 } );
 
-suite( "On managing plugin-related slots using an instance of OrderedQueue", function() {
+describe( "On managing plugin-related slots using an instance of OrderedQueue", function() {
 	let queue;
 	const pluginNumber = 10;
 
-	setup( function() {
+	beforeEach( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
-	test( "exposes methods for getting/setting value of plugin-related slots", function() {
+	it( "exposes methods for getting/setting value of plugin-related slots", function() {
 		queue.getOnPlugin.should.be.Function();
 		queue.setOnPlugin.should.be.Function();
 	} );
 
-	test( "requires valid plugin index on addressing related slot for reading", function() {
+	it( "requires valid plugin index on addressing related slot for reading", function() {
 		queue.getOnPlugin.bind( queue ).should.throw();
 		queue.getOnPlugin.bind( queue, null ).should.throw();
 		queue.getOnPlugin.bind( queue, undefined ).should.throw();
@@ -164,7 +164,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		queue.getOnPlugin.bind( queue, 10 ).should.throw();
 	} );
 
-	test( "requires valid plugin index on addressing related slot for writing", function() {
+	it( "requires valid plugin index on addressing related slot for writing", function() {
 		queue.setOnPlugin.bind( queue ).should.throw();
 		queue.setOnPlugin.bind( queue, null ).should.throw();
 		queue.setOnPlugin.bind( queue, undefined ).should.throw();
@@ -186,7 +186,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		queue.setOnPlugin.bind( queue, 10 ).should.throw();
 	} );
 
-	test( "takes supported stage on selecting slot by index in either one's related list", function() {
+	it( "takes supported stage on selecting slot by index in either one's related list", function() {
 		queue.getOnPlugin.bind( queue, 0 ).should.not.throw();
 		queue.getOnPlugin.bind( queue, 1 ).should.not.throw();
 		queue.getOnPlugin.bind( queue, 9 ).should.not.throw();
@@ -238,12 +238,12 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		queue.setOnPlugin.bind( queue, 9, "arbitrary" ).should.throw();
 	} );
 
-	test( "implicitly initializes selected plugin's slot on reading", function() {
+	it( "implicitly initializes selected plugin's slot on reading", function() {
 		queue.getOnPlugin( 0, "before", "test" ).should.equal( "test" );
 		queue.getOnPlugin( 0, "before", "another test" ).should.equal( "test" );
 	} );
 
-	test( "always provides same value on fetching same slot", function() {
+	it( "always provides same value on fetching same slot", function() {
 		const original = {};
 		const a = queue.getOnPlugin( 0, "before", original );
 		const b = queue.getOnPlugin( 0, "before" );
@@ -251,7 +251,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		a.should.equal( b );
 	} );
 
-	test( "provides different value on fetching same slot index from different stage", function() {
+	it( "provides different value on fetching same slot index from different stage", function() {
 		const original = {};
 		const a = queue.getOnPlugin( 0, "before", original );
 		const b = queue.getOnPlugin( 0, "after" );
@@ -259,7 +259,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		a.should.not.equal( b );
 	} );
 
-	test( "works with 'before' stage by default", function() {
+	it( "works with 'before' stage by default", function() {
 		const before = {}, after = {};
 
 		queue.getOnPlugin( 0, "before", before );
@@ -269,11 +269,11 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		queue.getOnPlugin( 0 ).should.not.equal( after );
 	} );
 
-	test( "provides queue on setting value of a slot for fluently chaining method invocations", function() {
+	it( "provides queue on setting value of a slot for fluently chaining method invocations", function() {
 		queue.setOnPlugin( 0 ).should.equal( queue );
 	} );
 
-	test( "rejects access via plugin's index after compacting queue", function() {
+	it( "rejects access via plugin's index after compacting queue", function() {
 		queue.setOnPlugin.bind( queue, 0, "before", {} ).should.not.throw();
 		queue.getOnPlugin.bind( queue, 0, "before" ).should.not.throw();
 		queue.compact();
@@ -281,7 +281,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		queue.getOnPlugin.bind( queue, 0, "before" ).should.throw();
 	} );
 
-	test( "removes any slot with falsy value on compacting", function() {
+	it( "removes any slot with falsy value on compacting", function() {
 		queue
 			.setOnPlugin( 0, "before", 0 )
 			.setOnPlugin( 1, "before", undefined )
@@ -302,7 +302,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		queue.before[2].should.equal( "0" );
 	} );
 
-	test( "manages all slots in stage 'before' in order of index of slots", function() {
+	it( "manages all slots in stage 'before' in order of index of slots", function() {
 		queue
 			.setOnPlugin( 9, "before", 10 )
 			.setOnPlugin( 8, "before", 9 )
@@ -321,7 +321,7 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 		}
 	} );
 
-	test( "manages all slots in stage 'after' in reverse order of index of slots", function() {
+	it( "manages all slots in stage 'after' in reverse order of index of slots", function() {
 		queue
 			.setOnPlugin( 0, "after", 10 )
 			.setOnPlugin( 1, "after", 9 )
@@ -341,24 +341,24 @@ suite( "On managing plugin-related slots using an instance of OrderedQueue", fun
 	} );
 } );
 
-suite( "On managing custom slots using an instance of OrderedQueue", function() {
+describe( "On managing custom slots using an instance of OrderedQueue", function() {
 	let queue;
 	const pluginNumber = 10;
 
-	setup( function() {
+	beforeEach( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
-	test( "exposes methods for getting/setting value of custom slots", function() {
+	it( "exposes methods for getting/setting value of custom slots", function() {
 		queue.getCustomSlot.should.be.Function();
 		queue.setCustomSlot.should.be.Function();
 	} );
 
-	test( "supports use of related getter w/o any argument", function() {
+	it( "supports use of related getter w/o any argument", function() {
 		queue.getCustomSlot.bind( queue ).should.not.throw();
 	} );
 
-	test( "optionally supports selection of custom slot in one out of several positions within managed sequence", function() {
+	it( "optionally supports selection of custom slot in one out of several positions within managed sequence", function() {
 		queue.getCustomSlot.bind( queue ).should.not.throw();
 		queue.getCustomSlot.bind( queue ).should.not.throw();
 		queue.getCustomSlot.bind( queue ).should.not.throw();
@@ -410,7 +410,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.setCustomSlot.bind( queue, "arbitrary" ).should.throw();
 	} );
 
-	test( "implicitly initializes selected plugin's slot on reading", function() {
+	it( "implicitly initializes selected plugin's slot on reading", function() {
 		queue.getCustomSlot( "before", "test" ).should.equal( "test" );
 		queue.getCustomSlot( "before", "another test" ).should.equal( "test" );
 		queue.getCustomSlot( "after", "test 2" ).should.equal( "test 2" );
@@ -426,7 +426,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.getCustomSlot( "late", "another test 4" ).should.equal( "test 4" );
 	} );
 
-	test( "always provides same value on fetching same slot", function() {
+	it( "always provides same value on fetching same slot", function() {
 		const original = {};
 		const a = queue.getCustomSlot( "before", original );
 		const b = queue.getCustomSlot( "before" );
@@ -434,7 +434,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		a.should.equal( b );
 	} );
 
-	test( "provides different value on fetching same slot index from different stage", function() {
+	it( "provides different value on fetching same slot index from different stage", function() {
 		const original = {};
 		const a = queue.getCustomSlot( "before", original );
 		const b = queue.getCustomSlot( "after" );
@@ -442,7 +442,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		a.should.not.equal( b );
 	} );
 
-	test( "works with 'before' stage by default", function() {
+	it( "works with 'before' stage by default", function() {
 		const before = {}, after = {};
 
 		queue.getCustomSlot( "before", before );
@@ -452,11 +452,11 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.getCustomSlot().should.not.equal( after );
 	} );
 
-	test( "provides queue on setting value of a slot for fluently chaining method invocations", function() {
+	it( "provides queue on setting value of a slot for fluently chaining method invocations", function() {
 		queue.setCustomSlot().should.equal( queue );
 	} );
 
-	test( "rejects access via plugin's index after compacting queue", function() {
+	it( "rejects access via plugin's index after compacting queue", function() {
 		queue.setCustomSlot.bind( queue, "before", {} ).should.not.throw();
 		queue.getCustomSlot.bind( queue, "before" ).should.not.throw();
 		queue.compact();
@@ -464,7 +464,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.getCustomSlot.bind( queue, "before" ).should.throw();
 	} );
 
-	test( "removes any slot with falsy value on compacting", function() {
+	it( "removes any slot with falsy value on compacting", function() {
 		queue
 			.setCustomSlot( "early", "0" )
 			.setCustomSlot( "before", undefined )
@@ -482,7 +482,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		queue.after[0].should.equal( 1 );
 	} );
 
-	test( "manages custom slots in list preceding inner slot in proper order", function() {
+	it( "manages custom slots in list preceding inner slot in proper order", function() {
 		queue
 			.setCustomSlot( "before", 12 )
 			.setOnPlugin( 9, "before", 11 )
@@ -503,7 +503,7 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 		}
 	} );
 
-	test( "manages custom slots in list succeeding inner slot in proper (reverse) order", function() {
+	it( "manages custom slots in list succeeding inner slot in proper (reverse) order", function() {
 		queue
 			.setCustomSlot( "late", 12 )
 			.setOnPlugin( 0, "after", 11 )
@@ -525,24 +525,24 @@ suite( "On managing custom slots using an instance of OrderedQueue", function() 
 	} );
 } );
 
-suite( "On managing inner-action slot using an instance of OrderedQueue", function() {
+describe( "On managing inner-action slot using an instance of OrderedQueue", function() {
 	let queue;
 	const pluginNumber = 10;
 
-	setup( function() {
+	beforeEach( function() {
 		queue = new OrderedQueue( pluginNumber );
 	} );
 
-	test( "exposes methods for getting/setting value of slot containing data related to inner action of queue", function() {
+	it( "exposes methods for getting/setting value of slot containing data related to inner action of queue", function() {
 		queue.getInnerSlot.should.be.Function();
 		queue.setInnerSlot.should.be.Function();
 	} );
 
-	test( "supports use of related getter w/o any argument", function() {
+	it( "supports use of related getter w/o any argument", function() {
 		queue.getInnerSlot.bind( queue ).should.not.throw();
 	} );
 
-	test( "does not require additional arguments on reading slot taking any given one as value optionally used to initialize slot", function() {
+	it( "does not require additional arguments on reading slot taking any given one as value optionally used to initialize slot", function() {
 		queue.getInnerSlot.bind( queue, null ).should.not.throw();
 		queue.getInnerSlot.bind( queue, undefined ).should.not.throw();
 		queue.getInnerSlot.bind( queue, false ).should.not.throw();
@@ -563,7 +563,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue.getInnerSlot.bind( queue, 10 ).should.not.throw();
 	} );
 
-	test( "optionally takes value on writing slot", function() {
+	it( "optionally takes value on writing slot", function() {
 		queue.setInnerSlot.bind( queue ).should.not.throw();
 		queue.setInnerSlot.bind( queue, null ).should.not.throw();
 		queue.setInnerSlot.bind( queue, undefined ).should.not.throw();
@@ -585,12 +585,12 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue.setInnerSlot.bind( queue ).should.not.throw();
 	} );
 
-	test( "implicitly initializes slot on reading", function() {
+	it( "implicitly initializes slot on reading", function() {
 		queue.getInnerSlot( "test" ).should.equal( "test" );
 		queue.getInnerSlot( "another test" ).should.equal( "test" );
 	} );
 
-	test( "always provides same value on fetching slot", function() {
+	it( "always provides same value on fetching slot", function() {
 		const original = {};
 		const a = queue.getInnerSlot( original );
 		const b = queue.getInnerSlot();
@@ -598,17 +598,17 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		a.should.equal( b );
 	} );
 
-	test( "provides queue on setting value of slot for fluently chaining method invocations", function() {
+	it( "provides queue on setting value of slot for fluently chaining method invocations", function() {
 		queue.setInnerSlot().should.equal( queue );
 	} );
 
-	test( "rejects access after compacting queue", function() {
+	it( "rejects access after compacting queue", function() {
 		queue.setInnerSlot.bind( queue, {} ).should.not.throw();
 		queue.compact();
 		queue.setInnerSlot.bind( queue, {} ).should.throw();
 	} );
 
-	test( "ignores slot with falsy value on compacting", function() {
+	it( "ignores slot with falsy value on compacting", function() {
 		queue
 			.setInnerSlot( 0 );
 
@@ -619,7 +619,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue.before.should.have.length( 0 );
 	} );
 
-	test( "obeys slot with truthy value on compacting", function() {
+	it( "obeys slot with truthy value on compacting", function() {
 		queue
 			.setInnerSlot( 1 );
 
@@ -631,7 +631,7 @@ suite( "On managing inner-action slot using an instance of OrderedQueue", functi
 		queue.before[0].should.equal( 1 );
 	} );
 
-	test( "manages all slots in stage 'before' in order of index of slots", function() {
+	it( "manages all slots in stage 'before' in order of index of slots", function() {
 		queue
 			.setInnerSlot( 13 )
 			.setCustomSlot( "before", 12 )

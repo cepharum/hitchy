@@ -1,6 +1,6 @@
 "use strict";
 
-const { suite, test, setup } = require( "mocha" );
+const { describe, it, beforeEach } = require( "mocha" );
 const Should = require( "should" );
 require( "should-http" );
 
@@ -8,10 +8,10 @@ const PromiseTool = require( "../../../tools" ).promise;
 
 // ----------------------------------------------------------------------------
 
-suite( "Tools.Promise", function() {
+describe( "Tools.Promise", function() {
 	let input;
 
-	setup( function() {
+	beforeEach( () => {
 		input = [
 			"*", "-",
 			new Promise( function( resolve ) { setTimeout( resolve, 20, "+" ); } ),
@@ -19,7 +19,7 @@ suite( "Tools.Promise", function() {
 		];
 	} );
 
-	test( "supports sequential, probably delayed iteration using each()", function() {
+	it( "supports sequential, probably delayed iteration using each()", function() {
 		const output = [];
 
 		return PromiseTool
@@ -28,7 +28,7 @@ suite( "Tools.Promise", function() {
 				items.should.be.Array();
 				items.should.have.length( 7 );
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return output.push( value.repeat( index ) );
 				}
@@ -48,21 +48,21 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed filtering of array using filter()", function() {
+	it( "supports sequential, probably delayed filtering of array using filter()", function() {
 		return PromiseTool
 			.filter( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
 				items.should.have.length( 7 );
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
-					return index % 3 != 0;
+					return index % 3 !== 0;
 				}
 
 				// return after some delay
 				return new Promise( resolve => setTimeout( resolve, 20 ) )
-					.then( () => index % 3 != 0 );
+					.then( () => index % 3 !== 0 );
 			} )
 			.then( function( result ) {
 				// filter() is providing reduced set of input values
@@ -78,14 +78,14 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed mapping of array using map()", function() {
+	it( "supports sequential, probably delayed mapping of array using map()", function() {
 		return PromiseTool
 			.map( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
 				items.should.have.length( 7 );
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value.repeat( index );
 				}
@@ -105,14 +105,14 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed mapping of array using multiMap()", function() {
+	it( "supports sequential, probably delayed mapping of array using multiMap()", function() {
 		return PromiseTool
 			.multiMap( input, function( value, index, items ) {
 				Should( index ).be.within( 0, 6 );
 				items.should.be.Array();
 				items.should.have.length( 7 );
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value.repeat( index );
 				}
@@ -132,7 +132,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "maps faster on using multiMap() than on using map()", function() {
+	it( "maps faster on using multiMap() than on using map()", function() {
 		let rank = 1;
 
 		const fastMapper = () => new Promise( resolve => setTimeout( resolve, 20 ) );
@@ -148,7 +148,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed search for value", function() {
+	it( "supports sequential, probably delayed search for value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -159,7 +159,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "%";
 				}
@@ -175,7 +175,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed search for value in reverse order", function() {
+	it( "supports sequential, probably delayed search for value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -186,7 +186,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "%";
 				}
@@ -202,7 +202,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "provides null on failed sequential, probably delayed search for value", function() {
+	it( "provides null on failed sequential, probably delayed search for value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -213,7 +213,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "something missing";
 				}
@@ -229,7 +229,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "provides null on failed sequential, probably delayed search for value in reverse order", function() {
+	it( "provides null on failed sequential, probably delayed search for value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -240,7 +240,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "something missing";
 				}
@@ -256,7 +256,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed search for index of a value", function() {
+	it( "supports sequential, probably delayed search for index of a value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -267,7 +267,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "%";
 				}
@@ -283,7 +283,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "supports sequential, probably delayed search for index of a value in reverse order", function() {
+	it( "supports sequential, probably delayed search for index of a value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -294,7 +294,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "%";
 				}
@@ -310,7 +310,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "provides -1 on failed sequential, probably delayed search for index of a value", function() {
+	it( "provides -1 on failed sequential, probably delayed search for index of a value", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -321,7 +321,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "something missing";
 				}
@@ -337,7 +337,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "provides null on failed sequential, probably delayed search for index of a value in reverse order", function() {
+	it( "provides null on failed sequential, probably delayed search for index of a value in reverse order", function() {
 		let sum = 0;
 
 		return PromiseTool
@@ -348,7 +348,7 @@ suite( "Tools.Promise", function() {
 
 				sum += index;
 
-				if ( index % 2 == 0 ) {
+				if ( index % 2 === 0 ) {
 					// return instantly
 					return value === "something missing";
 				}
@@ -364,7 +364,7 @@ suite( "Tools.Promise", function() {
 			} );
 	} );
 
-	test( "creates promise to conveniently delay processing", function() {
+	it( "creates promise to conveniently delay processing", function() {
 		const start = Date.now();
 
 		return PromiseTool.delay( 100 )

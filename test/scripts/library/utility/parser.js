@@ -36,13 +36,13 @@ const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
-const { suite, test } = require( "mocha" );
+const { describe, it } = require( "mocha" );
 const Should = require( "should" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Library.Utility.Parser", function() {
-	test( "is processing empty URL query", function() {
+describe( "Library.Utility.Parser", function() {
+	it( "is processing empty URL query", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "" );
 
@@ -51,7 +51,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "is processing single name w/o value", function() {
+	it( "is processing single name w/o value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar" );
 
@@ -62,7 +62,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "is processing multiple different names each w/o value", function() {
+	it( "is processing multiple different names each w/o value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar&anothervar" );
 
@@ -75,7 +75,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "is processing multiple occurrences of same names w/o value", function() {
+	it( "is processing multiple occurrences of same names w/o value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar&anothervar&myvar" );
 
@@ -88,7 +88,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports single name w/ non-empty string value", function() {
+	it( "supports single name w/ non-empty string value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar=test" );
 
@@ -99,7 +99,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports multiple occurrence of same name w/ non-empty string value", function() {
+	it( "supports multiple occurrence of same name w/ non-empty string value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar=foo&myvar=bar" );
 
@@ -110,7 +110,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "is obeying latest of multiple occurrences per name even though switching between value and no-value", function() {
+	it( "is obeying latest of multiple occurrences per name even though switching between value and no-value", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			let result = Parser.query( "myvar=test&anothervar&myvar" );
 
@@ -132,7 +132,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports assigning null explicitly", function() {
+	it( "supports assigning null explicitly", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar=test&anothervar&myvar=" );
 
@@ -145,7 +145,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports constructing array from names using empty brackets", function() {
+	it( "supports constructing array from names using empty brackets", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[]=test&anothervar&myvar[]=&myvar[]" );
 
@@ -159,7 +159,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports constructing object on using non-empty element names in brackets", function() {
+	it( "supports constructing object on using non-empty element names in brackets", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[foo]=oof&myvar[bar]=&myvar[baz]" );
 
@@ -173,7 +173,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "feeds array like object when oddly mixing empty brackets with non-empty ones", function() {
+	it( "feeds array like object when oddly mixing empty brackets with non-empty ones", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[]=foo&myvar[bar]=&myvar[baz]" );
 
@@ -188,7 +188,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "chooses numeric property names when oddly mixing non-empty brackets with empty ones", function() {
+	it( "chooses numeric property names when oddly mixing non-empty brackets with empty ones", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[baz]=foo&myvar[bar]=&myvar[]" );
 
@@ -202,7 +202,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "obeys last of multiple occurrences addressing same element", function() {
+	it( "obeys last of multiple occurrences addressing same element", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[baz]=foo&myvar[bar]=&myvar[]&myvar[bar]=3" );
 
@@ -216,7 +216,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports URL-encoded names", function() {
+	it( "supports URL-encoded names", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar%5Bbaz%5D=foo&m%79%76ar[bar]=&myvar[]&myvar[%66%3D%6F%6F]=3" );
 
@@ -231,7 +231,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports URL-encoded values", function() {
+	it( "supports URL-encoded values", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[baz]=%66%3D%26%6F%6F&myvar[bar]=&myvar[]&myvar[foo]=%33" );
 
@@ -246,7 +246,7 @@ suite( "Library.Utility.Parser", function() {
 		} );
 	} );
 
-	test( "supports URL- and UTF8-encoded names and values", function() {
+	it( "supports URL- and UTF8-encoded names and values", function() {
 		return ApiMockUp.then( function( { Parser } ) {
 			const result = Parser.query( "myvar[%F0%9F%91%BA]=%c3%a4%c3%a9%e2%90%a0%e5%bc%88" );
 

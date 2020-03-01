@@ -38,13 +38,13 @@ const PromiseTool = Tools.promise;
 
 // ----------------------------------------------------------------------------
 
-const { suite, test } = require( "mocha" );
+const { describe, it } = require( "mocha" );
 require( "should" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Library.Utility.Promise", function() {
-	test( "provides same API as Tools.Promise", function() {
+describe( "Library.Utility.Promise", function() {
+	it( "provides same API as Tools.Promise", function() {
 		return ApiMockUp.then( function( { PromiseUtility } ) {
 			PromiseUtility.each.should.be.exactly( PromiseTool.each );
 			PromiseUtility.filter.should.be.exactly( PromiseTool.filter );

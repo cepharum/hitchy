@@ -6,36 +6,34 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../../tools/index" ).test;
-const Hitchy = require( "../../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project in basic-routing-core w/o any application-specific routes", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project in basic-routing-core w/o any application-specific routes", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
-	test( "misses GETting /", function() {
-		return hitchy.onStarted.then( () => Test.get( "/" )
-			.then( function( response ) {
+	it( "misses GETting /", function() {
+		return ctx.get( "/" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /blueprint/6789", function() {
-		return hitchy.onStarted.then( () => Test.get( "/blueprint/6789" )
-			.then( function( response ) {
+	it( "GETs /blueprint/6789", function() {
+		return ctx.get( "/blueprint/6789" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.data.gotBlueprint.should.be.ok();
-			} ) );
+			} );
 	} );
 } );
 

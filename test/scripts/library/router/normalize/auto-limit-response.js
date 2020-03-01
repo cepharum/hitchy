@@ -8,7 +8,6 @@ const options = {
 };
 
 const Test = require( "../../../../../tools" ).test;
-const Hitchy = require( "../../../../../injector" ).node;
 
 const { describe, it, before, after } = require( "mocha" );
 
@@ -18,11 +17,10 @@ require( "should-http" );
 // ----------------------------------------------------------------------------
 
 describe( "Serving project w/ controller using response API", () => {
-	const hitchy = Hitchy( options );
-	let server = null;
+	const ctx = {};
 
-	before( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	after( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
 	const MethodsWithResponse = [ "GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS" ];
 	const MethodsWithoutResponse = ["HEAD"];
@@ -45,7 +43,7 @@ describe( "Serving project w/ controller using response API", () => {
 	Endpoints.forEach( ( [ url, type, headers = {} ] ) => {
 		MethodsWithResponse.forEach( method => {
 			it( `provides response on requesting ${url} with method ${method}`, () => {
-				return hitchy.onStarted.then( () => Test.request( method, url, null, headers )
+				return ctx.request( method, url, null, headers )
 					.then( res => {
 						res.should.have.status( 200 );
 						res.body.length.should.be.greaterThan( 0 );
@@ -66,13 +64,13 @@ describe( "Serving project w/ controller using response API", () => {
 						} else {
 							res.body.equals( Buffer.from( "success" ) ).should.be.true();
 						}
-					} ) );
+					} );
 			} );
 		} );
 
 		MethodsWithoutResponse.forEach( method => {
 			it( `does not provide response on requesting ${url} with method ${method}`, () => {
-				return hitchy.onStarted.then( () => Test.request( method, url, null, headers )
+				return ctx.request( method, url, null, headers )
 					.then( res => {
 						res.should.have.status( 200 );
 						res.body.length.should.not.be.greaterThan( 0 );
@@ -86,7 +84,7 @@ describe( "Serving project w/ controller using response API", () => {
 						} else {
 							res.body.should.be.instanceOf( Buffer );
 						}
-					} ) );
+					} );
 			} );
 		} );
 	} );

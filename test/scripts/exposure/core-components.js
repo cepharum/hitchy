@@ -5,28 +5,26 @@ const options = {
 	// debug: true,
 };
 
-const { describe, it, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
 describe( "Serving project from empty folder", function() {
-	const node = Hitchy( options );
-	let server = null;
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( node ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
 	it( "provides core service component HttpClient", () => {
-		node.hitchy.runtime.services.should.have.property( "HttpClient" );
-		node.hitchy.runtime.services.HttpClient.should.have.property( "fetch" ).which.is.a.Function();
+		ctx.hitchy.api.runtime.services.should.have.property( "HttpClient" );
+		ctx.hitchy.api.runtime.services.HttpClient.should.have.property( "fetch" ).which.is.a.Function();
 
-		return node.hitchy.runtime.services.HttpClient.fetch( "GET", "https://duckduckgo.com/" )
+		return ctx.hitchy.api.runtime.services.HttpClient.fetch( "GET", "https://duckduckgo.com/" )
 			.should.be.Promise().which.is.resolved()
 			.then( response => {
 				response.should.have.property( "statusCode" ).which.is.a.Number().and.is.equal( 200 );
@@ -43,9 +41,9 @@ describe( "Serving project from empty folder", function() {
 	} );
 
 	it( "provides core service component HttpException", () => {
-		node.hitchy.runtime.services.should.have.property( "HttpException" );
+		ctx.hitchy.api.runtime.services.should.have.property( "HttpException" );
 
-		const exception = new node.hitchy.runtime.services.HttpException( 404, "requested content not found" );
+		const exception = new ctx.hitchy.api.runtime.services.HttpException( 404, "requested content not found" );
 
 		exception.should.have.property( "statusCode" ).which.is.a.Number().and.is.equal( 404 );
 	} );

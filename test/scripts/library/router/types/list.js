@@ -48,7 +48,7 @@ const modules = {
 	RouteModule: "lib/router/types/route",
 };
 
-const { suite, test } = require( "mocha" );
+const { describe, it } = require( "mocha" );
 
 const Should = require( "should" );
 require( "should-http" );
@@ -57,20 +57,20 @@ const ApiMockUp = require( "../../../../../tools" ).apiMockUp( { apiOverlay, mod
 
 // ----------------------------------------------------------------------------
 
-suite( "Library.Router.Types.List.RoutesPerMethod", function() {
-	test( "exists", function() {
+describe( "Library.Router.Types.List.RoutesPerMethod", function() {
+	it( "exists", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			RoutesPerMethod.should.be.ok().and.should.be.Object();
 		} );
 	} );
 
-	test( "can be instantiated", function() {
+	it( "can be instantiated", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			( () => { new RoutesPerMethod(); } ).should.not.throw();
 		} );
 	} );
 
-	test( "exposes collection of routes per method", function() {
+	it( "exposes collection of routes per method", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			const collector = new RoutesPerMethod();
 			collector.should.have.property( "methods" );
@@ -78,7 +78,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "exposes flag indicating whether instance is adjustable or not", function() {
+	it( "exposes flag indicating whether instance is adjustable or not", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			const collector = new RoutesPerMethod();
 			collector.should.have.property( "isAdjustable" );
@@ -86,7 +86,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "provides method for adding routes", function() {
+	it( "provides method for adding routes", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 			collector.append.should.be.Function().and.have.length( 1 );
@@ -110,7 +110,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "provides method for concatenating two sets of lists", function() {
+	it( "provides method for concatenating two sets of lists", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			const collector = new RoutesPerMethod();
 			collector.concat.should.be.Function().and.have.length( 1 );
@@ -134,7 +134,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "provides method for fetching routes associated with an HTTP method", function() {
+	it( "provides method for fetching routes associated with an HTTP method", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod, RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			let collector = new RoutesPerMethod();
 			collector.onMethod.should.be.Function().and.have.length( 1 );
@@ -163,7 +163,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "provides method for optimizing sets of routes", function() {
+	it( "provides method for optimizing sets of routes", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerMethod } } ) {
 			const collector = new RoutesPerMethod();
 			collector.optimizeByPrefix.should.be.Function().have.length( 0 );
@@ -187,7 +187,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "becomes inadjustable on optimizing sets of routes", function() {
+	it( "becomes inadjustable on optimizing sets of routes", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 
@@ -201,7 +201,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "exposes initially empty map of method names into sorted lists of routes bound it", function() {
+	it( "exposes initially empty map of method names into sorted lists of routes bound it", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 			const route = new TerminalRoute( "GET /", () => {}, API );
@@ -213,7 +213,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "collects sets of non-unique routes per method each route is bound to", function() {
+	it( "collects sets of non-unique routes per method each route is bound to", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 
@@ -231,7 +231,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "collects appended routes in context of method each route is bound to", function() {
+	it( "collects appended routes in context of method each route is bound to", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 
@@ -275,7 +275,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "collects appended routes not bound to any method in context of any previously collected method, too", function() {
+	it( "collects appended routes not bound to any method in context of any previously collected method, too", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 
@@ -323,7 +323,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "starts sets for any new method with previously collected routes not bound to any method", function() {
+	it( "starts sets for any new method with previously collected routes not bound to any method", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 
@@ -352,7 +352,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "converts simple lists of routes per method into instances of RoutesPerPrefix per method on optimizing", function() {
+	it( "converts simple lists of routes per method into instances of RoutesPerPrefix per method on optimizing", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod, RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 
@@ -377,7 +377,7 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 		} );
 	} );
 
-	test( "concatenates all routes per method of two instances by appended a given one's routes to current one's", function() {
+	it( "concatenates all routes per method of two instances by appended a given one's routes to current one's", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerMethod }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerMethod();
 			const provider = new RoutesPerMethod();
@@ -424,20 +424,20 @@ suite( "Library.Router.Types.List.RoutesPerMethod", function() {
 	} );
 } );
 
-suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
-	test( "exists", function() {
+describe( "Library.Router.Types.List.RoutesPerPrefix", function() {
+	it( "exists", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerPrefix } } ) {
 			RoutesPerPrefix.should.be.ok().and.should.be.Object();
 		} );
 	} );
 
-	test( "can be instantiated", function() {
+	it( "can be instantiated", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerPrefix } } ) {
 			( () => { new RoutesPerPrefix(); } ).should.not.throw();
 		} );
 	} );
 
-	test( "exposes collection of routes per prefix", function() {
+	it( "exposes collection of routes per prefix", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerPrefix } } ) {
 			const collector = new RoutesPerPrefix();
 			collector.should.have.property( "prefixes" );
@@ -445,7 +445,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "exposes flag indicating whether list of supported prefixes can be extended or not", function() {
+	it( "exposes flag indicating whether list of supported prefixes can be extended or not", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerPrefix } } ) {
 			const collector = new RoutesPerPrefix();
 			collector.should.have.property( "extensible" );
@@ -453,7 +453,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "provides method for adding routes", function() {
+	it( "provides method for adding routes", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 			collector.append.should.be.Function().and.have.length( 1 );
@@ -475,7 +475,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "provides method for getting prefix addressing list of routes matching best some given prefix", function() {
+	it( "provides method for getting prefix addressing list of routes matching best some given prefix", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			let collector = new RoutesPerPrefix();
 			collector.getLongestMatchingPrefix.should.be.Function().and.have.length( 1 );
@@ -497,7 +497,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "provides method for getting sorted list of routes bound to prefix matching best some given one", function() {
+	it( "provides method for getting sorted list of routes bound to prefix matching best some given one", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			let collector = new RoutesPerPrefix();
 			collector.onPrefix.should.be.Function().and.have.length( 1 );
@@ -518,7 +518,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "is marked extensible unless providing explicit set of supported prefixes on constructing", function() {
+	it( "is marked extensible unless providing explicit set of supported prefixes on constructing", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerPrefix } } ) {
 			let collector = new RoutesPerPrefix();
 			collector.extensible.should.be.true();
@@ -531,7 +531,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "exposes initially empty map of prefixes into routes unless fixing set of supported prefixes to be provided initially", function() {
+	it( "exposes initially empty map of prefixes into routes unless fixing set of supported prefixes to be provided initially", function() {
 		return ApiMockUp.then( function( { ListModule: { RoutesPerPrefix } } ) {
 			let collector = new RoutesPerPrefix();
 			collector.prefixes.should.be.empty();
@@ -544,7 +544,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "collects routes by group on appending each keeping sorting order prefix", function() {
+	it( "collects routes by group on appending each keeping sorting order prefix", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 			const route1 = new TerminalRoute( "GET /", () => {}, API );
@@ -565,7 +565,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "doesn't collect routes using same pattern like a route collected before", function() {
+	it( "doesn't collect routes using same pattern like a route collected before", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 			const route1 = new TerminalRoute( "GET /", () => {}, API );
@@ -586,7 +586,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "creates new group on appending route not matching any existing prefix", function() {
+	it( "creates new group on appending route not matching any existing prefix", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 
@@ -610,7 +610,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "does not create new group on appending route not matching any of the pre-defined prefixes", function() {
+	it( "does not create new group on appending route not matching any of the pre-defined prefixes", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			let collector = new RoutesPerPrefix( [] );
 
@@ -644,7 +644,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "collects routes with divergent prefixes in separate groups, only", function() {
+	it( "collects routes with divergent prefixes in separate groups, only", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 
@@ -659,7 +659,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "collects policy routes with more generic prefixes in all groups of more specific matching prefixes, too", function() {
+	it( "collects policy routes with more generic prefixes in all groups of more specific matching prefixes, too", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { PolicyRoute } } ) {
 			const collector = new RoutesPerPrefix();
 
@@ -687,7 +687,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "does not also collect terminal routes with more generic prefixes in all groups of more specific matching prefixes", function() {
+	it( "does not also collect terminal routes with more generic prefixes in all groups of more specific matching prefixes", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { TerminalRoute } } ) {
 			const collector = new RoutesPerPrefix();
 
@@ -715,7 +715,7 @@ suite( "Library.Router.Types.List.RoutesPerPrefix", function() {
 		} );
 	} );
 
-	test( "collects generic path w/ regexp on existing prefix, too", function() {
+	it( "collects generic path w/ regexp on existing prefix, too", function() {
 		return ApiMockUp.then( function( { API, ListModule: { RoutesPerPrefix }, RouteModule: { PolicyRoute } } ) {
 			const collector = new RoutesPerPrefix();
 

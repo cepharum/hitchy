@@ -5,148 +5,145 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector" ).express;
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project w/ expressjs with invalid responder routes", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project w/ expressjs with invalid responder routes", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options, { injector: "express" } ) );
+	after( Test.after( ctx ) );
 
-	test( "GETs /test", function() {
-		return hitchy.onStarted.then( () => Test.get( "/test" )
-			.then( function( response ) {
+	it( "GETs /test", function() {
+		return ctx.get( "/test" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.mode.should.be.String().and.eql( "index" );
-			} ) );
+			} );
 	} );
 
-	test( "misses GETting /missing-controller", function() {
-		return hitchy.onStarted.then( () => Test.get( "/missing-controller" )
-			.then( function( response ) {
+	it( "misses GETting /missing-controller", function() {
+		return ctx.get( "/missing-controller" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "misses GETting /missing-method", function() {
-		return hitchy.onStarted.then( () => Test.get( "/missing-method" )
-			.then( function( response ) {
+	it( "misses GETting /missing-method", function() {
+		return ctx.get( "/missing-method" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /something", function() {
-		return hitchy.onStarted.then( () => Test.get( "/something" )
-			.then( function( response ) {
+	it( "GETs /something", function() {
+		return ctx.get( "/something" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.mode.should.be.String().and.eql( "something" );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /addon", function() {
-		return hitchy.onStarted.then( () => Test.get( "/addon" )
-			.then( function( response ) {
+	it( "GETs /addon", function() {
+		return ctx.get( "/addon" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.mode.should.be.String().and.eql( "addon" );
-			} ) );
+			} );
 	} );
 } );
 
-suite( "Serving project w/ expressjs w/ prefix with invalid responder routes", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project w/ expressjs w/ prefix with invalid responder routes", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy, { prefix: "/injected/hitchy" } ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options, { injector: "express", prefix: "/injected/hitchy" } ) );
+	after( Test.after( ctx ) );
 
-	test( "GETs /test", function() {
-		return hitchy.onStarted.then( () => Test.get( "/test" )
-			.then( function( response ) {
+	it( "GETs /test", function() {
+		return ctx.get( "/test" )
+			.then( response => {
 				// was working above when used w/o prefix
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "misses GETting /missing-controller", function() {
-		return hitchy.onStarted.then( () => Test.get( "/missing-controller" )
-			.then( function( response ) {
+	it( "misses GETting /missing-controller", function() {
+		return ctx.get( "/missing-controller" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "misses GETting /missing-method", function() {
-		return hitchy.onStarted.then( () => Test.get( "/missing-method" )
-			.then( function( response ) {
+	it( "misses GETting /missing-method", function() {
+		return ctx.get( "/missing-method" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /something", function() {
-		return hitchy.onStarted.then( () => Test.get( "/something" )
-			.then( function( response ) {
+	it( "GETs /something", function() {
+		return ctx.get( "/something" )
+			.then( response => {
 				// was working above when used w/o prefix
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /addon", function() {
-		return hitchy.onStarted.then( () => Test.get( "/addon" )
-			.then( function( response ) {
+	it( "GETs /addon", function() {
+		return ctx.get( "/addon" )
+			.then( response => {
 				// was working above when used w/o prefix
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /injected/hitchy/test", function() {
-		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/test" )
-			.then( function( response ) {
+	it( "GETs /injected/hitchy/test", function() {
+		return ctx.get( "/injected/hitchy/test" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.mode.should.be.String().and.eql( "index" );
-			} ) );
+			} );
 	} );
 
-	test( "misses GETting /injected/hitchy/missing-controller", function() {
-		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/missing-controller" )
-			.then( function( response ) {
+	it( "misses GETting /injected/hitchy/missing-controller", function() {
+		return ctx.get( "/injected/hitchy/missing-controller" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "misses GETting /injected/hitchy/missing-method", function() {
-		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/missing-method" )
-			.then( function( response ) {
+	it( "misses GETting /injected/hitchy/missing-method", function() {
+		return ctx.get( "/injected/hitchy/missing-method" )
+			.then( response => {
 				response.should.have.status( 404 );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /injected/hitchy/something", function() {
-		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/something" )
-			.then( function( response ) {
+	it( "GETs /injected/hitchy/something", function() {
+		return ctx.get( "/injected/hitchy/something" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.mode.should.be.String().and.eql( "something" );
-			} ) );
+			} );
 	} );
 
-	test( "GETs /injected/hitchy/addon", function() {
-		return hitchy.onStarted.then( () => Test.get( "/injected/hitchy/addon" )
-			.then( function( response ) {
+	it( "GETs /injected/hitchy/addon", function() {
+		return ctx.get( "/injected/hitchy/addon" )
+			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();
 				response.data.mode.should.be.String().and.eql( "addon" );
-			} ) );
+			} );
 	} );
 } );

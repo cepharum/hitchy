@@ -36,21 +36,21 @@ const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
 
 // ----------------------------------------------------------------------------
 
-const { suite, test } = require( "mocha" );
+const { describe, it } = require( "mocha" );
 
 require( "should" );
 
 // ----------------------------------------------------------------------------
 
-suite( "Library.Utility.Introduce", function() {
-	test( "is exporting function for qualifying request descriptors", function() {
+describe( "Library.Utility.Introduce", function() {
+	it( "is exporting function for qualifying request descriptors", function() {
 		return ApiMockUp.then( function( { Introduce } ) {
 			Introduce.should.be.Function();
 			Introduce.should.have.length( 1 );
 		} );
 	} );
 
-	test( "is qualifying request context provided as `this` in controllers and policies", function() {
+	it( "is qualifying request context provided as `this` in controllers and policies", function() {
 		return ApiMockUp.then( function( { Introduce } ) {
 			const request = {};
 

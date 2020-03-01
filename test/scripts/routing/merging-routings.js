@@ -9,19 +9,17 @@ const { describe, it, before, after } = require( "mocha" );
 require( "should" );
 
 const Test = require( "../../../tools/index" ).test;
-const Hitchy = require( "../../../injector" ).express;
 
 // ----------------------------------------------------------------------------
 
 describe( "Merging policies", function() {
-	const node = Hitchy( options );
-	let server = null;
+	const ctx = {};
 
-	before( () => Test.startServer( node ).then( s => ( server = s ) ) );
-	after( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
 	it( "should expose policies for either supported stage", () => {
-		const { policies } = node.hitchy.router;
+		const { policies } = ctx.hitchy.api.router;
 
 		policies.should.be.Object().which.has.properties( "before", "after" );
 
@@ -47,7 +45,7 @@ describe( "Merging policies", function() {
 	} );
 
 	it( "should expose subset of routes defined for either supported stage and plugin using actually required routes, only", () => {
-		const { terminals } = node.hitchy.router;
+		const { terminals } = ctx.hitchy.api.router;
 
 		const scalars = terminals.onMethod( "GET" ).onPrefix( "/scalar" );
 

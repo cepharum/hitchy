@@ -3,7 +3,7 @@
 const options = {
 	projectFolder: "test/projects/empty-plugins",
 	dependencies: [ "important", "supporting" ],
-	logger: true,
+	_logger: true,
 	// debug: true,
 };
 

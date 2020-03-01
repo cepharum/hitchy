@@ -5,26 +5,23 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"];
 
 // ----------------------------------------------------------------------------
 
-suite( "Serving project w/ empty plugins", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Serving project w/ empty plugins", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
-	test( "detects all components enabled by default", function() {
-		return hitchy.onStarted
-			.then( () => Test.get( "/", undefined, { accept: "text/json" } ) )
+	it( "detects all components enabled by default", function() {
+		return ctx.get( "/", undefined, { accept: "text/json" } )
 			.then( response => {
 				response.should.have.status( 200 );
 				response.should.be.json();

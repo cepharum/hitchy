@@ -33,30 +33,28 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../tools" ).test;
-const Hitchy = require( "../../injector" )[process.env.HITCHY_MODE || "node"];
 
 // ----------------------------------------------------------------------------
 
-suite( "Testing runtime", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Testing runtime", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options, { /* injector: "express", prefix: "/mount/path" */ } ) );
+	after( Test.after( ctx ) );
 
-	test( "is assessing request", () => {
-		return hitchy.onStarted.then( () => Test.get( "/" )
+	it( "is assessing request", () => {
+		return ctx.get( "/" )
 			.then( response => { // eslint-disable-line no-unused-vars
 				/*
 				response.should.have.status( 200 );
 				response.should.be.html();
 				response.text.should.be.String().and.match( /\bwelcome\b/i ).and.match( /<p>/i );
 				*/
-			} ) );
+			} );
 	} );
 } );
