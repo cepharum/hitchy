@@ -33,29 +33,25 @@ const options = {
 	// debug: true,
 };
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"];
 
 // ----------------------------------------------------------------------------
 
-suite( "Hitchy", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+describe( "Hitchy", function() {
+	const ctx = {};
 
-	suiteSetup( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
-	test( "is reading configuration files provided by discovered plugin", function() {
-		return hitchy.onStarted.then( () => {
-			hitchy.hitchy.config.should.be.Object();
-			hitchy.hitchy.config.should.have.property( "custom" ).which.is.an.Object().which.has.property( "visible" ).which.is.true();
-			hitchy.hitchy.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "additional" ).which.is.true();
-			hitchy.hitchy.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "overloaded" ).which.is.equal( "yes" );
-		} );
+	it( "is reading configuration files provided by discovered plugin", function() {
+		ctx.hitchy.api.config.should.be.Object();
+		ctx.hitchy.api.config.should.have.property( "custom" ).which.is.an.Object().which.has.property( "visible" ).which.is.true();
+		ctx.hitchy.api.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "additional" ).which.is.true();
+		ctx.hitchy.api.config.should.have.property( "customConfig" ).which.is.an.Object().which.has.property( "overloaded" ).which.is.equal( "yes" );
 	} );
 } );

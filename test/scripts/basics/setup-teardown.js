@@ -37,35 +37,27 @@ const { describe, it, before, after } = require( "mocha" );
 const Should = require( "should" );
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" )[process.env.HITCHY_MODE || "node"];
 
 // ----------------------------------------------------------------------------
 
 describe( "A Hitchy application", function() {
-	const hitchy = Hitchy( options );
-	let server = null;
+	const ctx = {};
 
-	before( () => Test.startServer( hitchy ).then( s => ( server = s ) ) );
-
-	after( () => server && server.stop() );
+	before( Test.before( ctx, options ) );
+	after( Test.after( ctx ) );
 
 	it( "may provide initialize.js in project root to be invoked at end of bootstrap", () => {
-		return hitchy.onStarted
-			.then( () => {
-				global.startedHitchyProjectNamedSetupTeardown.should.be.true();
-				global.startedHitchyProjectNamedSetupTeardownWith.should.be.Object().which.has.size( 2 ).and.has.properties( "options", "api" );
-				global.startedHitchyProjectNamedSetupTeardownWith.options.projectFolder.replace( /\\/g, "/" ).should.endWith( "test/projects/setup-teardown" );
+		global.startedHitchyProjectNamedSetupTeardown.should.be.true();
+		global.startedHitchyProjectNamedSetupTeardownWith.should.be.Object().which.has.size( 2 ).and.has.properties( "options", "api" );
+		global.startedHitchyProjectNamedSetupTeardownWith.options.projectFolder.replace( /\\/g, "/" ).should.endWith( "test/projects/setup-teardown" );
 
-				Should( global.stoppedHitchyProjectNamedSetupTeardown ).not.be.ok();
-				Should( global.stoppedHitchyProjectNamedSetupTeardownWith ).not.be.ok();
-			} );
+		Should( global.stoppedHitchyProjectNamedSetupTeardown ).not.be.ok();
+		Should( global.stoppedHitchyProjectNamedSetupTeardownWith ).not.be.ok();
 	} );
 
 	it( "may provide shutdown.js in project root to be invoked right before shutting down all plugins", () => {
-		return server.stop()
+		return ctx.hitchy.api.shutdown()
 			.then( () => {
-				server = null;
-
 				global.stoppedHitchyProjectNamedSetupTeardown.should.be.true();
 				global.stoppedHitchyProjectNamedSetupTeardownWith.should.be.Object().which.has.size( 2 ).and.has.properties( "options", "api" );
 				global.stoppedHitchyProjectNamedSetupTeardownWith.options.projectFolder.replace( /\\/g, "/" ).should.endWith( "test/projects/setup-teardown" );

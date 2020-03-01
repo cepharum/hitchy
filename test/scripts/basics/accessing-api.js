@@ -1,60 +1,57 @@
 "use strict";
 
-const { suite, test, suiteTeardown, suiteSetup } = require( "mocha" );
+const { describe, it, after, before } = require( "mocha" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools" ).test;
-const Hitchy = require( "../../../injector" ).node;
 
 // ----------------------------------------------------------------------------
 
-suite( "Hitchy node running empty project folder", () => {
-	let server = null;
-	const node = Hitchy( {
+describe( "Hitchy node running empty project folder", () => {
+	const ctx = {};
+
+	after( Test.after( ctx ) );
+	before( Test.before( ctx, {
 		projectFolder: "test/projects/empty",
 		// debug: true,
-	} );
+	} ) );
 
-	suiteSetup( () => Test.startServer( node ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
-
-	test( "has access on hitchy API", () => {
-		node.hitchy.should.be.ok();
-		node.hitchy.should.have.ownProperty( "runtime" );
-		node.hitchy.runtime.should.be.ok();
+	it( "has access on Hitchy API", () => {
+		ctx.hitchy.api.should.be.ok();
+		ctx.hitchy.api.should.have.ownProperty( "runtime" );
+		ctx.hitchy.api.runtime.should.be.ok();
 	} );
 } );
 
-suite( "Hitchy node running project with routed controllers", () => {
-	let server = null;
-	const node = Hitchy( {
+describe( "Hitchy node running project with routed controllers", () => {
+	const ctx = {};
+
+	after( Test.after( ctx ) );
+	before( Test.before( ctx, {
 		projectFolder: "test/projects/core-only",
 		// debug: true,
-	} );
+	} ) );
 
-	suiteSetup( () => Test.startServer( node ).then( s => ( server = s ) ) );
-	suiteTeardown( () => server && server.stop() );
-
-	test( "exposes Hitchy's API via `this.api`", () => {
-		return Test.get( "/mirror/api" )
+	it( "exposes Hitchy's API via `this.api`", () => {
+		return ctx.get( "/mirror/api" )
 			.then( res => {
 				res.should.have.status( 200 );
 				res.data.should.have.property( "this" ).which.is.Array().and.not.empty();
 			} );
 	} );
 
-	test( "exposes Hitchy's API via `req.hitchy`", () => {
-		return Test.get( "/mirror/api" )
+	it( "exposes Hitchy's API via `req.hitchy`", () => {
+		return ctx.get( "/mirror/api" )
 			.then( res => {
 				res.should.have.status( 200 );
 				res.data.should.have.property( "req" ).which.is.Array().and.not.empty();
 			} );
 	} );
 
-	test( "exposes same instance of Hitchy's API in either case", () => {
-		return Test.get( "/mirror/api" )
+	it( "exposes same instance of Hitchy's API in either case", () => {
+		return ctx.get( "/mirror/api" )
 			.then( res => {
 				res.should.have.status( 200 );
 				res.data.should.have.property( "same" ).which.is.true();
