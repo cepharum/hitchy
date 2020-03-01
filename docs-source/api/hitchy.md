@@ -21,7 +21,7 @@ In a fully running application Hitchy's API is available
 
 ### Using Common Module Pattern
 
-Plugins and components discovered by Hitchy are (consisting of) modules that may export an API as usual:
+As a Node.js developer you are familiar with the traditional way of writing modules. Plugins and components discovered by Hitchy are (consisting of) such modules and thus might look like this:
 
 ```javascript
 module.exports = {
@@ -34,15 +34,15 @@ module.exports = {
 };
 ```
 
-This example shows a software module that's exposing two functions to be its API the usual way.
+This example shows a software module that's exposing two functions forming its API.
 
-Hitchy's core supports so called _common module pattern_ when _discovering_ plugins and their components.
+In addition to those modules Hitchy's core supports so called _common module pattern_ when _discovering_ plugins and their components.
 
 :::warning Discovering Plugins?
-In Hitchy _discovering_ a plugin is different from _requiring_ it. The term discovery refers to Hitchy's capability of [automatically loading a plugin during bootstrap](../internals/architecture-basics.md#discovering-plugins). In opposition to that any code of your application may still `require()` modules the usual way though **this is going to have some negative side effects for modules relying on _common module pattern_**. 
+In Hitchy _discovering_ a plugin is different from _requiring_ it. The term discovery refers to Hitchy's capability of [automatically loading a plugin during bootstrap](../internals/architecture-basics.md#discovering-plugins). In opposition to that, any code of your application may still `require()` modules the usual way. **However, this is going to have some negative side effects for modules relying on _common module pattern_**. That's why we suggest to stick with this pattern most of the time. 
 ::: 
 
-The common module pattern is a convention allowing any complying module to export a function instead of its API. This function is invoked by Hitchy's bootstrap code to retrieve the actual API of the module:
+The common module pattern is a convention allowing any complying module to export a function instead of its API. This function is instantly invoked by Hitchy's bootstrap code to retrieve the actual API of the module:
 
 ```javascript
 module.exports = function( options ) {
@@ -59,7 +59,7 @@ module.exports = function( options ) {
 };
 ```
 
-This is the counterpart of same module as before. But this time it is relying on the common module pattern mostly to gain access on Hitchy's API. During discovery of plugins and components any function exported from either module is invoked with Hitchy's API provided as `this` and global options describing runtime context and arguments passed on starting Hitchy in first argument.
+In this example the same API is exposed as before. But this time it is relying on the common module pattern mostly to gain access on Hitchy's API in line two. During discovery of plugins and components any function exported by either module is invoked with Hitchy's API provided as `this` and global options describing runtime context and arguments passed on starting Hitchy in first argument.
 
 :::warning Related Issues
 On exporting an ES6 class in a module Hitchy might falsely consider this module to comply with common module pattern.
@@ -99,9 +99,27 @@ module.exports = MyServiceComponent;
 
 #### Returning Promise
 
-When complying with common module pattern a module may return an instance of Promise rather than some API. In that case Hitchy is waiting for the promise to be resolved with the actually desired API.
+Another benefit of complying with common module patterns is available on module's function returning a Promise for the module's API instead of that API directly. In that case Hitchy is waiting for the promise to be resolved with the actually desired API.
 
-Thus, when complying with common module pattern either module is capable of deferring bootstrap code of Hitchy and get all the opportunities required to deliver its export.
+This way it is possible to defer bootstrap code of Hitchy and wait for prerequisites required for delivering module's API eventually.
+
+```javascript
+module.exports = function( options ) {
+    const api = this;
+
+    return someAsynchronousCode()
+        .then( () => {
+            return {
+                create() {
+                    // add some code here
+                },
+                customFunction() {
+                    // add some code here
+                }, 
+            };
+        } );
+};
+```
 
 #### Passing Additional Information
 
@@ -111,7 +129,7 @@ Whenever Hitchy is supporting common module pattern it might intend to pass furt
 
 A similar pattern is supported e.g. when accessing some [elements of a plugin's API](plugins.md#common-plugin-api) and it is named _common module function pattern_. Just like common module pattern it is meant to support provision of a function to be invoked for generating some data instead of providing that data immediately. And any such function is invoked with Hitchy's API provided as `this`, Hitchy's options in first argument and any number of additional data provided in further arguments, too.
 
-In opposition to common module pattern this isn't about a whole module to be load but just some property exported there. And for the containing module to be capable of complying with common module pattern using this pattern isn't quite as beneficial and commonly useful except for rare cases.
+In opposition to common module pattern this isn't about a whole module to be loaded but just some property exported there. And for the containing module to be capable of complying with common module pattern using this pattern isn't quite as beneficial and commonly useful except for rare cases. **That's why we suggest to stick with [common module pattern](#using-common-module-pattern) whenever possible.**
 
 ### In Request Handlers
 

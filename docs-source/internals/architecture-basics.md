@@ -12,11 +12,13 @@ Hitchy consists of a very rudimentary core that's basically capable of these fea
 
 ## Integrating With Services
 
-Currently there are two _injectors_: one is available for integrating a Hitchy-based application with an Express.js based service as a middleware. A second one is attaching a Hitchy-based application to a purely Node.js based HTTP service. 
+Currently there are two _injectors_: one is available for integrating a Hitchy-based application with an [express](https://expressjs.com/)-based service as a middleware. A second one is attaching a Hitchy-based application to a purely Node.js based HTTP service. 
 
-Integrating with ExpressJS application is as simple as this:
+Integrating with an [express](https://expressjs.com/) application is as simple as this:
 
 ```javascript
+const expressApp = require( "express" )();
+
 const Hitchy = require( "hitchy" ).express;
 const MyApp = Hitchy( {
     projectFolder: "path/name/of/hitchy/project",
@@ -42,7 +44,7 @@ Plugins are discovered when starting Hitchy. There is bootstrap code which is pa
 3. **Exposure** stage is loading [components](#components) provided by either plugin as well as the application for exposing them in context of a resulting, commonly available [Hitchy API](../api).
 
    :::warning Compatibility
-   In versions before 0.4.0 exposure stage was processed after configuration stage. Order has been swapped to support services in configuration. 
+   In versions before 0.4.0 exposure stage was processed after configuration stage. Order has been swapped to enable use of services in configuration. 
    :::
 
 4. In **configuration** stage every plugin is asked for its contribution to application's configuration. This includes processing the custom configuration provided as part of the current application itself as well.
