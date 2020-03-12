@@ -34,7 +34,6 @@ const modules = {
 	IntroduceUtility: "lib/utility/introduce",
 	LoggerUtility: "lib/utility/logger",
 	ParserUtility: "lib/utility/parser",
-	PromiseUtility: "lib/utility/promise",
 };
 
 const ApiMockUp = require( "../../../../tools" ).apiMockUp( { modules } );
@@ -49,7 +48,7 @@ require( "should" );
 
 describe( "Library.Utility", function() {
 	it( "exports collection of submodules", function() {
-		return ApiMockUp.then( function( { Utility, FileUtility, IntroduceUtility, LoggerUtility, ParserUtility, PromiseUtility } ) {
+		return ApiMockUp.then( function( { Utility, FileUtility, IntroduceUtility, LoggerUtility, ParserUtility } ) {
 			// NOTE This test compares provision of APIs using different ways
 			//      for accessing parts of it ... due to CMP providing code
 			//      bound to API
@@ -57,7 +56,6 @@ describe( "Library.Utility", function() {
 			Utility.introduce.should.be.eql( IntroduceUtility );
 			Utility.logger.should.be.eql( LoggerUtility );
 			Utility.parser.should.be.eql( ParserUtility );
-			Utility.promise.should.be.eql( PromiseUtility );
 		} );
 	} );
 } );

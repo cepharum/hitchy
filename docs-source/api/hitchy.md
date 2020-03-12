@@ -631,14 +631,6 @@ This subsection provides helper functions used by Hitchy for accessing local fil
 There is a more powerful package [file-essentials](https://www.npmjs.com/package/file-essentials) and we consider to replace these functions with that package in a future release.
 :::
 
-### api.utility.promise
-
-This subsection provides helper functions to simplify complex asynchronous processes using promises.
-
-:::warning Deprecation Warning
-There is a more powerful package [promise-essentials](https://www.npmjs.com/package/promise-essentials) and we consider to replace these functions with that package in a future release.
-:::
-
 ### api.utility.object
 
 This subsection provides helper functions for 

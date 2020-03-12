@@ -30,7 +30,8 @@
 
 const File = require( "fs" );
 const Path = require( "path" );
-const Tools = require( "../../tools" );
+
+const PromiseUtils = require( "promise-essentials" );
 
 const Log = require( "debug" )( "hitchy:start" );
 
@@ -73,7 +74,7 @@ module.exports = function( options, args ) {
 	const files = [ "server.js", "app.js", "main.js" ]
 		.map( name => Path.resolve( options.projectFolder, name ) );
 
-	return Tools.promise.find( files, function( filename ) {
+	return PromiseUtils.find( files, function( filename ) {
 		return new Promise( ( resolve, reject ) => {
 			File.stat( filename, ( error, stat ) => {
 				if ( error ) {

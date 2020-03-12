@@ -27,7 +27,8 @@
     "debug": "^4.1.1",
     "file-essentials": "^0.0.13",
     "minimist": "^1.2.0",
-    "path-to-regexp": "^3.1.0"
+    "path-to-regexp": "^3.1.0",
+    "promise-essentials": "^0.1.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",

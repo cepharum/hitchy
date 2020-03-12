@@ -6,12 +6,12 @@ const options = {
 };
 
 const { describe, it, after, before } = require( "mocha" );
+const PromiseUtils = require( "promise-essentials" );
 
 require( "should" );
 require( "should-http" );
 
 const Test = require( "../../../tools" ).test;
-const Promises = require( "../../../tools" ).promise;
 
 // ----------------------------------------------------------------------------
 
@@ -42,8 +42,8 @@ describe( "Simulating load by sending 5k requests split into chunks of 500 each 
 			count++;
 		};
 
-		return Promises.each( new Array( Chunks ), ( _, chunkIndex ) => {
-			return Promises.delay( DelayPerChunk * chunkIndex )
+		return PromiseUtils.each( new Array( Chunks ), ( _, chunkIndex ) => {
+			return PromiseUtils.delay( DelayPerChunk * chunkIndex )
 				.then( () => {
 					const requests = new Array( RequestsPerChunk );
 
@@ -67,8 +67,8 @@ describe( "Simulating load by sending 5k requests split into chunks of 500 each 
 
 		let count = 0;
 
-		return Promises.each( new Array( Chunks ), ( _, chunkIndex ) => {
-			return Promises.delay( DelayPerChunk * chunkIndex )
+		return PromiseUtils.each( new Array( Chunks ), ( _, chunkIndex ) => {
+			return PromiseUtils.delay( DelayPerChunk * chunkIndex )
 				.then( () => {
 					const requests = new Array( RequestsPerChunk );
 

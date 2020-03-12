@@ -31,7 +31,7 @@
 const Path = require( "path" );
 const EventEmitter = require( "events" );
 
-const Promises = require( "./promise" );
+const PromiseUtils = require( "promise-essentials" );
 
 const LibraryComponents = [ "utility", "bootstrap", "responder", "router" ];
 
@@ -135,7 +135,7 @@ function _nop() {} // eslint-disable-line no-empty-function
 function _toolLibraryLoad( _api, libFolder, options = {} ) {
 	_api.loader = _toolLibraryCommonModulePatternLoader;
 
-	return Promises.each( LibraryComponents, moduleName => {
+	return PromiseUtils.each( LibraryComponents, moduleName => {
 		return Promise.resolve( require( Path.join( libFolder, moduleName ) ).call( _api, options ) )
 			.then( moduleApi => {
 				Object.defineProperty( _api, moduleName, {
@@ -195,7 +195,7 @@ function _toolLibraryLoad( _api, libFolder, options = {} ) {
 			let moduleApi = require( Path.resolve( options.projectFolder, pathname ) );
 
 			if ( typeof moduleApi === "function" ) {
-				moduleApi = moduleApi.apply( _api, [ options ].concat( moduleArguments ) );
+				moduleApi = moduleApi.apply( _api, [options].concat( moduleArguments ) );
 			}
 
 			resolve( moduleApi );
