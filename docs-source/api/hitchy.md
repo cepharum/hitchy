@@ -870,6 +870,10 @@ A properly sorted list of MIME type ranges is provided in this property accordin
 When handling request with header `Accept: text/*;q=0.5, text/json` this property will expose sorted list of given MIME ranges `[ "text/json", "text/*" ]`.
 :::
 
+### req.context
+
+This property is exposing the [request context](#request-context) which is also available via `this` in an invoked request handler. However, due to binding to different contexts use of `this` might not be an option.
+
 ### req.cookies
 
 :::warning Requires Plugin
