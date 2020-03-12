@@ -171,28 +171,20 @@ hitchy /app --useAuthProvider https://some.auth.provider.com
 
 These are options recognized and/or managed by Hitchy:
 
-### options.projectFolder
+### options.debug
 
-This option is qualified during triangulation stage of bootstrap. It is addressing folder containing currently running application. When omitted current working directory is used by default.
+This boolean option is controlling whether debug output is desired or not. Basically this option affects Hitchy to always enable any [logging facility](#api-log).
 
 :::tip CLI Parameter
-When using Hitchy's CLI the related parameter is called `--project`.
+When using Hitchy's CLI the related parameter is called `--debug`.
 :::
 
-### options.hitchyFolder
+### options.dependencies
 
-This option is defined by Hitchy during triangulation stage of bootstrap. It is addressing folder containing Hitchy installation used to manage currently running application.
-
-:::tip CLI Parameter
-There is no related CLI parameter for using Hitchy's CLI script already requires to pick its installation folder.
-:::
-
-### options.pluginsFolder
-
-This option is picking different folder containing all available plugins in a **node_modules** sub-folder. The [project folder](#options-projectfolder) is used in case of omitting this option.
+This option is supported to select plugins current application depends on. It is replacing any such list of plugins read from application's own **hitchy.json** file. In addition it is limiting set of eventually available plugins.
 
 :::tip CLI Parameter
-When using Hitchy's CLI the related parameter is called `--plugins`.
+When using Hitchy's CLI the related parameter is called `--depend-on`. It can be provided multiple times.
 :::
 
 ### options.explicitPlugins <Badge type="info" text="0.4.0"></Badge>
@@ -213,21 +205,30 @@ This boolean option can be set to limit discovery of plugins to those folders li
 When using Hitchy's CLI the related parameter is called `--explicit-only`.
 :::
 
-### options.debug
+### options.hitchyFolder
 
-This boolean option is controlling whether debug output is desired or not. Basically this option affects Hitchy to always enable any [logging facility](#api-log).
-
-:::tip CLI Parameter
-When using Hitchy's CLI the related parameter is called `--debug`.
-:::
-
-### options.dependencies
-
-This option is supported to select plugins current application depends on. It is replacing any such list of plugins read from application's own **hitchy.json** file. In addition it is limiting set of eventually available plugins.
+This option is defined by Hitchy during triangulation stage of bootstrap. It is addressing folder containing Hitchy installation used to manage currently running application.
 
 :::tip CLI Parameter
-When using Hitchy's CLI the related parameter is called `--depend-on`. It can be provided multiple times.
+There is no related CLI parameter for using Hitchy's CLI script already requires to pick its installation folder.
 :::
+
+### options.pluginsFolder
+
+This option is picking different folder containing all available plugins in a **node_modules** sub-folder. The [project folder](#options-projectfolder) is used in case of omitting this option.
+
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--plugins`.
+:::
+
+### options.projectFolder
+
+This option is qualified during triangulation stage of bootstrap. It is addressing folder containing currently running application. When omitted current working directory is used by default.
+
+:::tip CLI Parameter
+When using Hitchy's CLI the related parameter is called `--project`.
+:::
+
 
 ## Configuration
 
@@ -276,6 +277,22 @@ In either context a file named **config/local.js** is always processed last. It 
 :::
 
 The structure of configuration depends on used plugins and it might include arbitrary information specific to your application, as well. However, some properties are supported by Hitchy's core and they are listed below:
+
+### config.blueprints
+
+:::warning
+By intention, blueprints are supported in plugins, only.
+:::
+
+:::tip Hitchy's Routing Concept
+Reading the [introduction on Hitchy's routing](../internals/routing-basics.md) is highly recommended.
+:::
+
+Declaration of blueprints is mostly equivalent to declaring routes in [`config.routes`](#config-routes). In opposition to that blueprint declarations don't support separate lists per _routing slot_ for there is only one slot for every plugin to declare its blueprint routes.
+
+### config.bodyParser
+
+This property is exposing a function invoked with a buffer representing a request's raw body. It is invoked to parse this buffer for some contained information provided on invoking [`req.fetchBody()`](#req-fetchbody-parser) without any parameter. The function may return promise to deferredly deliver parsed content.
 
 ### config.policies
 
@@ -330,18 +347,6 @@ These are the differences between policies and routes:
       ],
   };
   ```
-
-### config.blueprints
-
-:::warning
-By intention, blueprints are supported in plugins, only.
-:::
-
-:::tip Hitchy's Routing Concept
-Reading the [introduction on Hitchy's routing](../internals/routing-basics.md) is highly recommended.
-:::
-
-Declaration of blueprints is mostly equivalent to declaring routes in [`config.routes`](#config-routes). In opposition to that blueprint declarations don't support separate lists per _routing slot_ for there is only one slot for every plugin to declare its blueprint routes.
 
 ### config.routes
 
@@ -465,10 +470,6 @@ exports.routes = {
 ```
 :::
 
-### config.bodyParser
-
-This property is exposing a function invoked with a buffer representing a request's raw body. It is invoked to parse this buffer for some contained information provided on invoking [`req.fetchBody()`](#req-fetchbody-parser) without any parameter. The function may return promise to deferredly deliver parsed content.
-
 
 ## API Elements
 
@@ -477,6 +478,61 @@ Hitchy's API can be divided into several sections to be described here.
 :::tip
 The following description assumes you know [how to gain access on Hitchy's API](#gaining-access) in either situation, thus referring to it using just `api`. 
 :::
+
+### api.Client
+
+This class is providing router client suitable for locally triggering request dispatching.
+
+:::warning Obey The Naming!
+This class is exposed using PascalCase name to comply with common rules of code style linters.
+:::
+
+This client can be used to simulate requests for testing purposes, for improved request processing e.g. via websockets or for locally triggering request handlers e.g. for transparently rewriting requests or similar.
+
+:::tip Example
+```javascript
+const client = new api.Client( {
+    method: "POST", 
+    url: "/some/internal/url?foo=bar",
+    headers: {
+        "content-type": "text/json",
+    },
+} );
+
+client.end( JSON.stringify( { some: "input" } ) );
+
+return client.dispatch()
+    .then( res => {
+        if ( res.statusCode === 200 ) {
+            return res.body()
+                .then( body => JSON.parse( body.toString( "utf8" ) ) )
+                .then( data => {
+                    // TODO: process response
+                } );
+        }
+    } );
+```
+:::
+
+:::tip
+This client simulates _most_ parts of [ClientRequest](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_clientrequest) and [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse). In addition method `res.body()` is provided to simplify retrieval of response body.
+:::
+
+### api.cmfp
+
+**Signature:** `api.cmfp( someFunction, [ arg1, arg2 ] )`
+
+This method is invoking some function provided by reference with support for _common module function pattern_. This pattern is derived from [common module pattern](#using-common-module-pattern) and is meant to invoke particular functions of plugins in a similar way.
+
+Invoked functions are assumed to expect Hitchy's API as `this` and global options provided in first argument which is implicitly prepended by this method.
+
+### api.cmp
+
+**Signature:** `api.cmp( "./my/module", [ arg1, arg2 ] )`
+
+This method is loading selected module with support for [common module pattern](#using-common-module-pattern). Optionally provided arguments are passed in addition to options on invoking function exposed by selected module as part of common module pattern. 
+
+If selected module doesn't comply with that pattern it is loaded as usual.
 
 ### api.config <Badge type="info" text="0.3.0"></Badge>
 
@@ -487,6 +543,68 @@ All configuration of every available plugin as well as the application itself is
 Configuration provided in `api.config` always includes options exported by available plugins. If you need to access the application's own configuration - which is merged from reading all Javascript files in application's sub-folder **config** - this basically hidden property can be used.
 
 This is the application's counterpart to either plugin's [exposure of its pure configuration](plugins.md#plugin-config).
+
+### api.crash() <Badge type="info" text="0.5.0"></Badge>
+
+**Signature:** `api.crash( Error ) : void`
+
+Using this function an application may _crash_ itself by intention. The provided error is logged before shutting down application and its request listener.
+
+This function may be useful when running a Hitchy application in a container. Consider your application has entered some failed state it might want to recover from the easy way by simply restarting on purpose. This is possible by invoking this function.
+
+This function is different from [api.shutdown()](#api-shutdown) by writing provided error to log file and exit process with non-zero status code eventually.
+
+### api.data
+
+Hitchy's API gets sealed after bootstrap has finished to prevent intended or accidental change of any exposed API. 
+
+This property is excluded in particular to provide a common space multiple components can use for saving and sharing data that's exceeding the lifetime of a single request.
+
+### api.folder
+
+This function takes a relative path name of a file or folder and qualifies it in context of current hitchy-based project, which is your application.
+
+The provided relative path name may start with special markers to select one of several supported base folders:
+
+* `@project/some/file.ext` is selecting **some/file.ext** in context of your current project's folder. This is the default behaviour when providing just `some/file.ext`, too.
+* `@hitchy/some/file.ext` is selecting **some/file.ext** in context of [folder containing currently used core implementation of Hitchy](#optionshitchyfolder). Usually, this folder is located in **node_modules/hitchy** of your project's folder, but using command line arguments it is possible to pick a different location. 
+
+### api.log()
+
+This function is a generator for logging facilities. It is invoked with the name of a logging facility and returns another function which can be used to actually generate log messages on behalf of either facility.
+
+:::tip Example
+```javascript
+const AlertLog = api.log( "hitchy:plugin:tooling:alert" );
+const DebugLog = api.log( "hitchy:plugin:tooling:debug" );
+
+DebugLog( "got some configuration" );
+
+AlertLog( "connection lost" );
+```
+:::
+
+Basically, facilities are supported to cluster your application's log and help with controlling what messages are actually logged or not making it more useful in either situation.
+
+:::tip Environment-Based Control
+Environment variable **DEBUG** is examined for providing a comma-separated list of facilities to be enabled. 
+
+```bash
+DEBUG=hitchy:*,myapp:*,-*
+```
+
+Every item of that list 
+
+* is a facility name to be logged,
+* may be prefixed with single dash `-` to explicitly exclude a matching facility from logging,
+* may contain asterisk `*` for matching multiple facilities to be enabled or disabled.
+:::
+
+:::warning Naming Convention
+Facility names should represent a hierarchy of facilities by extending the name of a superordinated facility with a colon and the intended facility's name. 
+
+Sticking to this pattern is beneficial on using asterisk `*` in logging control.
+::: 
 
 ### api.meta <Badge type="info" text="0.4.0"></Badge>
 
@@ -537,14 +655,9 @@ Data found in **hitchy.json** file is preferred over data found in **package.jso
 * [`deepComponents`](plugins.md#deepcomponents)
 * [`appendFolders`](plugins.md#appendfolders)
 
-### api.folder
+### api.plugins
 
-This function takes a relative path name of a file or folder and qualifies it in context of current hitchy-based project, which is your application.
-
-The provided relative path name may start with special markers to select one of several supported base folders:
-
-* `@project/some/file.ext` is selecting **some/file.ext** in context of your current project's folder. This is the default behaviour when providing just `some/file.ext`, too.
-* `@hitchy/some/file.ext` is selecting **some/file.ext** in context of [folder containing currently used core implementation of Hitchy](#optionshitchyfolder). Usually, this folder is located in **node_modules/hitchy** of your project's folder, but using command line arguments it is possible to pick a different location. 
+All discovered and loaded plugins are listed in this property. It is an object mapping a [plugin's role](plugins.md#roles) (which might be different from its name!) into either [plugin's API](plugins.md#common-plugin-api). 
 
 ### api.runtime
 
@@ -561,49 +674,6 @@ For the sake of flexibility and fault tolerance either group is exposed using it
 Starting with version 0.3.0 the configuration isn't available as `api.runtime.config` anymore, but exposed as [`api.config`](#api-config).
 :::
 
-### api.data
-
-Hitchy's API gets sealed after bootstrap has finished to prevent intended or accidental change of any exposed API. 
-
-This property is excluded in particular to provide a common space multiple components can use for saving and sharing data that's exceeding the lifetime of a single request.
-
-### api.log()
-
-This function is a generator for logging facilities. It is invoked with the name of a logging facility and returns another function which can be used to actually generate log messages on behalf of either facility.
-
-:::tip Example
-```javascript
-const AlertLog = api.log( "hitchy:plugin:tooling:alert" );
-const DebugLog = api.log( "hitchy:plugin:tooling:debug" );
-
-DebugLog( "got some configuration" );
-
-AlertLog( "connection lost" );
-```
-:::
-
-Basically, facilities are supported to cluster your application's log and help with controlling what messages are actually logged or not making it more useful in either situation.
-
-:::tip Environment-Based Control
-Environment variable **DEBUG** is examined for providing a comma-separated list of facilities to be enabled. 
-
-```bash
-DEBUG=hitchy:*,myapp:*,-*
-```
-
-Every item of that list 
-
-* is a facility name to be logged,
-* may be prefixed with single dash `-` to explicitly exclude a matching facility from logging,
-* may contain asterisk `*` for matching multiple facilities to be enabled or disabled.
-:::
-
-:::warning Naming Convention
-Facility names should represent a hierarchy of facilities by extending the name of a superordinated facility with a colon and the intended facility's name. 
-
-Sticking to this pattern is beneficial on using asterisk `*` in logging control.
-::: 
-
 ### api.shutdown() <Badge type="info" text="0.5.0"></Badge>
 
 **Signature:** `api.shutdown() : Promise`
@@ -612,51 +682,6 @@ Application may intentionally shut down itself by invoking this function. It is 
 
 * fulfilled on next [close](#close) event and
 * rejected on next [error](#error) event.
-
-### api.crash() <Badge type="info" text="0.5.0"></Badge>
-
-**Signature:** `api.crash( Error ) : void`
-
-Using this function an application may _crash_ itself by intention. The provided error is logged before shutting down application and its request listener.
-
-This function may be useful when running a Hitchy application in a container. Consider your application has entered some failed state it might want to recover from the easy way by simply restarting on purpose. This is possible by invoking this function.
-
-This function is different from [api.shutdown()](#api-shutdown) by writing provided error to log file and exit process with non-zero status code eventually.
-
-### api.utility.file
-
-This subsection provides helper functions used by Hitchy for accessing local file system.
-
-:::warning Deprecation Warning
-There is a more powerful package [file-essentials](https://www.npmjs.com/package/file-essentials) and we consider to replace these functions with that package in a future release.
-:::
-
-### api.utility.promise
-
-This subsection is passing API of module `promise-essentials` Hitchy is relying on to manage more complex asynchronous processes. It is exposed here for use in plugins and applications to prevent multiple dependencies on that module in a single resulting application.
-
-### api.utility.object
-
-This subsection provides helper functions for 
-
-* deeply merging objects:
-  ```javascript
-  target = api.utility.object.merge( target, sourceA, sourceB, ... )
-  ```
-
-* deeply sealing objects:
-  ```javascript
-  object = api.utility.object.seal( object )
-  ```
-
-  A callback may be provided in second argument to be called on every object to be sealed. It is invoked with breadcrumb of property names as array of strings and assumed to return boolean indicating whether either object should be actually sealed or not.
-
-* deeply freezing objects:
-  ```javascript
-  object = api.utility.object.freeze( object )
-  ```
-
-  A callback may be provided in second argument to be called on every object to be frozen. It is invoked with breadcrumb of property names as array of strings and assumed to return boolean indicating whether either object should be actually frozen or not.
 
 ### api.utility.case
 
@@ -687,64 +712,41 @@ This subsection provides functions for converting between different practices fo
   pascal = api.utility.case.camelToPascal( "camelCase" );
   ```
 
-### api.Client
+### api.utility.file
 
-This class is providing router client suitable for locally triggering request dispatching.
+This subsection provides helper functions used by Hitchy for accessing local file system.
 
-:::warning Obey The Naming!
-This class is exposed using PascalCase name to comply with common rules of code style linters.
+:::warning Deprecation Warning
+There is a more powerful package [file-essentials](https://www.npmjs.com/package/file-essentials) and we consider to replace these functions with that package in a future release.
 :::
 
-This client can be used to simulate requests for testing purposes, for improved request processing e.g. via websockets or for locally triggering request handlers e.g. for transparently rewriting requests or similar.
+### api.utility.object
 
-:::tip Example
-```javascript
-const client = new api.Client( {
-    method: "POST", 
-    url: "/some/internal/url?foo=bar",
-    headers: {
-        "content-type": "text/json",
-    },
-} );
+This subsection provides helper functions for 
 
-client.end( JSON.stringify( { some: "input" } ) );
+* deeply merging objects:
+  ```javascript
+  target = api.utility.object.merge( target, sourceA, sourceB, ... )
+  ```
 
-return client.dispatch()
-    .then( res => {
-        if ( res.statusCode === 200 ) {
-            return res.body()
-                .then( body => JSON.parse( body.toString( "utf8" ) ) )
-                .then( data => {
-                    // TODO: process response
-                } );
-        }
-    } );
-```
-:::
+* deeply sealing objects:
+  ```javascript
+  object = api.utility.object.seal( object )
+  ```
 
-:::tip
-This client simulates _most_ parts of [ClientRequest](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_clientrequest) and [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse). In addition method `res.body()` is provided to simplify retrieval of response body.
-:::
+  A callback may be provided in second argument to be called on every object to be sealed. It is invoked with breadcrumb of property names as array of strings and assumed to return boolean indicating whether either object should be actually sealed or not.
 
-### api.plugins
+* deeply freezing objects:
+  ```javascript
+  object = api.utility.object.freeze( object )
+  ```
 
-All discovered and loaded plugins are listed in this property. It is an object mapping a [plugin's role](plugins.md#roles) (which might be different from its name!) into either [plugin's API](plugins.md#common-plugin-api). 
+  A callback may be provided in second argument to be called on every object to be frozen. It is invoked with breadcrumb of property names as array of strings and assumed to return boolean indicating whether either object should be actually frozen or not.
 
-### api.cmp
+### api.utility.promise
 
-**Signature:** `api.cmp( "./my/module", [ arg1, arg2 ] )`
+This subsection is passing API of module `promise-essentials` Hitchy is relying on to manage more complex asynchronous processes. It is exposed here for use in plugins and applications to prevent multiple dependencies on that module in a single resulting application.
 
-This method is loading selected module with support for [common module pattern](#using-common-module-pattern). Optionally provided arguments are passed in addition to options on invoking function exposed by selected module as part of common module pattern. 
-
-If selected module doesn't comply with that pattern it is loaded as usual.
-
-### api.cmfp
-
-**Signature:** `api.cmfp( someFunction, [ arg1, arg2 ] )`
-
-This method is invoking some function provided by reference with support for _common module function pattern_. This pattern is derived from [common module pattern](#using-common-module-pattern) and is meant to invoke particular functions of plugins in a similar way.
-
-Invoked functions are assumed to expect Hitchy's API as `this` and global options provided in first argument which is implicitly prepended by this method.
 
 ## Request Context
 
@@ -762,18 +764,6 @@ function( req, res ) {
 the _request context_ is available using `this`.
 :::
 
-### this.request
-
-This property is a reference on [IncomingMessage](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_incomingmessage) describing current request to be handled. It is identical to the reference provided in first argument usually named `req` of either handler.
-
-### this.response
-
-This property is a reference on [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) for managing response to be sent. It is identical to the reference provided in second argument usually named `res` of either handler.
-
-### this.local
-
-This object is provided for sharing volatile information between handlers involved in handling a particular request. This information is shared between policies and controllers participating in handling a request and gets dropped when handling request has finished.
-
 ### this.api
 
 [Hitchy's API](#api-elements) is provided in request context for simplified access.
@@ -782,9 +772,16 @@ This object is provided for sharing volatile information between handlers involv
 
 This property is an alias for simplified access on [`api.config`](#api-config) of Hitchy's API exposing current runtime configuration.
 
-### this.runtime
+### this.consumed
 
-This property is an alias for simplified access on [`api.runtime`](#api-runtime) of Hitchy's API exposing available components.
+This property contains markers used internally to handle cases that haven't been handled by any controller. You shouldn't use or adjust those marks.
+
+### this.context <Badge type="info" text="0.3.0"></Badge>
+
+This property is a string naming the service hitchy is integrated with. Currently supported values are:
+
+* `standalone` when running current application without any integration into some other application.
+* `express` when running current application with Hitchy integrated into an Express-based application.
 
 ### this.controllers <Badge type="info" text="0.3.0"></Badge>
 
@@ -792,6 +789,26 @@ This is another alias for simplifying access on collection of available controll
 
 :::tip
 Using `this.controller` is supported as well.
+:::
+
+### this.done
+
+This callback is provided by the service Hitchy is integrating with. When using Hitchy with [Express](https://expressjs.com/) invoking this function is starting next handler function registered with Express skipping any code that's authoritative in scope of Hitchy integrating with Express.
+
+:::tip Caution
+Don't use this function for it might be causing significant side effects.
+:::
+
+### this.local
+
+This object is provided for sharing volatile information between handlers involved in handling a particular request. This information is shared between policies and controllers participating in handling a request and gets dropped when handling request has finished.
+
+### this.models <Badge type="info" text="0.3.0"></Badge>
+
+This alias is simplifying access on collection of available models.
+
+:::tip
+Using `this.model` is supported as well.
 :::
 
 ### this.policies <Badge type="info" text="0.3.0"></Badge>
@@ -802,6 +819,18 @@ This alias is simplifying access on collection of available policies.
 Using `this.policy` is supported as well.
 :::
 
+### this.request
+
+This property is a reference on [IncomingMessage](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_incomingmessage) describing current request to be handled. It is identical to the reference provided in first argument usually named `req` of either handler.
+
+### this.response
+
+This property is a reference on [ServerResponse](https://nodejs.org/dist/latest/docs/api/http.html#http_class_http_serverresponse) for managing response to be sent. It is identical to the reference provided in second argument usually named `res` of either handler.
+
+### this.runtime
+
+This property is an alias for simplified access on [`api.runtime`](#api-runtime) of Hitchy's API exposing available components.
+
 ### this.services <Badge type="info" text="0.3.0"></Badge>
 
 This alias is simplifying access on collection of available services.
@@ -810,36 +839,9 @@ This alias is simplifying access on collection of available services.
 Using `this.service` is supported as well.
 :::
 
-### this.models <Badge type="info" text="0.3.0"></Badge>
-
-This alias is simplifying access on collection of available models.
-
-:::tip
-Using `this.model` is supported as well.
-:::
-
 ### this.startTime
 
 This property is exposing the time of handling current request has started as number of milliseconds since midnight of January 1st, 1970.
-
-### this.context <Badge type="info" text="0.3.0"></Badge>
-
-This property is a string naming the service hitchy is integrated with. Currently supported values are:
-
-* `standalone` when running current application without any integration into some other application.
-* `express` when running current application with Hitchy integrated into an Express-based application.
-
-### this.done
-
-This callback is provided by the service Hitchy is integrating with. When using Hitchy with [Express](https://expressjs.com/) invoking this function is starting next handler function registered with Express skipping any code that's authoritative in scope of Hitchy integrating with Express.
-
-:::tip Caution
-Don't use this function for it might be causing significant side effects.
-:::
-
-### this.consumed
-
-This property contains markers used internally to handle cases that haven't been handled by any controller. You shouldn't use or adjust those marks.
 
 
 ## Request Helpers
@@ -967,6 +969,7 @@ This object consists of two properties meant to provide server-side session shar
 :::tip Supported Scenarios
 Sessions rely on client passing session cookie in every request following some initial one. Usually this is available with browsers requesting pages and assets on behalf of a user. You should not rely on this session feature when it comes to REST APIs, though.
 :::
+
 
 ## Response Helpers
 
