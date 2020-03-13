@@ -85,8 +85,24 @@ module.exports = function( options ) {
 		 * @property {function():Promise}
 		 */
 		stop: {
-			// eslint-disable-next-line no-empty-function
-			value: () => starter.catch( () => {} ).then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
+			value: () => Promise.race( [
+				starter,
+				new Promise( ( _, reject ) => {
+					const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
+
+					setTimeout( reject, timeout, Object.assign( new Error( "FATAL: incomplete start is blocking shutdown" ), {
+						startBlocked: true,
+					} ) );
+				} ),
+			] )
+				.catch( error => {
+					if ( error.startBlocked ) {
+						console.error( error.message );
+					}
+
+					throw error;
+				} )
+				.finally( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
 		},
 
 		injector: { value: "node" },
