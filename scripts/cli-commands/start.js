@@ -33,7 +33,7 @@ const Path = require( "path" );
 
 const PromiseUtils = require( "promise-essentials" );
 
-const Log = require( "debug" )( "hitchy:start" );
+const Log = require( "debug" )( "hitchy:cli" );
 
 
 /**
