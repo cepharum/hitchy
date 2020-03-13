@@ -90,7 +90,7 @@ module.exports = function( options ) {
 				new Promise( ( _, reject ) => {
 					const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
 
-					setTimeout( reject, timeout, Object.assign( new Error( "FATAL: incomplete start is blocking shutdown" ), {
+					setTimeout( reject, timeout, Object.assign( new Error( "FATAL: cancelling start-up blocking shutdown" ), {
 						startBlocked: true,
 					} ) );
 				} ),
@@ -100,9 +100,9 @@ module.exports = function( options ) {
 						console.error( error.message );
 					}
 
-					throw error;
+					// don't re-expose any issue encountered during start-up
 				} )
-				.finally( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
+				.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
 		},
 
 		injector: { value: "node" },
