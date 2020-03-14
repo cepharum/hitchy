@@ -103,7 +103,7 @@ module.exports = function( options ) {
 				] )
 					.catch( error => {
 						if ( error.startBlocked ) {
-							console.error( error.message );
+							logError( error.message );
 						}
 
 						// don't re-expose any issue encountered during start-up

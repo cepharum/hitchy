@@ -107,8 +107,6 @@ module.exports = function( options ) {
 					.catch( error => {
 						if ( error.startBlocked ) {
 							logError( error.message );
-						} else {
-							logError( "Hitchy start-up has failed -> shutting down" );
 						}
 
 						// don't re-expose any issue encountered during start-up
