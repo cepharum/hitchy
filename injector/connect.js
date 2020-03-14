@@ -88,24 +88,28 @@ module.exports = function( options ) {
 		 * @readonly
 		 */
 		stop: {
-			value: () => Promise.race( [
-				starter,
-				new Promise( ( _, reject ) => {
-					const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
+			value: () => {
+				logDebug( "stopping injector" );
 
-					setTimeout( reject, timeout, Object.assign( new Error( "FATAL: cancelling start-up blocking shutdown" ), {
-						startBlocked: true,
-					} ) );
-				} ),
-			] )
-				.catch( error => {
-					if ( error.startBlocked ) {
-						console.error( error.message );
-					}
+				return Promise.race( [
+					starter,
+					new Promise( ( _, reject ) => {
+						const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
 
-					// don't re-expose any issue encountered during start-up
-				} )
-				.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
+						setTimeout( reject, timeout, Object.assign( new Error( "FATAL: cancelling start-up blocking shutdown" ), {
+							startBlocked: true,
+						} ) );
+					} ),
+				] )
+					.catch( error => {
+						if ( error.startBlocked ) {
+							console.error( error.message );
+						}
+
+						// don't re-expose any issue encountered during start-up
+					} )
+					.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) );
+			},
 		},
 
 		injector: { value: "connect" },

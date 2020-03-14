@@ -91,10 +91,13 @@ module.exports = function( options ) {
 		 * @property {function():Promise}
 		 */
 		stop: {
-			value: () => Promise.race( [
-				starter,
-				new Promise( ( _, reject ) => {
-					const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
+			value: () => {
+				logDebug( "stopping injector" );
+
+				return Promise.race( [
+					starter,
+					new Promise( ( _, reject ) => {
+						const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
 
 						setTimeout( reject, timeout, Object.assign( new Error( "FATAL: cancelling start-up blocking shutdown" ), {
 							startBlocked: true,
