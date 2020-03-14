@@ -98,20 +98,22 @@ function _toolLibraryCreateAPI( options = {} ) {
 		service: { value: _api.runtime.services },
 	} );
 
-	_api.onShutdown = null;
+	_api.__onShutdown = null;
 
 	_api.crash = cause => { _api.emit( "crash", cause ); };
 	_api.shutdown = () => {
-		if ( _api.onShutdown == null ) {
-			_api.onShutdown = new Promise( ( resolve, reject ) => {
+		if ( _api.__onShutdown == null ) {
+			// prepare promise to be resolved after server and Hitchy have been shut down
+			_api.__onShutdown = new Promise( ( resolve, reject ) => {
 				_api.once( "close", resolve );
 				_api.once( "error", reject );
 			} );
 
+			// emit shutdown event to notify injecting server to shut down
 			_api.emit( "shutdown" );
 		}
 
-		return _api.onShutdown;
+		return _api.__onShutdown;
 	};
 
 	return _api;
