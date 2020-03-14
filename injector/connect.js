@@ -62,8 +62,7 @@ module.exports = function( options ) {
 			return api;
 		}, cause => {
 			startupError = cause;
-
-			logError( "FATAL: starting Hitchy failed", cause.stack );
+			hitchy = cause.hitchy;
 
 			// keep rejecting promise
 			throw cause;
