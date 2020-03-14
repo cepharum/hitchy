@@ -235,6 +235,10 @@ At the end of routing stage the application's bootstrap has finished.
 
 When gracefully shutting down a Hitchy-based application every plugin gets a chance to shutdown its previously initialised state. The same applies to the application which gets a chance to do so first.
 
+:::warning Changed Behaviour  
+In v0.5.2 the behaviour has changed from passing every plugin's shutdown code no matter whether either plugin has been initialized properly or not. It is up to the plugin to detect if resources have been initialized previously.  
+:::
+
 ### Shutting Down Application
 
 On behalf of application a file named **shutdown.js** found in its project folder is loaded complying with common module pattern.
