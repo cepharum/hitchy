@@ -40,7 +40,7 @@ const Https = require( "https" );
 module.exports = function() {
 	const api = this;
 
-	const logDebug = api.log( "hitchy:http-client" );
+	const logDebug = api.log( "hitchy:http-client:debug" );
 	const logError = api.log( "hitchy:http-client:error" );
 
 	const agents = {

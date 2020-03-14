@@ -28,7 +28,13 @@
 
 "use strict";
 
+const Debug = require( "debug" );
+
 const Common = require( "./common" );
+
+const logDebug = Debug( "hitchy:injector:node:debug" );
+const logError = Debug( "hitchy:injector:node:error" );
+
 
 /**
  * Provides API for injecting Hitchy into express/connect-based application
@@ -57,7 +63,7 @@ module.exports = function( options ) {
 		}, cause => {
 			startupError = cause;
 
-			require( "debug" )( "bootstrap" )( "FATAL: starting Hitchy failed", cause.stack );
+			logError( "FATAL: starting Hitchy failed", cause.stack );
 
 			// keep rejecting promise
 			throw cause;
@@ -147,10 +153,10 @@ module.exports = function( options ) {
 				} )
 				.catch( Common.errorHandler.bind( context, options ) );
 		} else if ( startupError ) {
-			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up" );
+			logDebug( "got request on node which failed during start-up" );
 			Common.errorHandler.call( context, options, startupError );
 		} else {
-			hitchy.log( "hitchy:debug" )( "got request during startup, sending splash" );
+			logDebug( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	}

@@ -28,7 +28,13 @@
 
 "use strict";
 
+const Debug = require( "debug" );
+
 const Common = require( "./common" );
+
+const logDebug = Debug( "hitchy:injector:node:debug" );
+const logError = Debug( "hitchy:injector:node:error" );
+
 
 /**
  * Provides API for injecting Hitchy into native HTTP service of NodeJS.
@@ -56,7 +62,7 @@ module.exports = function( options ) {
 		}, cause => {
 			startupError = cause;
 
-			require( "debug" )( "bootstrap" )( "FATAL: starting hitchy failed: %s", cause.stack );
+			logError( "FATAL: starting hitchy failed: %s", cause.stack );
 
 			// keep rejecting promise
 			throw cause;
@@ -90,19 +96,22 @@ module.exports = function( options ) {
 				new Promise( ( _, reject ) => {
 					const timeout = ( parseInt( process.env.STARTUP_TIMEOUT ) || 10 ) * 1000;
 
-					setTimeout( reject, timeout, Object.assign( new Error( "FATAL: cancelling start-up blocking shutdown" ), {
-						startBlocked: true,
-					} ) );
-				} ),
-			] )
-				.catch( error => {
-					if ( error.startBlocked ) {
-						console.error( error.message );
-					}
+						setTimeout( reject, timeout, Object.assign( new Error( "FATAL: cancelling start-up blocking shutdown" ), {
+							startBlocked: true,
+						} ) );
+					} ),
+				] )
+					.catch( error => {
+						if ( error.startBlocked ) {
+							logError( error.message );
+						} else {
+							logError( "Hitchy start-up has failed -> shutting down" );
+						}
 
-					// don't re-expose any issue encountered during start-up
-				} )
-				.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) ),
+						// don't re-expose any issue encountered during start-up
+					} )
+					.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) );
+			},
 		},
 
 		injector: { value: "node" },
@@ -127,7 +136,7 @@ module.exports = function( options ) {
 			response: res,
 			done: _error => {
 				if ( _error ) {
-					console.error( `got error on dispatching ${req.method} ${req.url}: ${_error.statusCode ? _error.message : _error.stack}` );
+					logError( `got error on dispatching ${req.method} ${req.url}: ${_error.statusCode ? _error.message : _error.stack}` );
 				}
 			},
 			local: {},
@@ -157,10 +166,10 @@ module.exports = function( options ) {
 				} )
 				.catch( Common.errorHandler.bind( context, options ) );
 		} else if ( startupError ) {
-			hitchy.log( "hitchy:debug" )( "got request on node which failed during start-up" );
+			logDebug( "got request on node which failed during start-up" );
 			Common.errorHandler.call( context, options, process.env.NODE_ENV === "production" ? true : startupError );
 		} else {
-			hitchy.log( "hitchy:debug" )( "got request during startup, sending splash" );
+			logDebug( "got request during startup, sending splash" );
 			Common.errorHandler.call( context, options );
 		}
 	}

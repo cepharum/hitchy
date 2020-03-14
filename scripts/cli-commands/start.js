@@ -33,7 +33,7 @@ const Path = require( "path" );
 
 const PromiseUtils = require( "promise-essentials" );
 
-const Log = require( "debug" )( "hitchy:cli" );
+const logInfo = require( "debug" )( "hitchy:cli:info" );
 
 
 /**
@@ -108,7 +108,7 @@ module.exports = function( options, args ) {
 	function start( scriptname = null ) {
 		if ( scriptname ) {
 			return new Promise( ( resolve, reject ) => {
-				Log( `invoking custom start script ${scriptname} ...` );
+				logInfo( `invoking custom start script ${scriptname} ...` );
 
 				const child = require( "child_process" ).fork( scriptname, {
 					cwd: options.projectFolder,
