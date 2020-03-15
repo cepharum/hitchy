@@ -100,17 +100,44 @@ function _toolLibraryCreateAPI( options = {} ) {
 
 	_api.__onShutdown = null;
 
-	_api.crash = cause => { _api.emit( "crash", cause ); };
+	let alwaysRejectWith = null;
+
+	_api.crash = cause => {
+		alwaysRejectWith = cause instanceof Error ? cause : new Error( String( cause ) );
+
+		return _api.shutdown()
+			.catch( () => {} ); // eslint-disable-line no-empty-function
+	};
+
 	_api.shutdown = () => {
 		if ( _api.__onShutdown == null ) {
 			// prepare promise to be resolved after server and Hitchy have been shut down
 			_api.__onShutdown = new Promise( ( resolve, reject ) => {
-				_api.once( "close", resolve );
-				_api.once( "error", reject );
+				_api.once( "close", () => {
+					if ( alwaysRejectWith instanceof Error ) {
+						reject( alwaysRejectWith );
+					} else {
+						resolve();
+					}
+				} );
+
+				_api.once( "error", error => {
+					if ( alwaysRejectWith instanceof Error ) {
+						console.error( "error while crashing Hitchy: %s", error.stack );
+
+						reject( alwaysRejectWith );
+					} else {
+						reject( error );
+					}
+				} );
 			} );
 
-			// emit shutdown event to notify injecting server to shut down
-			_api.emit( "shutdown" );
+			// emit event to notify injecting server to shut down or crash
+			if ( alwaysRejectWith ) {
+				_api.emit( "crash", alwaysRejectWith );
+			} else {
+				_api.emit( "shutdown" );
+			}
 		}
 
 		return _api.__onShutdown;
