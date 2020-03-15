@@ -110,7 +110,13 @@ module.exports = function( options ) {
 
 						// don't re-expose any issue encountered during start-up
 					} )
-					.then( () => ( hitchy ? hitchy.bootstrap.shutdown() : undefined ) );
+					.then( () => {
+						if ( hitchy ) {
+							return hitchy.bootstrap.shutdown();
+						}
+
+						return undefined;
+					} );
 			},
 		},
 
