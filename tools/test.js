@@ -93,12 +93,14 @@ module.exports = {
 
 		if ( options.debug ) {
 			_args.quiet = false;
-		} else if ( !_args.quiet && !_args["log-level"] ) {
+		} else if ( _args.quiet ) {
+			_args["log-level"] = "-*";
+		} else if ( !_args["log-level"] ) {
 			_args["log-level"] = "*:info,*:warning,*:error";
 		}
 
 		if ( _args["log-level"] ) {
-			process.env.DEBUG = _args["log-level"];
+			Debug.enable( _args["log-level"] );
 		}
 
 

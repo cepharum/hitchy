@@ -35,7 +35,9 @@ const command = Args._.shift() || "start";
 if ( Args.help || Args.h ) {
 	usage();
 } else {
-	if ( Args["log-level"] || !process.env.DEBUG ) {
+	if ( Args.quiet ) {
+		process.env.DEBUG = "-*";
+	} else if ( Args["log-level"] || !process.env.DEBUG ) {
 		process.env.DEBUG = Args["log-level"] || "*:info,*:warning,*:error";
 	}
 
