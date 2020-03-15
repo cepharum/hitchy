@@ -33,8 +33,6 @@ function getNotResponding( ctx, url, headers = {} ) {
 // ----------------------------------------------------------------------------
 
 describe( "Intentionally shutting down Hitchy", function() {
-	this.timeout( 5000 );
-
 	const ctx = {};
 	let crashed;
 	let closed;

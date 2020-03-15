@@ -33,8 +33,6 @@ function getNotResponding( ctx, url, headers = {} ) {
 // ----------------------------------------------------------------------------
 
 describe( "Intentionally crashing Hitchy", function() {
-	this.timeout( 5000 );
-
 	const ctx = {};
 	let crashed;
 	let closed;
@@ -59,7 +57,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -71,7 +69,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -83,7 +81,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -95,7 +93,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -107,7 +105,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -119,7 +117,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -131,7 +129,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 
@@ -143,7 +141,7 @@ describe( "Intentionally crashing Hitchy", function() {
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
 				ctx.logged.should.be.Array().which.is.not.empty();
-				ctx.logged.join( "" ).should.match( /FATAL:/ ).and.match( /testing crash with my custom cause/ );
+				ctx.logged.find( m => /\bFATAL: /.test( m ) ).should.match( /testing crash with my custom cause/ );
 			} );
 	} );
 } );
