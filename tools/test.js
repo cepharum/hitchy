@@ -34,6 +34,9 @@
 
 const Http = require( "http" );
 const Url = require( "url" );
+const Utility = require( "util" );
+
+const Debug = require( "debug" );
 
 const { BasicServer } = require( "../lib/server" );
 
@@ -90,7 +93,14 @@ module.exports = {
 
 		if ( options.debug ) {
 			_args.quiet = false;
+		} else if ( !_args.quiet && !_args["log-level"] ) {
+			_args["log-level"] = "*:info,*:warning,*:error";
 		}
+
+		if ( _args["log-level"] ) {
+			process.env.DEBUG = _args["log-level"];
+		}
+
 
 		return promise
 			.then( () => BasicServer( options, _args, () => {
@@ -146,10 +156,30 @@ module.exports = {
 
 		return () => {
 			if ( options._logger ) {
-				ctx.logger = console.error;
 				ctx.logged = [];
 
-				console.error = typeof options._logger === "function" ? options._logger : ( ...chunks ) => { ctx.logged.push( chunks ); };
+				ctx.hitchyReplacedErrorLogger = console.error;
+				console.error = typeof options._logger === "function" ? options._logger : capture.bind( capture, true );
+
+				ctx.hitchyReplacedLogLogger = console.log;
+				console.log = typeof options._logger === "function" ? options._logger : capture.bind( capture, false );
+
+				Debug.instances.forEach( logger => {
+					const error = /\berror\b/i.test( logger.namespace );
+
+					logger.hitchyReplacedLogger = logger.log;
+					logger.log = ( format, ...data ) => capture( error, "%s: " + format, logger.namespace, ...data );
+					logger.useColors = false;
+				} );
+
+				Debug.hitchyReplacedLogger = Debug.log;
+				Debug.log = typeof options._logger === "function" ? options._logger : ( ...chunks ) => {
+					const message = Utility.format( ...chunks );
+					const columns = message.split( /\s+/ );
+
+					capture( /\berror\b/i.test( columns[1] ), "%s", message );
+				};
+				Debug.useColors = () => false;
 			}
 
 			return module.exports.startServer( options, args )
@@ -169,6 +199,17 @@ module.exports = {
 					ctx.request = request.bind( ctx );
 				} );
 		};
+
+		/**
+		 * Captures and collects log message.
+		 *
+		 * @param {boolean} error set true if log message is indicating error case
+		 * @param {*} chunks arguments originally provided for compiling log message
+		 * @returns {void}
+		 */
+		function capture( error, ...chunks ) {
+			ctx.logged.push( ( error ? "ERROR: " : "LOG: " ) + Utility.format( ...chunks ) );
+		}
 	},
 
 	/**
@@ -181,8 +222,19 @@ module.exports = {
 		return () => ( ctx.hitchy ? ctx.hitchy.api.shutdown() : Promise.resolve() )
 			.finally( () => {
 				if ( ctx.logger ) {
-					console.error = ctx.logger;
-					ctx.logger = null;
+					console.error = ctx.hitchyReplacedErrorLogger;
+					ctx.loggerError = null;
+
+					console.log = ctx.hitchyReplacedLogLogger;
+					ctx.loggerLog = null;
+
+					Debug.instances.forEach( logger => {
+						if ( logger.hitchyReplacedLogger ) {
+							logger.log = logger.hitchyReplacedLogger;
+						}
+					} );
+
+					Debug.log = Debug.hitchyReplacedLogger;
 				}
 			} );
 	},

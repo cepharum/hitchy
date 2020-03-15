@@ -193,7 +193,7 @@ function _toolLibraryLoad( _api, libFolder, options = {} ) {
 	 * @private
 	 */
 	function _toolLibraryCommonModulePatternLoader( pathname, moduleArguments = [] ) {
-		return new Promise( function( resolve ) {
+		return new Promise( resolve => {
 			let moduleApi = require( Path.resolve( options.projectFolder, pathname ) );
 
 			if ( typeof moduleApi === "function" ) {
