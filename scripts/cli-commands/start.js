@@ -126,6 +126,10 @@ module.exports = function( options, args ) {
 		}
 
 
-		return BasicServer( options, args, () => process.exit() );
+		return BasicServer( options, args, () => {
+			logInfo( "exiting with %d", process.exitCode );
+
+			process.exit();
+		} );
 	}
 };
