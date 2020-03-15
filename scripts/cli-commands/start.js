@@ -31,9 +31,8 @@
 const File = require( "fs" );
 const Path = require( "path" );
 
+const Debug = require( "debug" );
 const PromiseUtils = require( "promise-essentials" );
-
-const logInfo = require( "debug" )( "hitchy:cli:info" );
 
 
 /**
@@ -45,6 +44,7 @@ const logInfo = require( "debug" )( "hitchy:cli:info" );
  */
 module.exports = function( options, args ) {
 	const { BasicServer } = require( "../../lib/server" );
+	const logInfo = Debug( "hitchy:cli:info" );
 
 	if ( args.plugins || args.extensions ) {
 		options.pluginsFolder = args.plugins || args.extensions;
