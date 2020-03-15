@@ -222,7 +222,8 @@ module.exports = {
 	 */
 	after( ctx ) {
 		return () => ( ctx.hitchy ? ctx.hitchy.api.shutdown() : Promise.resolve() )
-			.finally( () => {
+			.catch( () => {} ) // eslint-disable-line no-empty-function
+			.then( () => {
 				if ( ctx.logger ) {
 					console.error = ctx.hitchyReplacedErrorLogger;
 					ctx.loggerError = null;
