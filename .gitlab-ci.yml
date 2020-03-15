@@ -2,7 +2,6 @@ alpine-test:
   stage: test
   image: "node:lts-alpine"
   script:
-    - docker version
     - npm ci
     - npm run test
 
@@ -10,7 +9,6 @@ alpine-debian:
   stage: test
   image: "node:lts-buster"
   script:
-    - docker version
     - npm ci
     - npm run test
 
@@ -18,6 +16,5 @@ alpine-10:
   stage: test
   image: "node:10-buster"
   script:
-    - docker version
     - npm ci
     - npm run test
