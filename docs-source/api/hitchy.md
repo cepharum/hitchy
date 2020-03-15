@@ -560,13 +560,13 @@ This is the application's counterpart to either plugin's [exposure of its pure c
 
 ### api.crash() <Badge type="info" text="0.5.0"></Badge>
 
-**Signature:** `api.crash( Error ) : void`
+**Signature:** `api.crash( Error ) : Promise`
 
 Using this function an application may _crash_ itself by intention. The provided error is logged before shutting down application and its request listener.
 
 This function may be useful when running a Hitchy application in a container. Consider your application has entered some failed state it might want to recover from the easy way by simply restarting on purpose. This is possible by invoking this function.
 
-This function is different from [api.shutdown()](#api-shutdown) by writing provided error to log file and exit process with non-zero status code eventually.
+This function is different from [api.shutdown()](#api-shutdown) by writing provided error to log file and exit process with non-zero status code eventually. The returned promise is always rejected with the provided error. In addition, when called before promise returned from [api.shutdown()](#api-shutdown) is settled, that promise will be rejected as well.
 
 ### api.data
 
