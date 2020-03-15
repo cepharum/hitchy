@@ -37,7 +37,7 @@ describe( "Intentionally crashing Hitchy", function() {
 	let crashed;
 	let closed;
 
-	beforeEach( Test.before( ctx, options ) );
+	beforeEach( Test.before( ctx, options, { quiet: false } ) );
 	afterEach( Test.after( ctx ) );
 	beforeEach( () => {
 		crashed = new Promise( resolve => {

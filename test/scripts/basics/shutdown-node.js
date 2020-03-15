@@ -58,7 +58,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -69,7 +70,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -80,7 +82,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -91,7 +94,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -102,7 +106,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -113,7 +118,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -124,7 +130,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 
@@ -135,7 +142,8 @@ describe( "Intentionally shutting down Hitchy", function() {
 			.then( () => crashed.done.should.be.false() )
 			.then( () => closed.should.be.resolved() )
 			.then( () => {
-				ctx.logged.should.be.Array().which.is.empty();
+				ctx.logged.should.be.Array();
+				ctx.logged.filter( m => !/^LOG: /.test( m ) ).should.be.empty();
 			} );
 	} );
 } );
