@@ -42,7 +42,7 @@ In addition to those modules, Hitchy's core supports so called _common module pa
 In Hitchy _discovering_ a plugin is different from _requiring_ it. The term discovery refers to Hitchy's capability of [automatically loading a plugin during bootstrap](../internals/architecture-basics.md#discovering-plugins). In opposition to that, any code of your application may still `require()` modules the usual way. **However, this is going to have some negative side effects for modules relying on _common module pattern_**. That's why we suggest to stick with this pattern most of the time. 
 ::: 
 
-The common module pattern is a convention allowing any complying module to export a function generating its API on invocation instead of returning it immediately. This function is invoked by Hitchy's bootstrap code to retrieve the actual API of the module in controlled context:
+Instead of exporting some API, the common module pattern is a convention allowing either complying module to export a function generating its API on invocation. This function is invoked by Hitchy's bootstrap code in a controlled context to get the module's actual API:
 
 ```javascript
 module.exports = function( options ) {
@@ -63,8 +63,14 @@ In this example the same API is exposed as before. But this time it is relying o
 
 Following this pattern is beneficial in several ways:
 
-* Your modules are gaining access to invocation arguments, [runtime options](#options) and Hitchy's common API described in this document.
-* Because of that, either module may provide different implementations depending on current runtime environment. _That's why it's always wise choice to put **everything** into that function._
+* Your modules are gaining access to [runtime options](#options) and Hitchy's common API described in this document.
+
+* Because of that, either module may provide different implementations depending on current runtime environment. 
+
+  :::tip
+  It's always wise choice to put **everything** into that function.
+  :::
+
 * Defer bootstrap of your application by [returning promises](#returning-promise) so you get all the time required to decide how to proceed.
 
 And, of course, all this applies to configuration files as well.
