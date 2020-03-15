@@ -36,13 +36,13 @@ module.exports = {
 
 This example shows a software module that's exposing two functions forming its API.
 
-In addition to those modules Hitchy's core supports so called _common module pattern_ when _discovering_ plugins and their components.
+In addition to those modules, Hitchy's core supports so called _common module pattern_ when _discovering_ plugins and their components.
 
 :::warning Discovering Plugins?
 In Hitchy _discovering_ a plugin is different from _requiring_ it. The term discovery refers to Hitchy's capability of [automatically loading a plugin during bootstrap](../internals/architecture-basics.md#discovering-plugins). In opposition to that, any code of your application may still `require()` modules the usual way. **However, this is going to have some negative side effects for modules relying on _common module pattern_**. That's why we suggest to stick with this pattern most of the time. 
 ::: 
 
-The common module pattern is a convention allowing any complying module to export a function instead of its API. This function is instantly invoked by Hitchy's bootstrap code to retrieve the actual API of the module:
+The common module pattern is a convention allowing any complying module to export a function generating its API on invocation instead of returning it immediately. This function is invoked by Hitchy's bootstrap code to retrieve the actual API of the module in controlled context:
 
 ```javascript
 module.exports = function( options ) {
@@ -60,6 +60,14 @@ module.exports = function( options ) {
 ```
 
 In this example the same API is exposed as before. But this time it is relying on the common module pattern mostly to gain access on Hitchy's API in line two. During discovery of plugins and components any function exported by either module is invoked with Hitchy's API provided as `this` and global options describing runtime context and arguments passed on starting Hitchy in first argument.
+
+Following this pattern is beneficial in several ways:
+
+* Your modules are gaining access to invocation arguments, [runtime options](#options) and Hitchy's common API described in this document.
+* Because of that, either module may provide different implementations depending on current runtime environment. _That's why it's always wise choice to put **everything** into that function._
+* Defer bootstrap of your application by [returning promises](#returning-promise) so you get all the time required to decide how to proceed.
+
+And, of course, all this applies to configuration files as well.
 
 :::warning Related Issues
 On exporting an ES6 class in a module Hitchy might falsely consider this module to comply with common module pattern.
