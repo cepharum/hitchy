@@ -1,20 +1,27 @@
-alpine-test:
+alpine-lts:
   stage: test
   image: "node:lts-alpine"
   script:
     - npm ci
     - npm run test
 
-alpine-debian:
+debian-lts:
   stage: test
   image: "node:lts-buster"
   script:
     - npm ci
     - npm run test
 
-alpine-10:
+debian-10:
   stage: test
   image: "node:10-buster"
+  script:
+    - npm ci
+    - npm run test
+
+debian-13:
+  stage: test
+  image: "node:13-buster"
   script:
     - npm ci
     - npm run test
