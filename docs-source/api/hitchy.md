@@ -924,6 +924,100 @@ When providing custom function make sure to provide the same instance of that fu
 
 This property is exposing [Hitchy's API](#hitchys-api).
 
+### req.is() <Badge type="info" text="0.5.3"></Badge>
+
+When discovering format of some provided request body data this function may be used to conveniently check the client-provided information in request header `content-type`. 
+
+The function takes one or more patterns matching expected formats and the first one matching current request will be returned. If neither listed pattern is matching, `false` is returned.
+
+```javascript
+// if request claims to provide application/json
+req.is( "application/json" ); // --> "application/json"
+req.is( "json" );             // --> "json"
+req.is( "*/json" );           // --> "*/json"
+req.is( "json", "*/json" );   // --> "*/json"
+req.is( "text", "json" );     // --> "json"
+req.is( "text" );             // --> false
+```
+
+On all requests lacking any body data `null` is returned:
+
+```javascript
+// if request doesn't seem to provide any octet of body data
+req.is( "application/json" ); // --> null
+req.is( "json" );             // --> null
+req.is( "*/json" );           // --> null
+req.is( "json", "*/json" );   // --> null
+req.is( "text", "json" );     // --> null
+req.is( "text" );             // --> null
+```
+
+If there is some body data but request header `content-type` is missing, this function is returning false:
+
+```javascript
+// there is body data, but "content-type" is missing
+req.is( "application/json" ); // --> false
+req.is( "json" );             // --> false
+req.is( "*/json" );           // --> false
+req.is( "json", "*/json" );   // --> false
+req.is( "text", "json" );     // --> false
+req.is( "text" );             // --> false
+```
+
+Supported test patterns are mostly equivalent to the ones supported by [type-is](https://github.com/jshttp/type-is) which is used in [express](https://expressjs.com/en/4x/api.html#req.is). However, this implementation _might_ differ from that one in some aspects:
+
+* All string-based tests work case-insensitively.
+
+  ```javascript
+  // if request header contains `content-type` with `AppliCatIon/JsON`
+  req.is( "json" );                           // --> "json"
+  req.is( "application/json" );               // --> "application/json"
+  ```
+  
+  On matching, the provided pattern is returned as-is, though.
+
+  ```javascript
+  // if request header contains `content-type` with `AppliCatIon/JsON`
+  req.is( "JSON" );                           // --> "JSON"
+  req.is( "aPPLicATion/JSOn" );               // --> "aPPLicATion/JSOn"
+  ```
+
+* When providing patterns without forward slash like `png` or `html` instead of `image/png` or `text/html` this library simply requires that pattern to match either first or second part of found MIME information.
+
+  ```javascript
+  // if request header contains `content-type` with `text/html`
+  req.is( "html" );                           // --> "html"
+  // if request header contains `content-type` with `image/png`
+  req.is( "image" );                          // --> "image"
+  req.is( "png" );                            // --> "png"
+  ```
+
+* Some special cases differ from that first rule for being replaced with a different pattern internally.
+
+  | provided     | actually tested                |
+  |--------------|--------------------------------|
+  | `text`       | `text/plain`                   |
+  | `multipart`  | `multipart/*`                  |
+  | `urlencoded` | `application/x-www-urlencoded` |
+  | `+json`      | `*/*+json`                     |
+  | `+xml`       | `*/*+xml`                      |
+
+  Just like in [type-is](https://github.com/jshttp/type-is) the last qualification examples apply to any provided string starting with `+`.
+
+* All patterns can contain `*` for basically matching any number of characters. It may appear multiple times and in any position of your pattern. However, neither case is matching the forward slash for being applied on separated halves of MIME information.
+
+  ```javascript
+  // if request header contains `content-type` with `text/html`
+  req.is( "text", "te*tml", "t*e*x*t" );      // --> "t*e*x*t"
+  ``` 
+
+* You may provide regular expressions instead of strings. Those are applied to the full content of `content-type` header. On match the actual MIME information found in request header without optional qualifiers such as `;charset=UTF-8` is returned.
+
+  ```javascript
+  // if request header contains `content-type` with `application/json; charset=UTF-8`
+  req.is( /*\/json\b/ );      // --> "application/json"
+  ``` 
+
 ### req.params
 
 This object is populated with named segments of currently dispatched route. 

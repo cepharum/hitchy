@@ -51,6 +51,7 @@ const TestCases = [
 	[ "application/xml", "*/xml", "*/xml" ],
 	[ "text/xml", "xml", "xml" ],
 	[ "text/xml", "text", false ],
+	[ "text/xml", "t*e*x*t", "t*e*x*t" ],
 	[ "text/xml", [ "text", "xml", "json" ], "xml" ],
 	[ "text/plain", [ "text", "xml", "json" ], "text" ],
 	[ "text/json", [ "text", "xml", "json" ], "json" ],
@@ -60,6 +61,12 @@ const TestCases = [
 	[ "application/vnd.api+json", "vnd.api+json", "vnd.api+json" ],
 	[ "application/vnd-api+json", "vnd.api+json", false ],
 	[ "application/x-resource+json", "x-*", "x-*" ],
+	[ "aPPlication/jSOn", "json", "json" ],
+	[ "aPPlication/jSOn", "*/json", "*/json" ],
+	[ "aPPlication/jSOn", "application/json", "application/json" ],
+	[ "aPPlication/jSOn", "JSON", "JSON" ],
+	[ "aPPlication/jSOn", "application/JSON", "application/JSON" ],
+	[ "aPPlication/jSOn", "appl*Ion/JSO*N", "appl*Ion/JSO*N" ],
 ];
 
 
