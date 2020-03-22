@@ -805,7 +805,7 @@ This is another alias for simplifying access on collection of available controll
 Using `this.controller` is supported as well.
 :::
 
-### this.done
+### this.done()
 
 This callback is provided by the service Hitchy is integrating with. When using Hitchy with [Express](https://expressjs.com/) invoking this function is starting next handler function registered with Express skipping any code that's authoritative in scope of Hitchy integrating with Express.
 
@@ -886,6 +886,10 @@ A properly sorted list of MIME type ranges is provided in this property accordin
 When handling request with header `Accept: text/*;q=0.5, text/json` this property will expose sorted list of given MIME ranges `[ "text/json", "text/*" ]`.
 :::
 
+### req.api <Badge type="info" text="0.5.3"></Badge>
+
+This property is virtually aliasing [req.hitchy](#req-hitchy) to support framework-agnostic code.
+
 ### req.context
 
 This property is exposing the [request context](#request-context) which is also available via `this` in an invoked request handler. However, due to binding to different contexts use of `this` might not be an option.
@@ -914,7 +918,7 @@ Supporting this scenario any existing data in `req.body` will be delivered whene
 
 * On providing `false` the raw body is promised as instance of Buffer. This is bypassing any parser to be invoked thus won't result in caching some parser's output as well.
 
-:::warning
+:::tip Different Parsers and Body Caching
 This method is caching any previously extracted body data in association with provided parser argument. Thus, re-invoking this method with a different parser results in parsing raw body again while providing same parser re-fetches same information as before.
 
 When providing custom function make sure to provide the same instance of that function to benefit from this caching. As an option assign a global body parser function in configuration as `config.bodyParser`.
@@ -922,7 +926,11 @@ When providing custom function make sure to provide the same instance of that fu
 
 ### req.hitchy <Badge type="info" text="0.2.0"></Badge>
 
-This property is exposing [Hitchy's API](#hitchys-api).
+This property is exposing [Hitchy's API](#hitchys-api). It has been named `hitchy` instead of a more common `api` to prevent it from interfering with other framework's API in portable code meant to run with different frameworks.
+
+:::tip Virtual Alias <Badge type="info" text="0.5.3"></Badge> 
+There is a virtual alias _additionally_ exposing Hitchy's API as `req.api` unless this property exists in request descriptor. This is useful for writing code agnostic to supported frameworks.
+:::
 
 ### req.is() <Badge type="info" text="0.5.3"></Badge>
 
