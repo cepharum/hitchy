@@ -764,7 +764,7 @@ This subsection is passing API of module `promise-essentials` Hitchy is relying 
 
 ## Request Context
 
-On request handling routes are used to select handlers to be invoked. Those handlers areare functions invoked with `this` referring to a _request context_ which is providing information related to currently dispatched request.
+On request handling routes are used to select handlers to be invoked. Those handlers are functions invoked with `this` referring to a _request context_ which is providing information related to currently dispatched request.
 
 :::tip
 In a request handler like
@@ -1023,7 +1023,7 @@ Supported test patterns are mostly equivalent to the ones supported by [type-is]
 
   ```javascript
   // if request header contains `content-type` with `application/json; charset=UTF-8`
-  req.is( /*\/json\b/ );      // --> "application/json"
+  req.is( /.*\/json\b/ );      // --> "application/json"
   ``` 
 
 ### req.params
