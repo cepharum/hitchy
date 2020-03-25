@@ -82,7 +82,7 @@ module.exports = {
 :::tip Remarks
 The preceding example illustrates support for callback provided in third argument for calling next policy in chain of policies to be applied. **In fact, any policy hast to invoke this callback unless it is returning a promise instead.**
 
-The example also illustrates a policy adjusting response without responding by [setting response header](../api/README.md#res-set-name-value). 
+The example also illustrates a policy adjusting response without responding by [setting response header](../api/hitchy.md#res-set-name-value). 
 
 Eventually it shows a _filter_ instantly responding to client in case of an error. In the latter case make sure the response is finished.
 :::
@@ -108,14 +108,14 @@ Service components are discovered in folder **api/services** of your application
 
 ## Exposure At Runtime
 
-All components are exposed at runtime in section `runtime` of [Hitchy's API](../api/README.md#api-runtime). There are separate groups for every kind of component:
+All components are exposed at runtime in section `runtime` of [Hitchy's API](../api/hitchy.md#api-runtime). There are separate groups for every kind of component:
 
 * `api.runtime.controllers` 
 * `api.runtime.policies` 
 * `api.runtime.models` 
 * `api.runtime.services`
 
-In addition, in [context of a controller's or a policy's request handler](../api/README.md#request-context) either collection of components is available via some convenient alias:
+In addition, in [context of a controller's or a policy's request handler](../api/hitchy.md#request-context) either collection of components is available via some convenient alias:
 
 * `this.controllers`
 * `this.policies`
@@ -163,9 +163,9 @@ Starting with version 0.3.3 every plugin as well as the application may customiz
 
 * A plugin may use options [`deepComponents`](../api/plugins.md#deepcomponents) and [`appendFolder`](../api/plugins.md#appendfolders) of its [meta information](../api/plugins.md#meta-information).
 
-* The application can provide the same options as part of [its own meta information](../api/README.md#api-meta).
+* The application can provide the same options as part of [its own meta information](../api/hitchy.md#api-meta).
 
-Starting with version 0.4.0 this support for customizing exposure has been moved from [configuration](../api/README.md#configuration) to meta information.
+Starting with version 0.4.0 this support for customizing exposure has been moved from [configuration](../api/hitchy.md#configuration) to meta information.
 
 
 ### Accessing Components
@@ -190,7 +190,7 @@ function someRequestHandler( req, res ) {
 }
 ```
 
-Basically, [`req.hitchy`](../api/README.md#req-hitchy) and [`this.api`](../api/README.md#this-api) are both referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
+Basically, [`req.hitchy`](../api/hitchy.md#req-hitchy) and [`this.api`](../api/hitchy.md#this-api) are both referring to the same API instance. Using `req.hitchy` is beneficial when using arrow functions as well as on passing request descriptor `req` into sub-functions.
 
 Last but not least aliases are provided in context of request handlers for accessing either type of component more conveniently:
 

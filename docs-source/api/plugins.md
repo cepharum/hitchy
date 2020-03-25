@@ -65,7 +65,7 @@ Every plugin's folder must contain at least two files:
   
      This is the [part which is described below](#common-plugin-api).
   
-  2. It may expose additional information and methods for use by the application at runtime. Therefore, it will be exposed as part of a collection in [Hitchy's API](README.md#api-plugins) using the plugin's role name.
+  2. It may expose additional information and methods for use by the application at runtime. Therefore, it will be exposed as part of a collection in [Hitchy's API](hitchy.md#api-plugins) using the plugin's role name.
   
      This [part of API](#a-plugin-s-particular-api) is optional and depends on actual plugin. 
      
@@ -79,7 +79,7 @@ Every plugin's folder must contain at least two files:
   };
   ```
   
-  Complying with [common module pattern](README.md#using-common-module-pattern) is highly suggested to use the [full potential of integrating with an application](../internals/bootstrap.md#validating-claimed-roles). But it's not required and thus it's okay to export the plugin's API without:
+  Complying with [common module pattern](../internals/patterns.md#common-module-pattern) is highly suggested to use the [full potential of integrating with an application](../internals/bootstrap.md#validating-claimed-roles). But it's not required and thus it's okay to export the plugin's API without:
 
   ```javascript
   module.exports = {
@@ -114,7 +114,7 @@ Every plugin may provide configuration to be merged into resulting application's
 
 Names of configuration files don't matter as long as they don't start with a full stop `.` and end in **.js**.
 
-Either plugin's configuration as merged data of all files loaded here is exposed as [part of plugin's resulting API](#plugin-config). Configuration of all plugins and resulting application is merged and gets eventually exposed via [Hitchy's API](README.md#api-config).
+Either plugin's configuration as merged data of all files loaded here is exposed as [part of plugin's resulting API](#plugin-config). Configuration of all plugins and resulting application is merged and gets eventually exposed via [Hitchy's API](hitchy.md#api-config).
 
 ### Components
 
@@ -143,7 +143,7 @@ Using singular names for those four folders is supported as well.
     index.js
 ```
 
-Discovered components are exposed via [Hitchy's API](README.md#api-runtime).
+Discovered components are exposed via [Hitchy's API](hitchy.md#api-runtime).
 
 
 ## The Beacon File
@@ -170,7 +170,7 @@ Both sources are merged into single set of meta information with data found in l
 
 There are elements of meta information Hitchy is using while integrating discovered plugins. These are described below. Hitchy is assuming defaults or deriving values e.g. from a plugin's name when meta information lacks either element.
 
-In addition a plugin's meta information may contain custom data which isn't used by Hitchy for integrating the plugin. It might be used by plugins or the application at runtime [using Hitchy's API](README.md#api-plugins).
+In addition a plugin's meta information may contain custom data which isn't used by Hitchy for integrating the plugin. It might be used by plugins or the application at runtime [using Hitchy's API](hitchy.md#api-plugins).
 
 :::tip
 Due to being processed in [discovery stage of bootstrap](../internals/bootstrap.md#discovery) meta information is available early and thus may be used to customize upcoming [stages of bootstrap](../internals/architecture-basics.md#discovering-plugins).
@@ -265,7 +265,7 @@ When set or omitted, a file **api/controllers/user/management.js** is discovered
 :::
 
 :::warning Compatibility
-In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.deepComponents`](README.md#configuration). Moving it into meta information was in support for swapping exposure and configuration stages of bootstrap.
+In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.deepComponents`](hitchy.md#configuration). Moving it into meta information was in support for swapping exposure and configuration stages of bootstrap.
 
 Versions before v0.3.3 did not support deep searching components at all. Due to enabling it by default now you need to explicitly set this property `false` to keep the previous behaviour.
 :::
@@ -312,7 +312,7 @@ When setting `appendFolder` to be false the resulting service components are exp
 :::
 
 :::warning Compatibility
-In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.appendFolders`](README.md#configuration). It has been moved to support swapping exposure and configuration stages of bootstrap.
+In versions 0.3.3 through 0.3.6 this option was available as [`config.hitchy.appendFolders`](hitchy.md#configuration). It has been moved to support swapping exposure and configuration stages of bootstrap.
 
 Versions before v0.3.3 did not support deep searching components at all. Thus, this option wasn't supported either.
 :::
@@ -347,11 +347,11 @@ Due to sorting plugins for sequential processing either plugin has an index into
 
 ### plugin.$config <Badge type="info" text="0.3.3"></Badge>
 
-When loading configuration files of a plugin a single object merged from information exported by either found file is exposed as part of plugin's API. The information is also merged with related configuration objects of all other plugins and the application itself into one [global configuration object](README.md#api-config).
+When loading configuration files of a plugin a single object merged from information exported by either found file is exposed as part of plugin's API. The information is also merged with related configuration objects of all other plugins and the application itself into one [global configuration object](hitchy.md#api-config).
 
 ### plugin.onDiscovered()
 
-**Signature:** `onDiscovered( options, pluginHandles, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signature:** `onDiscovered( options, pluginHandles, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
 This optional method is invoked on all eventually integrated plugin's APIs have been loaded. At this point every plugin's API has been loaded and is available as part of provided [handles](../internals/bootstrap.md#a-plugin-s-handle) which is a dictionary mapping either plugin's _name_ into its handle. This dictionary includes discovered plugins that are dropped in favour of others.
 
@@ -361,9 +361,9 @@ Plugins may be discovered but fail to be integrated with the application eventua
 
 ### plugin.onExposing()
 
-**Signature:** `onExposing( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signature:** `onExposing( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
-This optional method is invoked at start of exposure stage right before detecting either plugin's components and exposing them in [Hitchy's API](README.md#api-runtime).
+This optional method is invoked at start of exposure stage right before detecting either plugin's components and exposing them in [Hitchy's API](hitchy.md#api-runtime).
 
 :::tip
 Returning a promise is supported for deferring bootstrap until promise is settled. On rejecting promise or on throwing the bootstrap fails.
@@ -371,9 +371,9 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ### plugin.onExposed()
 
-**Signature:** `onExposed( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signature:** `onExposed( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
-This optional method is invoked at end of exposure stage after having detecting and [exposed](README.md#api-runtime) either plugin's components.
+This optional method is invoked at end of exposure stage after having detecting and [exposed](hitchy.md#api-runtime) either plugin's components.
 
 :::tip
 Returning a promise is supported for deferring bootstrap until promise is settled. On rejecting promise or on throwing the bootstrap fails.
@@ -381,7 +381,7 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ### plugin.configure()
 
-**Signature:** `configure( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signature:** `configure( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
 This optional method is invoked at end of configuration stage to request either plugin for fixing any [configuration read from its files](#configuration).
 
@@ -391,7 +391,7 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ### plugin.initialize()
 
-**Signature:** `initialize( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signature:** `initialize( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
 This optional method is invoked so the plugin is able to initialise its resources e.g. by connecting to some database.
 
@@ -401,9 +401,9 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ### plugin.policies
 
-**Signatures:** `policies` or `policies( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signatures:** `policies` or `policies( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
-This optional property or method is used to fetch a plugin's routing declarations for policies during [routing stage of bootstrap](../internals/bootstrap.md#routing). It is either an object with structure equivalent to the one [supported in configuration](README.md#config-policies) or some method invoked in compliance with [common module function pattern](README.md#common-module-function-pattern) to get that set of declarations.
+This optional property or method is used to fetch a plugin's routing declarations for policies during [routing stage of bootstrap](../internals/bootstrap.md#routing). It is either an object with structure equivalent to the one [supported in configuration](hitchy.md#config-policies) or some method invoked in compliance with [common module function pattern](../internals/patterns.md#common-module-function-pattern) to get that set of declarations.
 
 :::tip
 In addition, it is possible to expose this property as a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) which is fulfilled with the actual set of routing declarations.
@@ -415,9 +415,9 @@ In opposition to an application's custom routing declarations, a plugin is capab
 
 ### plugin.routes
 
-**Signatures:** `routes` or `routes( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signatures:** `routes` or `routes( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
-Similar to [`plugin.policies`](#plugin-policies) this optional property or method is used to fetch plugin's routing declarations for (terminal) routes during [routing stage of bootstrap](../internals/bootstrap.md#routing). See its [configuration counterpart](README.md#config-routes) for information on supported syntax.
+Similar to [`plugin.policies`](#plugin-policies) this optional property or method is used to fetch plugin's routing declarations for (terminal) routes during [routing stage of bootstrap](../internals/bootstrap.md#routing). See its [configuration counterpart](hitchy.md#config-routes) for information on supported syntax.
 
 :::tip
 In addition, it is possible to expose this property as a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises) which is fulfilled with the actual set of routing declarations.
@@ -429,7 +429,7 @@ In opposition to an application's custom routing declarations, a plugin is capab
 
 ### plugin.blueprints
 
-**Signatures:** `routes` or `routes( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signatures:** `routes` or `routes( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
 Similar to [`plugin.routes`](#plugin-routes) this optional property or method is used to fetch plugin's routing declarations for [blueprint routes](../internals/routing-basics.md#focusing-on-routes) during [routing stage of bootstrap](../internals/bootstrap.md#routing). The supported syntax is basically identical to the one supported by `plugin.routes`, though blueprints are limited in multiple ways:
 
@@ -443,7 +443,7 @@ When it comes to declaring blueprints there is no support for selecting any kind
 
 ### plugin.shutdown()
 
-**Signature:** `shutdown( options, myHandle )` ([CMFP](README.md#common-module-function-pattern))
+**Signature:** `shutdown( options, myHandle )` ([CMFP](../internals/patterns.md#common-module-function-pattern))
 
 This optional method is invoked on gracefully shutting down Hitchy-based application. It is meant to enable a plugin to release its resources e.g. by disconnecting from some database.
 
@@ -454,7 +454,7 @@ Returning a promise is supported for deferring bootstrap until promise is settle
 
 ## A Plugin's Particular API
 
-In addition to complying with Hitchy's Plugin API every plugin may expose its own API to be made available via [Hitchy's API](README.md#api-plugins) available at runtime of a Hitchy-based application.
+In addition to complying with Hitchy's Plugin API every plugin may expose its own API to be made available via [Hitchy's API](hitchy.md#api-plugins) available at runtime of a Hitchy-based application.
 
 A plugin's API is specific to either plugin and thus you should consult the plugin's documentation.
 

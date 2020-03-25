@@ -6,7 +6,7 @@ On startup Hitchy is discovering available plugins and integrating them with the
 
 During triangulation phase there is no interaction with plugins for they haven't been discovered yet. It is mostly about Hitchy processing options customizing its behaviour and detecting an application's project folder as well its folder assumed to contain any available plugin.
 
-In triangulation Hitchy is qualifying some of the supported [options](../api/README.md#options). And it tries to find base folder of project to be managed by Hitchy unless it has been given on invocation explicitly.
+In triangulation Hitchy is qualifying some of the supported [options](../api/hitchy.md#options). And it tries to find base folder of project to be managed by Hitchy unless it has been given on invocation explicitly.
 
 :::tip Finding Application Folder
 Unless providing application's project folder on invocation Hitchy is checking one of these supported use cases accepting the first one matching:
@@ -30,14 +30,14 @@ In discovery stage Hitchy is searching local filesystem for folders containing *
 :::tip Folders Searched For Plugins
 By default, Hitchy is starting at application's folder. There it is deeply searching for any sub-folder in **./node_modules** containing a file named **hitchy.json**. It is ignoring folders marked as hidden by name starting with a period.
 
-It is possible to explicitly select different folder to start searching as described before using option [**pluginsFolder**](../api/README.md#options-pluginsfolder).
+It is possible to explicitly select different folder to start searching as described before using option [**pluginsFolder**](../api/hitchy.md#options-pluginsfolder).
 
-It is possible to provide an explicit list of folders containing plugins and their dependencies to be discovered using option [**explicitPlugins**](../api/README.md#options-explicitplugins). Plugins discovery can be limited to those explicitly provided plugins using option [**explicitPluginsOnly**](../api/README.md#options-explicitpluginsonly).
+It is possible to provide an explicit list of folders containing plugins and their dependencies to be discovered using option [**explicitPlugins**](../api/hitchy.md#options-explicitplugins). Plugins discovery can be limited to those explicitly provided plugins using option [**explicitPluginsOnly**](../api/hitchy.md#options-explicitpluginsonly).
 :::
 
 ### Loading Plugins
 
-For every plugin its folder is loaded as a module using `require()` while supporting compliance with [common module pattern](../api/README.md#using-common-module-pattern). A plugin must provide an **index.js** file or [select a different file](https://docs.npmjs.com/files/package.json#main) to be actually loaded.
+For every plugin its folder is loaded as a module using `require()` while supporting compliance with [common module pattern](patterns.md#common-module-pattern). A plugin must provide an **index.js** file or [select a different file](https://docs.npmjs.com/files/package.json#main) to be actually loaded.
 
 The loaded module is considered the plugin's API.
 
@@ -49,7 +49,7 @@ At this stage plugins are loaded in arbitrary order. Thus you can't rely on ever
 
 ### Validating Claimed Roles
 
-Hitchy is passing additional information on loading a plugin which is complying with common module pattern. In addition to its highly rudimentary API provided as `this` and its [options](../api/README.md#options) provided in first argument it is passing
+Hitchy is passing additional information on loading a plugin which is complying with common module pattern. In addition to its highly rudimentary API provided as `this` and its [options](../api/hitchy.md#options) provided in first argument it is passing
 
 * a dictionary mapping every basically discovered plugin's name into either one's rudimentary [handle](#a-plugin-s-handle) in second argument and
 * notified plugin's own handle in third argument.
@@ -78,9 +78,9 @@ During bootstrap every discovered plugin is additionally represented by another 
 
 ### Notifying Plugins on Discovery
 
-Next, every plugin with an approved role which is exporting a method called `onDiscovered()` as part of its API gets notified on being discovered by invoking that function. This _notification handler_ is assumed to comply with [common module function pattern](../api/README.md#common-module-function-pattern) and thus is invoked with `this` referring to Hitchy's still rudimentary API and with
+Next, every plugin with an approved role which is exporting a method called `onDiscovered()` as part of its API gets notified on being discovered by invoking that function. This _notification handler_ is assumed to comply with [common module function pattern](patterns.md#common-module-function-pattern) and thus is invoked with `this` referring to Hitchy's still rudimentary API and with
  
-* [Hitchy's options](../api/README.md#options),
+* [Hitchy's options](../api/hitchy.md#options),
 * a dictionary mapping either discovered plugin's name into its [handle](#a-plugins-handle) and
 * the [handle](#a-plugins-handle) of current plugin exporting the notification handler
 
@@ -97,7 +97,7 @@ Plugins are notified in arbitrary order here. All succeeding notifications are p
 Next, plugins with their static roles dropped as described before are dropped. They won't make it into Hitchy's API and thus won't be available at runtime directly, but still might be used internally by some of the other plugins.
 
 :::tip
-Even though explicitly selecting additional folders to contain plugins using option [**explicitPlugins**](../api/README.md#options-explicitplugins) either of these plugins may be dropped for claiming a role neither application nor any of its plugins depend on. You may claim roles explicitly using option [**dependencies**](../api/README.md#options-dependencies).
+Even though explicitly selecting additional folders to contain plugins using option [**explicitPlugins**](../api/hitchy.md#options-explicitplugins) either of these plugins may be dropped for claiming a role neither application nor any of its plugins depend on. You may claim roles explicitly using option [**dependencies**](../api/hitchy.md#options-dependencies).
 :::
 
 ### Sorting Plugins
@@ -115,7 +115,7 @@ Any follow-up action regarding _every plugin_ is obeying this sorting order now.
 Starting with version 0.4.0 this stage has swapped its position with [configuration stage](#configuration).
 :::
 
-Exposure stage is meant to compile and expose components in section [`api.runtime` of Hitchy's API](../api/README.md#api-runtime).
+Exposure stage is meant to compile and expose components in section [`api.runtime` of Hitchy's API](../api/hitchy.md#api-runtime).
 
 ### Early Notification
 
@@ -133,9 +133,9 @@ In either case components are processed [type](architecture-basics.md#components
 Starting with v0.3.3 Hitchy is deeply searching in either folder. Providing special meta information [per plugin](../api/plugins.md#deepcomponents-badge) or [application](components.md#exposure-at-runtime) the previous behaviour can be restored for either plugin or application.
 :::
 
-Every found Javascript file is loaded to export the component's API. This might be any kind of data. Usually, it is a class or an object of functions. It is exposed as part of [Hitchy's API](../api/README.md#api-runtime) at runtime using a [name that is derived from found file's name](components.md#derivation-of-component-names). 
+Every found Javascript file is loaded to export the component's API. This might be any kind of data. Usually, it is a class or an object of functions. It is exposed as part of [Hitchy's API](../api/hitchy.md#api-runtime) at runtime using a [name that is derived from found file's name](components.md#derivation-of-component-names). 
 
-Either component's module may comply with [common module pattern](../api/README.md#using-common-module-pattern). In this case the exported  function is invoked with `this` referring to Hitchy's API in its current state and Hitchy's options in first argument as usual. In addition, however, some existing component of same name to be replaced by loaded one is passed in second argument so the new component is capable of deriving from that existing one.
+Either component's module may comply with [common module pattern](patterns.md#common-module-pattern). In this case the exported  function is invoked with `this` referring to Hitchy's API in its current state and Hitchy's options in first argument as usual. In addition, however, some existing component of same name to be replaced by loaded one is passed in second argument so the new component is capable of deriving from that existing one.
 
 :::tip Example
 Assume some plugin is providing same service module as another plugin it depends on. The module could look like this:
@@ -222,7 +222,7 @@ In routing stage every plugin is asked to provide its routing declarations in on
 2. The preferred way is to expose either set of declarations as part of a [plugin's API](../api/plugins.md#common-plugin-api). `policies`, `routes` and/or `blueprints` can be exposed as object containing declarations or as function to be invoked in compliance with common module (function) pattern to return either set of declarations there.
 
    :::tip Hidden Routings
-   This approach is preferred to prevent useless pollution of [configuration object](../api/README.md#configuration).
+   This approach is preferred to prevent useless pollution of [configuration object](../api/hitchy.md#configuration).
    :::
  
 After that application's configuration is processed accordingly for `routes` and `policies`.
