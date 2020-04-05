@@ -321,12 +321,14 @@ describe( "Library.Router.Types.Route.Route#parseSource", function() {
 	it( "accepts valid pathes", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			const pathes = [
-				// w/o parameters and globbing
+				// w/o parameters
 				"/", "/test", "/test/", "/test/more", "/a", "/a/b",
-				// w/ parameters or globbing
-				"/:test", "/prefix/:rest", "/?(optional)", "/+(repeatable)",
-				// w/ regexp elements
-				"/(optional)?", "/(repeatable)+"
+				// w/ parameters
+				"/:test", "/prefix/:rest", "/(optional)?", "/(repeatable)*", "/(repeatable)+",
+				"/:test/(optional)?", "/:test/(repeatable)*", "/:test/(repeatable)+",
+				"/prefix/:rest/(optional)?", "/prefix/:rest/(repeatable)*", "/prefix/:rest/(repeatable)+",
+				"/prefix/:rest/(optional)?/suffix", "/prefix/:rest/(repeatable)*/suffix", "/prefix/:rest/(repeatable)+/suffix",
+				"/prefix/:rest/(optional)?/suffix/:arg", "/prefix/:rest/(repeatable)*/suffix/:arg", "/prefix/:rest/(repeatable)+/suffix/:arg",
 			];
 
 			pathes.forEach( path => Route.parseSource.bind( Route, path ).should.not.throw() );
@@ -358,7 +360,7 @@ describe( "Library.Router.Types.Route.Route#parseSource", function() {
 
 			Route.parseSource( "/test/more/:name" ).prefix.should.equal( "/test/more" );
 			Route.parseSource( "/test/(more)" ).prefix.should.equal( "/test" );
-			Route.parseSource( "/test?/(more)" ).prefix.should.equal( "/tes" );
+			Route.parseSource( "/tes(t)?/(more)" ).prefix.should.equal( "/tes" );
 			Route.parseSource( "/test(more)" ).prefix.should.equal( "/test" );
 		} );
 	} );
@@ -372,30 +374,24 @@ describe( "Library.Router.Types.Route.Route#parseSource", function() {
 
 			let parameters = Route.parseSource( "/test/more/:var" ).parameters;
 			parameters.should.have.length( 1 );
-			parameters[0].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "pattern" );
+			parameters[0].should.have.properties( "name", "prefix", "modifier", "pattern" );
 			parameters[0].name.should.equal( "var" );
 			parameters[0].prefix.should.equal( "/" );
-			parameters[0].delimiter.should.equal( "/" );
-			parameters[0].optional.should.be.false();
-			parameters[0].repeat.should.be.false();
+			parameters[0].modifier.should.be.empty();
 			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 
 			parameters = Route.parseSource( "/test/:more/extra\\-:var" ).parameters;
 			parameters.should.have.length( 2 );
-			parameters[0].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "pattern" );
+			parameters[0].should.have.properties( "name", "prefix", "modifier", "pattern" );
 			parameters[0].name.should.equal( "more" );
 			parameters[0].prefix.should.equal( "/" );
-			parameters[0].delimiter.should.equal( "/" );
-			parameters[0].optional.should.be.false();
-			parameters[0].repeat.should.be.false();
+			parameters[0].modifier.should.be.empty();
 			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 
-			parameters[1].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "pattern" );
+			parameters[1].should.have.properties( "name", "prefix", "modifier", "pattern" );
 			parameters[1].name.should.equal( "var" );
 			parameters[1].prefix.should.equal( "" );
-			parameters[1].delimiter.should.equal( "/" );
-			parameters[1].optional.should.be.false();
-			parameters[1].repeat.should.be.false();
+			parameters[1].modifier.should.be.empty();
 			( () => { new RegExp( parameters[1].pattern ); } ).should.not.throw();
 		} );
 	} );
@@ -404,31 +400,25 @@ describe( "Library.Router.Types.Route.Route#parseSource", function() {
 		return ApiMockUp.then( function( { RouteModule: { Route } } ) {
 			let parameters = Route.parseSource( "/test/more/(var)" ).parameters;
 			parameters.should.have.length( 1 );
-			parameters[0].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "pattern" );
+			parameters[0].should.have.properties( "name", "prefix", "modifier", "pattern" );
 			parameters[0].name.should.equal( 0 );
 			parameters[0].prefix.should.equal( "/" );
-			parameters[0].delimiter.should.equal( "/" );
-			parameters[0].optional.should.be.false();
-			parameters[0].repeat.should.be.false();
+			parameters[0].modifier.should.be.empty();
 			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 			parameters[0].pattern.should.equal( "var" );    // for matching `var` as "value", only
 
 			parameters = Route.parseSource( "/test/(more)*/extra\\-(var|name)" ).parameters;
 			parameters.should.have.length( 2 );
-			parameters[0].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "pattern" );
+			parameters[0].should.have.properties( "name", "prefix", "modifier", "pattern" );
 			parameters[0].name.should.equal( 0 );
 			parameters[0].prefix.should.equal( "/" );
-			parameters[0].delimiter.should.equal( "/" );
-			parameters[0].optional.should.be.true();
-			parameters[0].repeat.should.be.true();
+			parameters[0].modifier.should.be.equal( "*" );
 			( () => { new RegExp( parameters[0].pattern ); } ).should.not.throw();
 
-			parameters[1].should.have.properties( "name", "prefix", "delimiter", "optional", "repeat", "pattern" );
+			parameters[1].should.have.properties( "name", "prefix", "modifier", "pattern" );
 			parameters[1].name.should.equal( 1 );
 			parameters[1].prefix.should.equal( "" );
-			parameters[1].delimiter.should.equal( "/" );
-			parameters[1].optional.should.be.false();
-			parameters[1].repeat.should.be.false();
+			parameters[1].modifier.should.be.empty();
 			( () => { new RegExp( parameters[1].pattern ); } ).should.not.throw();
 			parameters[1].pattern.should.equal( "var|name" );
 		} );
@@ -1042,7 +1032,7 @@ describe( "Library.Router.Types.Route.Route#selectProbablyCoveredPrefixes", func
 				{ generic: "/t\\a(st)?", specific: "/test/name/sub" },
 				{ generic: "/t\\a(st)*", specific: "/test/name/sub" },
 				{ generic: "/(tas)+", specific: "/test/name/sub" },
-				{ generic: "/tas*", specific: "/test/name/sub" },
+				{ generic: "/ta(s)*", specific: "/test/name/sub" },
 				{ generic: "/tast/:minor", specific: "/test/name/sub" },
 				{ generic: "/tast/:minor?", specific: "/test/name/sub" },
 				{ generic: "/tast/:minor*", specific: "/test/name/sub" },
