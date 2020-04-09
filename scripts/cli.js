@@ -29,7 +29,7 @@
 "use strict";
 
 const Args = require( "minimist" )( process.argv.slice( 2 ) );
-const LogLevels = require( "log-levels" );
+const LogLevels = require( "../tools/log-levels" );
 
 const command = Args._.shift() || "start";
 
