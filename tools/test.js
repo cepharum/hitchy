@@ -39,6 +39,7 @@ const Utility = require( "util" );
 const Debug = require( "debug" );
 
 const { BasicServer } = require( "../lib/server" );
+const LogLevels = require( "./log-levels" );
 
 const DefaultArguments = {
 	quiet: true,
@@ -96,11 +97,11 @@ module.exports = {
 		} else if ( _args.quiet ) {
 			_args["log-level"] = "-*";
 		} else if ( !_args["log-level"] ) {
-			_args["log-level"] = "*:info,*:warning,*:error";
+			_args["log-level"] = "INFO";
 		}
 
 		if ( _args["log-level"] ) {
-			Debug.enable( _args["log-level"] );
+			Debug.enable( LogLevels[_args["log-level"]] || _args["log-level"] );
 		}
 
 

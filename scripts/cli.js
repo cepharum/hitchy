@@ -29,6 +29,7 @@
 "use strict";
 
 const Args = require( "minimist" )( process.argv.slice( 2 ) );
+const LogLevels = require( "log-levels" );
 
 const command = Args._.shift() || "start";
 
@@ -38,7 +39,7 @@ if ( Args.help || Args.h ) {
 	if ( Args.quiet ) {
 		process.env.DEBUG = "-*";
 	} else if ( Args["log-level"] || !process.env.DEBUG ) {
-		process.env.DEBUG = Args["log-level"] || "*:info,*:warning,*:error";
+		process.env.DEBUG = LogLevels[Args["log-level"] || "INFO"] || Args["log-level"];
 	}
 
 	process.on( "unhandledRejection", _unhandledRejection );
@@ -91,7 +92,9 @@ Common options are:
  --project=path       Selects directory containing hitchy-based project to 
                       control. Defaults to current working directory.
  --debug              Enables noisy logging for debugging purposes.
- --log-level=names    Controls logging facilities (see npm package "debug").
+ --log-level=names    Controls logging facilities (see npm package "debug" or 
+                      use DEBUG2, DEBUG, INFO, NOTICE, WARNING, ERROR, ALERT or
+                      CRITICAL).
  
 Action "start" supports additional options:
  
