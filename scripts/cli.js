@@ -39,8 +39,10 @@ if ( Args.help || Args.h ) {
 	if ( Args.quiet ) {
 		process.env.DEBUG = "-*";
 	} else if ( Args["log-level"] || !process.env.DEBUG ) {
-		process.env.DEBUG = LogLevels[Args["log-level"] || "INFO"] || Args["log-level"];
+		process.env.DEBUG = Args["log-level"] = LogLevels[Args["log-level"] || "INFO"] || Args["log-level"];
 	}
+
+	require( "debug" ).enable( process.env.DEBUG );
 
 	process.on( "unhandledRejection", _unhandledRejection );
 	process.on( "uncaughtException", _unhandledException );
@@ -49,7 +51,7 @@ if ( Args.help || Args.h ) {
 	 * @type {HitchyOptions}
 	 */
 	const options = {
-		debug: Boolean( Args.debug ),
+		debug: Boolean( Args.debug ) || /(?:^|,)\*:debug\d*(?:,|$)/.test( Args["log-level"] ),
 	};
 
 	if ( Args.project ) {
