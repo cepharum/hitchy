@@ -57,7 +57,7 @@ const DefaultArguments = {
  * @typedef {object} HitchyTestContext
  * @property {HitchyInstance} hitchy instance of Hitchy to be tested
  * @property {Server} server HTTP service dispatching incoming requests into Hitchy instance
- * @property {function(url:string, body:(Buffer|string|object), headers:object):Promise<ServerResponse>} get sends GET request to running Hitchy instance
+ * @property {string} logged list of captured lög messages if enabled in options
  * @property {HitchyTestBoundClient} get sends GET request to running Hitchy instance
  * @property {HitchyTestBoundClient} post sends POST request to running Hitchy instance
  * @property {HitchyTestBoundClient} put sends PUT request to running Hitchy instance
@@ -225,7 +225,7 @@ module.exports = {
 		return () => ( ctx.hitchy ? ctx.hitchy.api.shutdown() : Promise.resolve() )
 			.catch( () => {} ) // eslint-disable-line no-empty-function
 			.then( () => {
-				if ( ctx.logger ) {
+				if ( ctx.logged ) {
 					console.error = ctx.hitchyReplacedErrorLogger;
 					ctx.loggerError = null;
 
@@ -240,6 +240,10 @@ module.exports = {
 
 					Debug.log = Debug.hitchyReplacedLogger;
 				}
+
+				ctx.server = null;
+				ctx.hitchy = null;
+				ctx.logged = null;
 			} );
 	},
 
