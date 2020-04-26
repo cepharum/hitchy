@@ -1,4 +1,4 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { IncomingMessage, ServerResponse, Server } from "http";
 import { EventEmitter } from "events";
 
 export = hitchy;
@@ -773,5 +773,23 @@ declare namespace hitchy {
     enum HitchyContextIdentifier {
         Standalone= "standalone",
         Express= "express",
+    }
+
+    type HitchyTestBoundClient = ( url: string, body: Buffer | string | object, headers: object ) => Promise<ServerResponse>;
+    type HitchyTestUnboundClient = ( method: string, url: string, body: Buffer | string | object, headers: object ) => Promise<ServerResponse>;
+
+    interface HitchyTestContext {
+        hitchy: HitchyInstance;
+        server: Server;
+        logged?: string[];
+        get: HitchyTestBoundClient;
+        post: HitchyTestBoundClient;
+        put: HitchyTestBoundClient;
+        patch: HitchyTestBoundClient;
+        delete: HitchyTestBoundClient;
+        head: HitchyTestBoundClient;
+        options: HitchyTestBoundClient;
+        trace: HitchyTestBoundClient;
+        request: HitchyTestUnboundClient;
     }
 }
