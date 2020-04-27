@@ -353,6 +353,11 @@ declare namespace hitchy {
          * of enabling all available plugins.
          */
         dependencies: string[];
+
+        /**
+         * Lists all arguments provided on CLI.
+         */
+        arguments: object;
     }
 
     /**

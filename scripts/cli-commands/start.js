@@ -62,6 +62,8 @@ module.exports = function( options, args ) {
 		options.dependencies = Array.isArray( args["depend-on"] ) ? args["depend-on"] : [args["depend-on"]];
 	}
 
+	options.arguments = args;
+
 	if ( args.injector ) {
 		return start();
 	}

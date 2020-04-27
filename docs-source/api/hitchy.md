@@ -55,13 +55,15 @@ hitchy /app --pluginFolder /some/different/path --debug
 
 There are options recognized by Hitchy and some of those get qualified during [bootstrap](../internals/architecture-basics.md#discovering-plugins). 
 
-Additionally provided parameters are included with options available in common module pattern. That's why your application is implicitly capable of supporting custom CLI options for controlling its behaviour.
+:::tip Custom Arguments support <Badge type="info" text="0.6.2"></Badge>
+Additional parameters are available in option [arguments](#options-arguments). That's why your application is implicitly capable of supporting custom CLI options for controlling its behaviour.
 
 ```bash
 hitchy /app --useAuthProvider https://some.auth.provider.com
 ```
+:::
 
-These are options recognized and/or managed by Hitchy:
+This is a list of options recognized by Hitchy itself:
 
 ### options.debug
 
@@ -121,6 +123,26 @@ This option is qualified during triangulation stage of bootstrap. It is addressi
 When using Hitchy's CLI the related parameter is called `--project`.
 :::
 
+### options.arguments <Badge type="info" text="0.6.2"></Badge>
+
+All CLI arguments are exposed in this option.
+
+```bash
+hitchy start --port 3000 --saml --use-idp https://idp.example.com somefile.txt
+```
+
+would populate this option with an object like this one:
+
+```javascript
+{
+    _: [ "start", "somefile.txt" ],
+    port: 3000,
+    saml: true,
+    "use-idp": "https://idp.example.com",
+}
+```
+
+The syntax is due to using [minimist](https://www.npmjs.com/package/minimist) for CLI parsing.
 
 ## Configuration
 
