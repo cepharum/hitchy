@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Patterns | Hitchy Manual</title>
+    <meta name="description" content="">
+    <meta name="generator" content="VuePress 1.4.0">
+    
+    
+    <link rel="preload" href="/core/assets/css/0.styles.7e2f65f7.css" as="style"><link rel="preload" href="/core/assets/js/app.b6694633.js" as="script"><link rel="preload" href="/core/assets/js/2.c2bbe95d.js" as="script"><link rel="preload" href="/core/assets/js/16.5fb62ebe.js" as="script"><link rel="prefetch" href="/core/assets/js/10.d48fcbd9.js"><link rel="prefetch" href="/core/assets/js/11.247ca3e4.js"><link rel="prefetch" href="/core/assets/js/12.4c4552eb.js"><link rel="prefetch" href="/core/assets/js/13.19865f11.js"><link rel="prefetch" href="/core/assets/js/14.b2f0d6d1.js"><link rel="prefetch" href="/core/assets/js/15.ea2650cc.js"><link rel="prefetch" href="/core/assets/js/17.df891bef.js"><link rel="prefetch" href="/core/assets/js/18.098f785b.js"><link rel="prefetch" href="/core/assets/js/19.b425b3de.js"><link rel="prefetch" href="/core/assets/js/20.2215f6f7.js"><link rel="prefetch" href="/core/assets/js/21.5df4a47f.js"><link rel="prefetch" href="/core/assets/js/22.a465016a.js"><link rel="prefetch" href="/core/assets/js/3.affde567.js"><link rel="prefetch" href="/core/assets/js/4.c85c5090.js"><link rel="prefetch" href="/core/assets/js/5.1b871d4e.js"><link rel="prefetch" href="/core/assets/js/6.3f11fd39.js"><link rel="prefetch" href="/core/assets/js/7.eaa24f8b.js"><link rel="prefetch" href="/core/assets/js/8.27b55aaa.js"><link rel="prefetch" href="/core/assets/js/9.8ec89218.js">
+    <link rel="stylesheet" href="/core/assets/css/0.styles.7e2f65f7.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/core/" class="home-link router-link-active"><!----> <span class="site-name">Hitchy Manual</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/core/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/core/tutorials/" class="nav-link">
+  Tutorials
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="API" class="dropdown-title"><span class="title">API</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/core/api/hitchy.html" class="nav-link">
+  Hitchy's API
+</a></li><li class="dropdown-item"><!----> <a href="/core/api/plugins.html" class="nav-link">
+  Plugins API
+</a></li><li class="dropdown-item"><!----> <a href="/core/api/components/" class="nav-link">
+  Core Components
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Internals" class="dropdown-title"><span class="title">Internals</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/core/internals/architecture-basics.html" class="nav-link">
+  Architecture
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/components.html" class="nav-link">
+  Components
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/patterns.html" class="nav-link router-link-exact-active router-link-active">
+  Patterns
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/bootstrap.html" class="nav-link">
+  Plugins
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/routing-basics.html" class="nav-link">
+  Routing
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Hitchy" class="dropdown-title"><span class="title">Hitchy</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/core/" class="nav-link">
+  Core
+</a></li><li class="dropdown-item"><h4>
+          
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="https://hitchyjs.github.io/plugin-odem/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Odem
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li><li class="dropdown-subitem"><a href="https://hitchyjs.github.io/plugin-auth/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Auth
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li></ul></li></ul></div></div> <a href="https://github.com/hitchyjs/core" target="_blank" rel="noopener noreferrer" class="repo-link">
+    Contribute!
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/core/" class="nav-link">
+  Home
+</a></div><div class="nav-item"><a href="/core/tutorials/" class="nav-link">
+  Tutorials
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="API" class="dropdown-title"><span class="title">API</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/core/api/hitchy.html" class="nav-link">
+  Hitchy's API
+</a></li><li class="dropdown-item"><!----> <a href="/core/api/plugins.html" class="nav-link">
+  Plugins API
+</a></li><li class="dropdown-item"><!----> <a href="/core/api/components/" class="nav-link">
+  Core Components
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Internals" class="dropdown-title"><span class="title">Internals</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/core/internals/architecture-basics.html" class="nav-link">
+  Architecture
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/components.html" class="nav-link">
+  Components
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/patterns.html" class="nav-link router-link-exact-active router-link-active">
+  Patterns
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/bootstrap.html" class="nav-link">
+  Plugins
+</a></li><li class="dropdown-item"><!----> <a href="/core/internals/routing-basics.html" class="nav-link">
+  Routing
+</a></li></ul></div></div><div class="nav-item"><div class="dropdown-wrapper"><button type="button" aria-label="Hitchy" class="dropdown-title"><span class="title">Hitchy</span> <span class="arrow right"></span></button> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/core/" class="nav-link">
+  Core
+</a></li><li class="dropdown-item"><h4>
+          
+        </h4> <ul class="dropdown-subitem-wrapper"><li class="dropdown-subitem"><a href="https://hitchyjs.github.io/plugin-odem/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Odem
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li><li class="dropdown-subitem"><a href="https://hitchyjs.github.io/plugin-auth/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Auth
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></li></ul></li></ul></div></div> <a href="https://github.com/hitchyjs/core" target="_blank" rel="noopener noreferrer" class="repo-link">
+    Contribute!
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>Patterns</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/core/internals/patterns.html#common-module-pattern" class="sidebar-link">Common Module Pattern</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/core/internals/patterns.html#returning-promise" class="sidebar-link">Returning Promise</a></li><li class="sidebar-sub-header"><a href="/core/internals/patterns.html#passing-additional-information" class="sidebar-link">Passing Additional Information</a></li></ul></li><li><a href="/core/internals/patterns.html#common-module-function-pattern" class="sidebar-link">Common Module Function Pattern</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/core/internals/patterns.html#use-cases" class="sidebar-link">Use Cases</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="patterns"><a href="#patterns" class="header-anchor">#</a> Patterns</h1> <p>Hitchy strongly relies on conventions over configuration paradigm. As such, there are some patterns introduced below that you might want to comply with to benefit from Hitchy's capabilities the most.</p> <h2 id="common-module-pattern"><a href="#common-module-pattern" class="header-anchor">#</a> Common Module Pattern</h2> <p>As a Node.js developer you are familiar with the traditional way of writing modules. Plugins and components discovered by Hitchy are (consisting of) such modules and thus might look like this:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// add some code here</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">customFunction</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">// add some code here</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> 
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>This example shows a software module that's exposing two functions forming its API.</p> <p>In addition to those modules, Hitchy's core supports so called <em>common module pattern</em> (CMP) when <em>discovering</em> plugins and their components.</p> <div class="custom-block warning"><p class="custom-block-title">Discovering Plugins?</p> <p>In Hitchy <em>discovering</em> a plugin is different from <em>requiring</em> it. The term discovery refers to Hitchy's capability of <a href="/core/internals/architecture-basics.html#discovering-plugins">automatically loading a plugin during bootstrap</a>. In opposition to that, any code of your application may still <code>require()</code> modules the usual way. <strong>However, this is going to have some negative side effects for modules relying on <em>common module pattern</em></strong>. That's why we suggest to stick with this pattern most of the time.</p></div> <p>Instead of exporting some API, the common module pattern is a convention allowing either complying module to export a function generating its API on invocation. This function is invoked by Hitchy's bootstrap code in a controlled context to get the module's actual API:</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> api <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+        <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">// add some code here</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token function">customFunction</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token comment">// add some code here</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span> 
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>In this example the same API is exposed as before. But this time it is relying on the common module pattern mostly to gain access on Hitchy's API in line two. During discovery of plugins and components any function exported by either module is invoked with Hitchy's API provided as <code>this</code> and global options describing runtime context and arguments passed on starting Hitchy in first argument.</p> <p>Following this pattern is beneficial in several ways:</p> <ul><li><p>Your modules are gaining access to <a href="#options">runtime options</a> and Hitchy's common API described in this document.</p></li> <li><p>Because of that, either module may provide different implementations depending on current runtime environment.</p> <div class="custom-block tip"><p class="custom-block-title">TIP</p> <p>It's always wise choice to put <strong>everything</strong> into that function.</p></div></li> <li><p>Defer bootstrap of your application by <a href="#returning-promise">returning promises</a> so you get all the time required to decide how to proceed.</p></li></ul> <p>And, of course, all this applies to configuration files as well.</p> <div class="custom-block warning"><p class="custom-block-title">Related Issues</p> <p>On exporting an ES6 class in a module Hitchy might falsely consider this module to comply with common module pattern.</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">class</span> <span class="token class-name">MyServiceComponent</span> <span class="token punctuation">{</span>
+    <span class="token comment">// TODO add methods here</span>
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> MyServiceComponent<span class="token punctuation">;</span>
+</code></pre></div><p>This results in error on Hitchy start regarding invoking your exposed class without operator <code>new</code>. As a fix you might need to wrap this class in a function to actually comply with common module pattern.</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">class</span> <span class="token class-name">MyServiceComponent</span> <span class="token punctuation">{</span>
+        <span class="token comment">// TODO add methods here</span>
+    <span class="token punctuation">}</span>
+
+    <span class="token keyword">return</span> MyServiceComponent<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>Alternatively you might add static property <code>useCMP</code> set <code>false</code> to prevent Hitchy from assuming this module is complying with common module pattern.</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">class</span> <span class="token class-name">MyServiceComponent</span> <span class="token punctuation">{</span>
+    <span class="token comment">// TODO add methods here</span>
+    
+    <span class="token keyword">static</span> <span class="token keyword">get</span> <span class="token function">useCMP</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> MyServiceComponent<span class="token punctuation">;</span>
+</code></pre></div></div> <h3 id="returning-promise"><a href="#returning-promise" class="header-anchor">#</a> Returning Promise</h3> <p>Another benefit of complying with common module patterns is available on module's function returning a Promise for the module's API instead of that API directly. In that case Hitchy is waiting for the promise to be resolved with the actually desired API.</p> <p>This way it is possible to defer bootstrap code of Hitchy and wait for prerequisites required for delivering module's API eventually.</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> api <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token function">someAsynchronousCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> <span class="token punctuation">{</span>
+                <span class="token function">create</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment">// add some code here</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token function">customFunction</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token comment">// add some code here</span>
+                <span class="token punctuation">}</span><span class="token punctuation">,</span> 
+            <span class="token punctuation">}</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="passing-additional-information"><a href="#passing-additional-information" class="header-anchor">#</a> Passing Additional Information</h3> <p>Whenever Hitchy is supporting common module pattern it might intend to pass further information in addition to its API and options. This information will be provided as additional arguments following provided options.</p> <h2 id="common-module-function-pattern"><a href="#common-module-function-pattern" class="header-anchor">#</a> Common Module Function Pattern</h2> <p>A similar pattern is named <em>common module function pattern</em> (CMFP). It is supported mostly for implementing Hitchy plugins e.g. when exposing <a href="/core/internals/plugins.html#common-plugin-api">a plugin's integration with Hitchy's plugins API</a>.</p> <p>Just like <a href="#common-module-pattern">common module pattern</a> it is meant to support provision of a function to be invoked for generating some data instead of providing that data immediately. Again, any such function is invoked with Hitchy's API provided as <code>this</code>, Hitchy's options in first argument and any number of additional data provided in further arguments.</p> <p>In opposition to <a href="#common-module-pattern">common module pattern</a> this one isn't about a whole module's export to be generated dynamically but some property or method exported there.</p> <h3 id="use-cases"><a href="#use-cases" class="header-anchor">#</a> Use Cases</h3> <p>When implementing a Hitchy-based application complying with <a href="#common-module-pattern">common module pattern</a> is superior over adopting <a href="#common-module-function-pattern">common module function pattern</a>. For example, when creating a service component most parts of Hitchy's API are available when <a href="/core/internals/bootstrap.html#exposure">loading the component in exposure stage</a>. Thus sticking with common module pattern is suggested for implementing components like <a href="/core/internals/components.html#controllers">controllers</a> and <a href="/core/internals/components.html#services">services</a> as well as more dynamic configuration files.</p> <p>However, when <em>implementing a plugin for Hitchy</em> instead of an application with Hitchy, that plugin's main file is <a href="/core/api/plugins.html#common-plugin-api">exposing elements of plugins API</a> to be retrieved at different stages of bootstrapping an application your plugin will be used with. In that case using common module function pattern is superior for either exported element is gaining access to a different amount of Hitchy's API whereas using common module pattern will have early access to a very limited API of Hitchy, only.</p> <p>Let's consider this rather simple example of a plugin declaring blueprint routes:</p> <p><strong>node_modules/your_plugin/index.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    blueprints<span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token string">&quot;/&quot;</span><span class="token operator">:</span> <span class="token string">&quot;foo.index()&quot;</span><span class="token punctuation">,</span>
+        <span class="token string">&quot;/bar&quot;</span><span class="token operator">:</span> <span class="token string">&quot;foo.bar()&quot;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>If you need to collect some information first to have a context-aware set of routes exported, you might want to stick with common module pattern:</p> <p><strong>node_modules/your_plugin/index.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span> <span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> api <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+    <span class="token keyword">const</span> blueprints <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// TODO collect routing definitions in blueprints variable</span>
+
+    <span class="token keyword">return</span> <span class="token punctuation">{</span>
+        blueprints<span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>Using <code>api</code> for dynamically creating values of exposed <code>blueprints</code> property would fail most probably for this code is run at <a href="/core/internals/bootstrap.html#discovery">discovery stage of bootstrap</a> when your plugin's module is loaded for the first time. At that point in time there is no access on eventually available plugins, there is no configuration and there are no components ready for use. It might even happen that your plugin won't make it into the application, finally.</p> <p>According to plugins API, the <a href="/core/api/plugins.html#plugin-blueprints"><code>blueprints</code> property</a> is assumed to be a regular object or some map, by default. By adopting common module function pattern it becomes a function, though:</p> <p><strong>node_modules/your_plugin/index.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token function">blueprints</span><span class="token punctuation">(</span> <span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> api <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+        <span class="token keyword">const</span> blueprints <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+        <span class="token comment">// TODO collect routing definitions in blueprints variable</span>
+
+        <span class="token keyword">return</span> <span class="token punctuation">{</span>
+            blueprints<span class="token punctuation">,</span>
+        <span class="token punctuation">}</span><span class="token punctuation">;</span> 
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><p>Here, the module still gets loaded early in bootstrapping application. But routing definitions aren't collected quite as early, but when Hitchy is in <a href="/core/internals/bootstrap.html#routing">routing stage</a> which is close to the end of bootstrapping with all plugins, models, services, controllers and configurations being exposed in <code>api</code>.</p> <p>On top of that, you may even return a promise for the eventually used routing definitions, again:</p> <p><strong>node_modules/your_plugin/index.js</strong></p> <div class="language-javascript extra-class"><pre class="language-javascript"><code>module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">{</span>
+    <span class="token function">blueprints</span><span class="token punctuation">(</span> <span class="token parameter">options</span> <span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">const</span> api <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">return</span> <span class="token function">someAsynchronousCode</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span> <span class="token parameter">info</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+                <span class="token keyword">const</span> blueprints <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+                <span class="token comment">// TODO collect routing definitions in blueprints variable</span>
+            	
+                <span class="token keyword">return</span> <span class="token punctuation">{</span>
+                    blueprints<span class="token punctuation">,</span>
+                <span class="token punctuation">}</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/core/assets/js/app.b6694633.js" defer></script><script src="/core/assets/js/2.c2bbe95d.js" defer></script><script src="/core/assets/js/16.5fb62ebe.js" defer></script>
+  </body>
+</html>
