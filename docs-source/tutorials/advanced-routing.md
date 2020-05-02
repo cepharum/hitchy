@@ -1,5 +1,6 @@
 ---
 prev: hello-world.md
+next: vue.md
 ---
 
 # Tutorial: Advanced Routing
