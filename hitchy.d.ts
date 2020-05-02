@@ -655,13 +655,12 @@ declare namespace hitchy {
         [key: string]: HitchyServiceComponent;
     }
 
-    interface HitchyComponent {
-    }
+    interface HitchyComponent {}
 
-    type HitchyControllerComponent = HitchyComponent;
-    type HitchyPolicyComponent = HitchyComponent;
-    type HitchyModelComponent = HitchyComponent;
-    type HitchyServiceComponent = HitchyComponent;
+    interface HitchyControllerComponent extends HitchyComponent {}
+    interface HitchyPolicyComponent extends HitchyComponent {}
+    interface HitchyModelComponent extends HitchyComponent {}
+    interface HitchyServiceComponent extends HitchyComponent {}
 
     /**
      * Extends IncomingMessage of Node.js in context of a Hitchy-based application.
