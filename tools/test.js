@@ -104,6 +104,9 @@ module.exports = {
 			Debug.enable( LogLevels[_args["log-level"]] || _args["log-level"] );
 		}
 
+		if ( !_args.hasOwnProperty( "port" ) ) {
+			_args.port = "auto";
+		}
 
 		return promise
 			.then( () => BasicServer( options, _args, () => {
@@ -309,10 +312,11 @@ function request( method, url, data = null, headers = {} ) {
 
 		req.method = method;
 
-		if ( !req.hostname ) {
+		if ( !req.hostname || req.hostname === "0.0.0.0" || req.hostname === "::" ) {
 			req.hostname = "127.0.0.1";
-			req.port = server.address().port;
 		}
+
+		req.port = server.address().port;
 
 		req.headers = {
 			accept: "text/html",

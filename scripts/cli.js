@@ -109,6 +109,7 @@ Action "start" supports additional options:
                       can be used multiple times.
  --injector=name      Picks injector to use (default: "node", may be "express").
  --port=number        Chooses port to listen on for incoming requests.
+                      Use "auto" for picking some random port number.
  --ip=address         Chooses IP address to listen on for incoming requests.
  --quiet              Suppresses output regarding successful start of service.
  --sslKey=file        Selects file with SSL key for serving over HTTPS.
