@@ -1,12 +1,12 @@
 module.exports = {
-	base: "/core/",
-	dest: "./docs",
+	base: "/",
+	dest: "./public",
 	evergreen: true,
-	title: "Hitchy Manual",
+	title: "Hitchy Core Manual",
 	themeConfig: {
 		sidebar: "auto",
 		displayAllHeaders: true,
-		repo: "hitchyjs/core",
+		repo: "https://gitlab.com/hitchy/core",
 		repoLabel: "Contribute!",
 		nav: [
 			{ text: "Home", link: "/" },
@@ -26,8 +26,8 @@ module.exports = {
 			{ text: "Hitchy", items: [
 					{ text: "Core", link: "/" },
 					{ text: "", items: [
-							{ text: "Odem", link: "https://hitchyjs.github.io/plugin-odem/" },
-							{ text: "Auth", link: "https://hitchyjs.github.io/plugin-auth/" },
+							{ text: "Odem", link: "https://odem.hitchy.org/" },
+							{ text: "Auth", link: "https://auth.hitchy.org/" },
 						] }
 				] },
 		],
